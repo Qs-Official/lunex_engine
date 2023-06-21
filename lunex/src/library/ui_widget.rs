@@ -18,6 +18,12 @@ impl Widget {
             Err (message) => Err(String::from("WIDGET '") + &self.path + "' NOT FOUND! #Error: "+ &message),
         }
     }
+    pub fn is_within (&self, system: &Ui::Hiearchy, point: &Vec2) -> Result<bool, String> {
+        match self.position(&system) {
+            Ok (position) => Result::Ok((point.x > position.point_1.x && point.x < position.point_2.x) && (point.y > position.point_1.y && point.y < position.point_2.y)),
+            Err (message) => Result::Err(message),
+        }
+    }
 
 
 

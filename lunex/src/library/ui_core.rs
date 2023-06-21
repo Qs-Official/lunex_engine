@@ -4,26 +4,25 @@
 use bevy::prelude::*;
 
 use crate::library::prelude::{HashMap, Outcome, Ui};
-use crate::library::ui_container::Container;
 
-use super::ui_container::ContainerPosition;
+use super::ui_container::{Container, ContainerPosition};
 
 
 //=====================================
-//#Lunex = Main UI struct
+//#Hiearchy
 //------------------
-#[derive(Component)]
+#[derive(Component, Clone, Debug, PartialEq, Default)]
 pub struct Hiearchy {
     pub width: f32,
     pub height: f32,
     branch: Branch,
 }
 impl Hiearchy {
-    pub fn new () -> Hiearchy {                   //CREATES NEW UI SYSTEM
+    pub fn new () -> Hiearchy {
         let mut branch = Branch::new();
         branch.container.position_add("default", Ui::Pos::Relative {
-            point_relative_1: [0.0, 0.0],
-            point_relative_2: [100.0, 100.0],
+            relative_1: Vec2 { x: 0.0, y: 0.0 },
+            relative_2: Vec2 { x: 100.0, y: 100.0 },
             ..Default::default()
         }.wrap());
 
@@ -34,7 +33,7 @@ impl Hiearchy {
         }
     }
     pub fn calculate (&mut self) {
-        self.branch.container_calculate([0.0,0.0], self.width, self.height);
+        self.branch.container_calculate(Vec2::default(), self.width, self.height);
     }
     pub fn draw (&self) {
         //self.expose().draw(&self.sprite_vault);
@@ -70,6 +69,7 @@ pub fn hiearchy_update(mut query: Query<&mut Hiearchy>, mut windows: Query<&mut 
 }
 
 
+#[derive(Clone, Debug, PartialEq, Default)]
 pub (in crate) struct Branch {
     container: Container,
 
@@ -105,7 +105,7 @@ impl Branch {
     }
     
     //#LIBRARY TICK
-    pub (in crate) fn container_calculate (&mut self, point: [f32; 2], width: f32, height: f32) {                                   //This will calculate container and enter reccursion
+    pub (in crate) fn container_calculate (&mut self, point: Vec2, width: f32, height: f32) {                                   //This will calculate container and enter reccursion
         self.container.calculate(point, width, height);
         for i in 0..self.pernament.len() {
             let pos = self.container.position();
