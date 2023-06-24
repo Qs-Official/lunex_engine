@@ -1,29 +1,28 @@
 #![allow(non_snake_case)]
-pub mod Ui {
-    pub use crate::library::ui_widget::Widget;
 
+pub use crate::library::ui_widget::Widget;
 
-    pub use crate::library::ui_core::Hiearchy;
-    pub use crate::library::ui_core::hiearchy_update;
+pub use crate::library::ui_core::Data;
 
-    //pub use crate::core::style::Style;
-    //pub use crate::core::style::Align;
-    //pub use crate::core::style::Sprite;
+pub use crate::library::ui_core::Hierarchy;
+pub use crate::library::ui_core::hiearchy_update;
 
-    pub use crate::library::ui_container::PositionType;
-    pub use crate::library::ui_container::SolidSize;
+pub use crate::library::ui_cursor::Cursor;
+pub use crate::library::ui_cursor::cursor_update;
 
-    pub mod Pos {
-        pub use crate::library::ui_container::Relative;
-        pub use crate::library::ui_container::Window;
-        pub use crate::library::ui_container::Solid;
-    }
+//pub use crate::library::ui_container::PositionLayout;
+pub use crate::library::ui_container::Scale;
 
-    //pub use crate::library::ui::preset as Templates;
-    //pub use crate::template as Template;
+pub mod Layout {
+    pub use crate::library::ui_container::Relative;
+    pub use crate::library::ui_container::Window;
+    pub use crate::library::ui_container::Solid;
 }
-pub use crate::library::general::Outcome;
-pub use crate::library::general::Timer;
-pub use crate::library::general::MString;
 
-pub use ahash::AHashMap as HashMap;
+
+
+pub (in crate) use crate::library::general::Outcome;
+//pub (in crate) use crate::library::general::Timer;
+pub (in crate) use crate::library::general::MString;
+
+pub (in crate) use ahash::AHashMap as HashMap;

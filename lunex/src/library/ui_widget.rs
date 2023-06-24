@@ -1,10 +1,13 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-use crate::library::prelude::{Ui, MString, Outcome};
+use crate::library::prelude::*;
 use bevy::prelude::*;
 
-use super::ui_container::ContainerPosition;
+use super::ui_container::{Position, PositionLayout};
+use super::ui_core::Branch;
+
+//===========================================================================
 
 #[derive(Component)]
 pub struct Widget {
@@ -12,47 +15,70 @@ pub struct Widget {
 }
 impl Widget {
 
-    pub fn position<'a> (&'a self, system: &'a  Ui::Hiearchy) -> Result<&ContainerPosition, String> {
-        match system.expose().borrow_chain_checked(&self.path){
-            Ok (reference) => Result::Ok(reference.container_get()),
-            Err (message) => Err(String::from("WIDGET '") + &self.path + "' NOT FOUND! #Error: "+ &message),
+    pub fn fetch<'a> (&'a self, system: &'a  Hierarchy, key: &str) -> Result<&Branch, String> {
+        let mut extra_path = String::from(&self.path);
+        if !key.is_empty() { extra_path += "/";extra_path += key;}
+        match system.expose().borrow_chain_checked(&extra_path){
+            Ok (branch) => Result::Ok(branch),
+            Err (message) => Err(format!("Fetch failed, could not find '{}' #REASON: {}", &extra_path, message).to_string()),
         }
     }
-    pub fn is_within (&self, system: &Ui::Hiearchy, point: &Vec2) -> Result<bool, String> {
-        match self.position(&system) {
+    pub fn fetch_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut Branch, String> {
+        let mut extra_path = String::from(&self.path);
+        if !key.is_empty() { extra_path += "/";extra_path += key;}
+        match system.expose_mut().borrow_chain_checked_mut(&extra_path){
+            Ok (branch) => Result::Ok(branch),
+            Err (message) => Err(format!("Fetch failed, could not find '{}' #REASON: {}", &extra_path, message).to_string()),
+        }
+    }
+    
+    pub fn fetch_layout<'a> (&'a self, system: &'a  Hierarchy, key: &str) -> Result<&PositionLayout, String> {
+        match self.fetch(system, key){
+            Ok (branch) => Result::Ok(branch.container_get().position_layout_get()),
+            Err (message) => Err(message),
+        }
+    }
+    pub fn fetch_layout_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut PositionLayout, String> {
+        match self.fetch_mut(system, key){
+            Ok (branch) => Result::Ok(branch.container_get_mut().position_layout_get_mut()),
+            Err (message) => Err(message),
+        }
+    }
+
+
+    pub fn fetch_position<'a> (&'a self, system: &'a Hierarchy, key: &str) -> Result<&Position, String> {
+        match self.fetch(&system, key) {
+            Ok (branch) => Result::Ok(&branch.container_get().position_get()),
+            Err (message) => Result::Err(message),
+        }
+    }
+    pub fn is_within (&self, system: &Hierarchy, key: &str, point: &Vec2) -> Result<bool, String> {
+        match self.fetch_position(&system, key) {
             Ok (position) => Result::Ok((point.x > position.point_1.x && point.x < position.point_2.x) && (point.y > position.point_1.y && point.y < position.point_2.y)),
             Err (message) => Result::Err(message),
         }
     }
+    //add is cursor_within + depth
 
 
-
-    fn new_empty () -> Widget {
-        Widget {
-            path: String::new(),
-        }
-    }
-    fn from_path (path: String) -> Widget {
+    fn from_path (path: &str) -> Widget {
         Widget { 
-            path,
+            path: path.to_string(),
         }
     }
 
-    pub fn new(system: &mut Ui::Hiearchy, key: &str, position: Ui::PositionType) -> Result<Widget, String> {
+    pub fn new(system: &mut Hierarchy, key: &str, position: PositionLayout) -> Result<Widget, String> {
         match system.expose_mut().create_simple_checked(key, position) {
-            Ok (new_key) => Result::Ok(Widget::from_path(new_key)),
+            Ok (new_key) => Result::Ok(Widget::from_path(&new_key)),
             Err (message) => Err(String::from("UNABLE TO CREATE WIDGET! #Error: ") + &message),
         }
     }
-    pub fn key(&self) -> String {
-        String::from("#ROOT/") + &self.path + "/"
-    }
-    pub fn new_in(system: &mut Ui::Hiearchy, widget: &Widget, key: &str, position: Ui::PositionType) -> Result <Widget, String> {
+    pub fn new_in(system: &mut Hierarchy, widget: &Widget, key: &str, position: PositionLayout) -> Result <Widget, String> {
         match key.split_once('/') {
             None => {
                 match system.expose_mut().borrow_chain_checked_mut(&widget.path){
                     Ok (reference) => match reference.create_simple_checked(key, position) {
-                        Ok (new_key) => Result::Ok(Widget::from_path(String::new() + &widget.path + "/"+ &new_key)),
+                        Ok (new_key) => Result::Ok(Widget::from_path(&(String::new() + &widget.path + "/"+ &new_key))),
                         Err (message) => Result::Err(message),
                     },
                     Err (message) => Err(String::from("WIDGET '") + &widget.path + "' NOT FOUND! #Error: "+ &message),
@@ -94,7 +120,7 @@ impl Widget {
                             Err (message) => return Result::Err(message),
                         };
 
-                        Result::Ok(Widget::from_path(String::new() + &widget.path + "/" + &tuple1.1))
+                        Result::Ok(Widget::from_path(&(String::new() + &widget.path + "/" + &tuple1.1)))
                     }
                 } else {
                     let mut new_local_path = String::from(&path) + "/";
@@ -110,13 +136,13 @@ impl Widget {
                         },
                         Err (message) => return Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
                     };
-                    Result::Ok(Widget::from_path(String::new() + &widget.path + "/" + &tuple1.1))
+                    Result::Ok(Widget::from_path(&(String::new() + &widget.path + "/" + &tuple1.1)))
                 }
             },
         }
     }
     
-    pub fn map (&self, system: & Ui::Hiearchy) -> Result<String, String> {
+    pub fn map (&self, system: & Hierarchy) -> Result<String, String> {
         match system.expose().borrow_chain_checked(&self.path){
             Ok (reference) => {
                 let list: Vec<&str> =  self.path.split('/').collect();
@@ -127,7 +153,7 @@ impl Widget {
             Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn map_debug (&self, system: & Ui::Hiearchy) -> Result<String, String> {
+    pub fn map_debug (&self, system: & Hierarchy) -> Result<String, String> {
         match system.expose().borrow_chain_checked(&self.path){
             Ok (reference) => {
                 let list: Vec<&str> =  self.path.split('/').collect();
@@ -138,7 +164,7 @@ impl Widget {
             Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn destroy (&self, system: &mut Ui::Hiearchy, path : &str) -> Outcome {
+    pub fn destroy (&self, system: &mut Hierarchy, path : &str) -> Outcome {
         match system.expose_mut().borrow_chain_checked_mut(&self.path){
             Ok (reference) => {
                 reference.destroy_chain_checked(path)
@@ -146,7 +172,7 @@ impl Widget {
             Err (message) => Outcome::Fail(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn remove (&self, system: &mut Ui::Hiearchy, key : &str) -> Outcome {
+    pub fn remove (&self, system: &mut Hierarchy, key : &str) -> Outcome {
         match system.expose_mut().borrow_chain_checked_mut(&self.path){
             Ok (reference) => {
                 reference.remove_simple_checked(key)
@@ -155,216 +181,5 @@ impl Widget {
         }
     }
 
-    pub fn exist (&self, system: &mut Ui::Hiearchy, key : &str) -> bool{
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        system.expose_mut().check_chain_checked(&path)
-        
-    }
-
-    /*pub fn container_get<'a> (&'a self, system: &'a mut Ui::System, key : &str) -> Result<Ui::Container, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (reference) => {
-                Ok(reference.container_get())
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }*/
-    
-    // CONVERT ABSOLUTE INTO RELATIVE
-    /*pub fn container_absolute_to_relative<'a> (&'a self, system: &'a mut Ui::System, key : &str, point: [f32;2]) -> Result<[f32; 2], String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (reference) => {
-                let container = reference.container_get();
-                Ok([(point[0]-container.parent_parameters.0[0]) * 100.0 / container.parent_parameters.1, (point[1]-container.parent_parameters.0[1]) * 100.0 / container.parent_parameters.2])
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }*/
-    
-    
-
-
-    pub fn position_add (&self, system: &mut Ui::Hiearchy, name: &str, position: Ui::PositionType, key: &str) -> Outcome {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked_mut(&path){
-            Ok (branch) => {
-                branch.container_position_add(name, position)
-            },
-            Err (message) => Outcome::Fail(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow<'a> (&'a self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<& Ui::PositionType, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (branch) => {
-                branch.container_position_borrow(name)
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_mut<'a> (&'a mut self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<&mut Ui::PositionType, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked_mut(&path){
-            Ok (branch) => {
-                branch.container_position_borrow_mut(name)
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    
-    pub fn position_borrow_solid<'a> (&'a self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<& Ui::Pos::Solid, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Solid (window) => Ok(&window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A SOLID TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_window<'a> (&'a self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<& Ui::Pos::Window, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Window (window) => Ok(&window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A WINDOW TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_relative<'a> (&'a self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<& Ui::Pos::Relative, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Relative (window) => Ok(&window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A RELATIVE TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_solid_mut<'a> (&'a mut self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<&mut Ui::Pos::Solid, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked_mut(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow_mut(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Solid (window) => Ok(window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A SOLID TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_window_mut<'a> (&'a mut self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<&mut Ui::Pos::Window, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked_mut(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow_mut(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Window (window) => Ok(window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A WINDOW TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-    pub fn position_borrow_relative_mut<'a> (&'a mut self, system: &'a mut Ui::Hiearchy, name: &str, key: &str) -> Result<&mut Ui::Pos::Relative, String> {
-        let mut path = String::from(&self.path);
-        if !key.is_empty() {
-            path += "/";
-            path += &key
-        }
-        match system.expose_mut().borrow_chain_checked_mut(&path){
-            Ok (branch) => {
-                match branch.container_position_borrow_mut(name) {
-                    Ok (position) => {
-                        match position {
-                            Ui::PositionType::Relative (window) => Ok(window),
-                            _ => Err(String::from("POSITION '") + name + "' IS NOT A RELATIVE TYPE!"),
-                        }
-                    },
-                    Err(message) => Err(message),
-                }
-            },
-            Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
-        }
-    }
-
-    //NOT FINISHED PAST THIS
 
 }

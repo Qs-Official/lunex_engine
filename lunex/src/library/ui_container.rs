@@ -2,13 +2,11 @@
 #![allow(unused_variables)]
 
 use bevy::prelude::*;
-use crate::library::prelude::{HashMap, Outcome};
-
 
 
 //===========================================================================
-//#POSITION TYPE OF THE CONTAINER
-//-------------------------------
+
+
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Window {
     pub absolute: Vec2,
@@ -29,8 +27,8 @@ impl Window {
             height_relative: 0.0,
         }
     }
-    pub fn wrap (self) -> PositionType {
-        PositionType::Window(self)
+    pub fn wrap (self) -> PositionLayout {
+        PositionLayout::Window(self)
     }
     fn calculate (&self, point: Vec2, width: f32, height: f32) -> (Vec2, f32, f32) {
         let xs = width / 100.0;
@@ -60,8 +58,8 @@ impl Relative {
             relative_2: Vec2 { x: 0.0, y: 0.0 },
         }
     }
-    pub fn wrap (self) -> PositionType {
-        PositionType::Relative(self)
+    pub fn wrap (self) -> PositionLayout {
+        PositionLayout::Relative(self)
     }
     fn calculate (&self, point: Vec2, width: f32, height: f32) -> [Vec2; 2] {
         let xs = width / 100.0;
@@ -80,7 +78,7 @@ pub struct Solid {
     pub height: u32,
     pub horizontal_anchor: f32,
     pub vertical_anchor: f32,
-    pub size: SolidSize,
+    pub scaling: Scale,
 }
 impl Solid {
     pub fn new () -> Solid {
@@ -89,16 +87,16 @@ impl Solid {
             height: 0,
             horizontal_anchor: 0.0,
             vertical_anchor: 0.0,
-            size: SolidSize::Fit,
+            scaling: Scale::Fit,
         }
     }
-    pub fn wrap (self) -> PositionType {
-        PositionType::Solid(self)
+    pub fn wrap (self) -> PositionLayout {
+        PositionLayout::Solid(self)
     }
     fn calculate (&self, point: Vec2, width: f32, height: f32) -> (Vec2, f32, f32) {
-        let scale = match self.size {
-            SolidSize::Fill => f32::max(width/self.width as f32, height/self.height as f32),
-            SolidSize::Fit => f32::min(width/self.width as f32, height/self.height as f32),
+        let scale = match self.scaling {
+            Scale::Fill => f32::max(width/self.width as f32, height/self.height as f32),
+            Scale::Fit => f32::min(width/self.width as f32, height/self.height as f32),
         };
 
         let center = [point.x + width/2.0, point.y + height/2.0];
@@ -114,30 +112,94 @@ impl Solid {
     }
 }
 
-//-------------------------------
+
 //===========================================================================
-//-------------------------------
 
 
 #[derive(Clone, Debug, PartialEq, Default)]
-pub enum SolidSize {
+pub enum Scale {
     #[default]
     Fit,
     Fill,
 }
 #[derive(Clone, Debug, PartialEq)]
-pub enum PositionType {
+pub enum PositionLayout {
     Window (Window),
     Relative (Relative),
     Solid (Solid),
 }
-impl Default for PositionType {
+impl PositionLayout {
+    pub fn expect_window_ref (&self) -> &Window {
+        match self {
+            PositionLayout::Window (window) => window,
+            PositionLayout::Relative(..) => panic!("Layout window expected!"),
+            PositionLayout::Solid(..) => panic!("Layout window expected!"),
+        }
+    }
+    pub fn expect_relative_ref (&self) -> &Relative {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout relative expected!"),
+            PositionLayout::Relative(relative) => relative,
+            PositionLayout::Solid(..) => panic!("Layout relative expected!"),
+        }
+    }
+    pub fn expect_solid_ref (&self) -> &Solid {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout solid expected!"),
+            PositionLayout::Relative(..) => panic!("Layout solid expected!"),
+            PositionLayout::Solid(solid) => solid,
+        }
+    }
+    pub fn expect_window_mut (&mut self) -> &mut Window {
+        match self {
+            PositionLayout::Window (window) => window,
+            PositionLayout::Relative(..) => panic!("Layout window expected!"),
+            PositionLayout::Solid(..) => panic!("Layout window expected!"),
+        }
+    }
+    pub fn expect_relative_mut (&mut self) -> &mut Relative {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout relative expected!"),
+            PositionLayout::Relative(relative) => relative,
+            PositionLayout::Solid(..) => panic!("Layout relative expected!"),
+        }
+    }
+    pub fn expect_solid_mut (&mut self) -> &mut Solid {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout solid expected!"),
+            PositionLayout::Relative(..) => panic!("Layout solid expected!"),
+            PositionLayout::Solid(solid) => solid,
+        }
+    }
+    pub fn expect_window (self) -> Window {
+        match self {
+            PositionLayout::Window (window) => window,
+            PositionLayout::Relative(..) => panic!("Layout window expected!"),
+            PositionLayout::Solid(..) => panic!("Layout window expected!"),
+        }
+    }
+    pub fn expect_relative (self) -> Relative {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout relative expected!"),
+            PositionLayout::Relative(relative) => relative,
+            PositionLayout::Solid(..) => panic!("Layout relative expected!"),
+        }
+    }
+    pub fn expect_solid (self) -> Solid {
+        match self {
+            PositionLayout::Window (..) => panic!("Layout solid expected!"),
+            PositionLayout::Relative(..) => panic!("Layout solid expected!"),
+            PositionLayout::Solid(solid) => solid,
+        }
+    }
+}
+impl Default for PositionLayout {
     fn default() -> Self {
-        PositionType::Relative(Relative {..Default::default()})
+        PositionLayout::Relative(Relative {..Default::default()})
     }
 }
 #[derive(Clone, Debug, PartialEq, Default)]
-pub struct ContainerPosition {
+pub struct Position {
     pub point_1: Vec2,
     pub point_2: Vec2,
     pub width: f32,
@@ -145,77 +207,64 @@ pub struct ContainerPosition {
     pub depth: f32,
 }
 
-//-------------------------------
+
 //===========================================================================
-//-------------------------------
+
 
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Container {
-    position: ContainerPosition,
-    position_types: HashMap<String, PositionType>,
-    current_position: String,
+    position_cached: Position,
+    position_layout: PositionLayout,
 }
 impl Container {
     pub fn new () -> Container {
         Container {
-            position: ContainerPosition { ..Default::default() },
-            position_types: HashMap::new(),
-            current_position: "default".to_string(),
+            position_cached: Position::default(),
+            position_layout: PositionLayout::default(),
         }
     }
-    pub fn calculate (&mut self, point: Vec2, width: f32, height: f32) {
-        match self.position_types.get(&self.current_position){
-            None => {},
-            Some (position_types) => match position_types {
-                PositionType::Window(container) => {
-                    let values = container.calculate(point, width, height);
-                    self.position.point_1 = values.0;
-                    self.position.width = values.1;
-                    self.position.height = values.2;
-                    self.position.point_2 = Vec2 {x: self.position.point_1.x + self.position.width, y: self.position.point_1.y + self.position.height};
-                },
-                PositionType::Relative(container) => {
-                    let values = container.calculate(point, width, height);
-                    self.position.point_1 = values[0];
-                    self.position.width = values[1][0] - values[0][0];
-                    self.position.height = values[1][1] - values[0][1];
-                    self.position.point_2 = Vec2 {x: self.position.point_1.x + self.position.width, y: self.position.point_1.y + self.position.height};
-                },
-                PositionType::Solid(container) => {
-                    let values = container.calculate(point, width, height);
-                    self.position.point_1 = values.0;
-                    self.position.width = values.1;
-                    self.position.height = values.2;
-                    self.position.point_2 = Vec2 {x: self.position.point_1.x + self.position.width, y: self.position.point_1.y + self.position.height};
-                },
+    pub fn update (&mut self, point: Vec2, width: f32, height: f32) {
+        match &self.position_layout {
+            PositionLayout::Window(container) => {
+                let values = container.calculate(point, width, height);
+                self.position_cached.point_1 = values.0;
+                self.position_cached.width = values.1;
+                self.position_cached.height = values.2;
+                self.position_cached.point_2 = Vec2 {x: self.position_cached.point_1.x + self.position_cached.width, y: self.position_cached.point_1.y + self.position_cached.height};
             },
-        }
+            PositionLayout::Relative(container) => {
+                let values = container.calculate(point, width, height);
+                self.position_cached.point_1 = values[0];
+                self.position_cached.width = values[1][0] - values[0][0];
+                self.position_cached.height = values[1][1] - values[0][1];
+                self.position_cached.point_2 = Vec2 {x: self.position_cached.point_1.x + self.position_cached.width, y: self.position_cached.point_1.y + self.position_cached.height};
+            },
+            PositionLayout::Solid(container) => {
+                let values = container.calculate(point, width, height);
+                self.position_cached.point_1 = values.0;
+                self.position_cached.width = values.1;
+                self.position_cached.height = values.2;
+                self.position_cached.point_2 = Vec2 {x: self.position_cached.point_1.x + self.position_cached.width, y: self.position_cached.point_1.y + self.position_cached.height};
+            },
+        }   
     }
-    pub fn position (&self) -> &ContainerPosition {
-        &self.position
+    pub fn position_set (&mut self, position: Position) {
+        self.position_cached = position;
     }
-
-    pub fn position_add (&mut self, key: &str, position: PositionType) -> Outcome {
-        if !self.position_types.contains_key(key) {
-            self.position_types.insert(String::from(key), position);
-            Outcome::Pass
-        } else {
-            Outcome::Fail(format!("The key '{}' is already in use!", &key).to_string())
-        }
+    pub fn position_get (&self) -> &Position {
+        &self.position_cached
     }
-
-    pub fn position_borrow (&self, key: &str) -> Result<& PositionType, String> {
-        match self.position_types.get(key) {
-            Some (position) => Result::Ok(position),
-            None => Result::Err(format!("Container does not have position '{}'!", &key).to_string()),
-        }
+    pub fn position_get_mut (&mut self) -> &mut Position {
+        &mut self.position_cached
     }
-    pub fn position_borrow_mut (&mut self, key: &str) -> Result<&mut PositionType, String> {
-        match self.position_types.get_mut(key) {
-            Some (position) => Result::Ok(position),
-            None => Result::Err(format!("Container does not have position '{}'!", &key).to_string()),
-        }
+    pub fn position_layout_set (&mut self, position: PositionLayout) {
+        self.position_layout = position;
     }
-
+    pub fn position_layout_get (&self) -> &PositionLayout {
+        &self.position_layout
+    }
+    pub fn position_layout_get_mut (&mut self) -> &mut PositionLayout {
+        &mut self.position_layout
+    }
 }

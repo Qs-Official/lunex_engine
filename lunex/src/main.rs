@@ -1,10 +1,15 @@
+//# bevy_lunex is located here
 mod library;
-mod style;
 
-use crate::library::prelude::*;
+//# Importing the main crates
+use crate::library::prelude::*;                                            //Will be replaced with "use bevy_lunex::prelude::*" when the crate is released
 use bevy::{prelude::*, sprite::Anchor};
+
+//# This is where Main Menu is styled
+mod style;
 use style::*;
 
+//# For visual effects only
 use bevy::core_pipeline::bloom::{BloomSettings, BloomPrefilterSettings, BloomCompositeMode};
 use bevy::core_pipeline::tonemapping::Tonemapping;
 use rand::Rng;
@@ -12,17 +17,20 @@ use rand::Rng;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+
+        .add_plugin(ButtonPlugin)
+
         .add_startup_system(setup)
 
         .add_system(image_update)
-        .add_system(cursor_update)
-        .add_system(button_animation)
         .add_system(smooth_movement)
         .add_system(smooth_bg_movement)
 
         .add_system(effect_update)
 
-        .add_system(Ui::hiearchy_update)
+        .add_system(hiearchy_update)
+        .add_system(cursor_update)
+
         .run();
 }
 
@@ -61,17 +69,14 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
 
     //SPAWN UI HIEARCHY
-    let system = get_hiearchy();
+    let system = create_main_menu();
     commands.spawn ((
         system,
     ));
 
     //SPAWN CURSOR
     commands.spawn ((
-        CursorInfo {
-            offset: 10.,
-            ..default()
-        },
+        Cursor::new(10.0),
         SpriteBundle {
             texture: asset_server.load("cursor_mouse.png"),
             transform: Transform { translation: Vec3 { x: 0., y: 0., z: 200. } , scale: Vec3 { x: 0.4, y: 0.4, z: 1. }, ..default() },
@@ -86,7 +91,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     //SPAWN BACKGROUND HANGLE MOVEMENT
     commands.spawn ((
-        Ui::Widget {
+        Widget {
             path: "App/Handle".to_string()
         },
         SmoothSlider {..Default::default()},
@@ -94,7 +99,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     //SPAWN BACKGROUND IMAGE
     commands.spawn ((
-        Ui::Widget {
+        Widget {
             path: "App/Handle/Background".to_string()
         },
         ImageInfo {
@@ -114,7 +119,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     //SPAWN BOARD IMAGE
     commands.spawn ((
-        Ui::Widget {
+        Widget {
             path: "App/Board".to_string()
         },
         ImageInfo {
@@ -134,7 +139,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     //SPAWN LOGO IMAGE
     commands.spawn ((
-        Ui::Widget {
+        Widget {
             path: "App/Board/Logo".to_string()
         },
         ImageInfo {
@@ -154,7 +159,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     //SPAWN LOGO SHADOW IMAGE
     commands.spawn ((
-        Ui::Widget {
+        Widget {
             path: "App/Board/Logo/LogoShadow".to_string()
         },
         ImageInfo {
@@ -187,14 +192,21 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 
     for i in 0..button_list.len() {
         commands.spawn ((
-            Ui::Widget {
+            Widget {
                 path: "App/Board/ButtonList/".to_string() + button_list[i]
             },
+            MainMenuButton {}
+        ));
+
+        commands.spawn ((
+            Widget {
+                path: "App/Board/ButtonList/".to_string() + button_list[i] + "/#p0"
+            },
+            MainMenuButtonDecoration {alpha: 0.0},
             ImageInfo {
                 width: 532.,
                 height: 75.,
             },
-            MainMenuButton{},
             SpriteBundle {
                 texture: asset_server.load("button.png"),
                 transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
@@ -223,16 +235,14 @@ struct ImageInfo {
     width: f32,
     height: f32,
 }
-
-
-fn image_update(mut systems: Query<&mut Ui::Hiearchy>, mut query: Query<(&mut Ui::Widget, &ImageInfo, &mut Transform)>) {
+fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut Widget, &ImageInfo, &mut Transform)>) {
 
     let mut system = systems.get_single_mut().unwrap();     //Unwrap the hiearchy struct
 
     for (widget, imageinfo, mut transform) in &mut query {
 
         let dimensions = (system.width, system.height);
-        let pos = widget.position(&mut system).unwrap();
+        let pos = widget.fetch_position(&mut system, "").unwrap();
         transform.translation.x = pos.point_1[0] - dimensions.0/2.;
         transform.translation.y = pos.point_2[1] - dimensions.1/2.;
 
@@ -241,61 +251,6 @@ fn image_update(mut systems: Query<&mut Ui::Hiearchy>, mut query: Query<(&mut Ui
     }
 }
 
-#[derive(Component, Default)]
-struct CursorInfo {
-    depth: f32,
-    offset: f32,
-    cursor_world: Vec2,
-    cursor_screen: Vec2,
-}
-fn cursor_update(mut windows: Query<&mut Window>, mut query: Query<(&mut CursorInfo, &mut Transform)>) {
-    for (mut cursorinfo, mut transform) in &mut query {
-        let mut window = windows.get_single_mut().unwrap();
-
-        match window.cursor_position() {
-            Some (cursor) => {
-                window.cursor.visible = false;
-
-                let offset_x = window.resolution.width()/2. + cursorinfo.offset*transform.scale.x;
-                let offset_y = window.resolution.height()/2. - cursorinfo.offset*transform.scale.y;
-
-                cursorinfo.cursor_screen = Vec2 {x: cursor.x, y: cursor.y};
-                cursorinfo.cursor_world = Vec2 {x: cursor.x - offset_x, y: cursor.y - offset_y};
-
-                transform.translation.x = cursorinfo.cursor_world.x;
-                transform.translation.y = cursorinfo.cursor_world.y;
-
-            },
-            None => {
-                transform.translation.x = -window.resolution.width();
-                transform.translation.y = -window.resolution.height();
-            }
-        }
-    }
-}
-
-#[derive(Component)]
-struct MainMenuButton {}
-fn button_animation(systems: Query<&Ui::Hiearchy>, mut query: Query<(&mut Ui::Widget, &mut Sprite, &mut Transform, &MainMenuButton)>, cursor_query: Query<&CursorInfo>) {
-    let system = systems.get_single().unwrap();
-    for cursor in &cursor_query {
-        for (widget, mut sprite, mut transform, _) in &mut query {
-
-            if widget.is_within(&system, &cursor.cursor_screen).unwrap(){
-                
-                sprite.color.set_a(0.4);
-                transform.translation.x += 5.
-
-            } else {
-
-                let alpha = sprite.color.a();
-                if alpha > 0.0 {sprite.color.set_a(alpha - 0.01);} else {sprite.color.set_a(0.0);}
-                
-            }
-        }
-        break;
-    }
-}
 
 //#SMOOTH MENU EFFECTS
 #[derive(Component, Default)]
@@ -311,15 +266,16 @@ fn smooth_movement (mut query: Query<(&mut SmoothSlider, &mut Transform)>) {
         transform.translation.y = smoothslider.y.sin()*3.;
     }
 }
-fn smooth_bg_movement (mut query: Query<(&mut SmoothSlider, &mut Ui::Widget)>, mut systems: Query<&mut Ui::Hiearchy>) {
+fn smooth_bg_movement (mut query: Query<(&mut SmoothSlider, &Widget)>, mut systems: Query<&mut Hierarchy>) {
     let mut system = systems.get_single_mut().unwrap();
-    for (mut smoothslider, mut widget) in &mut query {
-        smoothslider.x += 0.01;
-        smoothslider.y += 0.005;
+    for (mut smoothslider, widget) in &mut query {
         
-        let pos = widget.position_borrow_window_mut(&mut system, "default", "").unwrap();
-        pos.absolute.x = smoothslider.x.sin()*25.;
-        pos.absolute.y = smoothslider.y.sin()*16.;
+        let pos = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
+        smoothslider.x += 0.007;
+        smoothslider.y += 0.002;
+
+        pos.relative.x = -5.0 + smoothslider.x.sin()*1.3*2.;  //25
+        pos.relative.y = -5.0 + smoothslider.y.sin()*1.0*2.;   //16
     }
 }
 fn effect_update (mut query: Query<&mut BloomSettings>) {
