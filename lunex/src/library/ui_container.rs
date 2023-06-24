@@ -76,8 +76,8 @@ impl Relative {
 pub struct Solid {
     pub width: u32,
     pub height: u32,
-    pub horizontal_anchor: f32,
-    pub vertical_anchor: f32,
+    pub horizontal_anchor: f32,     // (-1.0 to 1.0)
+    pub vertical_anchor: f32,       // (-1.0 to 1.0)
     pub scaling: Scale,
 }
 impl Solid {

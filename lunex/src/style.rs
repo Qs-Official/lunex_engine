@@ -38,14 +38,15 @@ pub fn create_main_menu() -> Hierarchy {
         ..Default::default()
     }.wrap()).unwrap();
 
-    //# Create un-named widget in BOARD (useful when widget is not important and is used for layout position only (no image, not interactive), helps with clarity)
+    //# Create nameless widget in BOARD (useful when widget is not important and is used for layout purposes only (no image, not interactive), helps with abstractions)
+    //# All nameless widgets are given the name "#pNUMBER", with number being the order they were created. Nameless widgets are hidden from mapping.
     let _logo_boundary = Widget::new_in(&mut system, &_board, "", Layout::Relative {
         relative_1: Vec2 { x: -5.0, y: 70.0 },
         relative_2: Vec2 { x: 105.0, y: 85.0 },
         ..Default::default()
     }.wrap()).unwrap();
 
-    //# Create LOGO in un-named widget and register LOGO under BOARD (it will be Board/Logo instead Board/un-named/Logo)
+    //# Create LOGO in nameless widget and register LOGO under BOARD (it will be Board/Logo instead Board/nameless/Logo)
     let _logo = Widget::new_in(&mut system, &_board, "#p0/Logo", Layout::Solid {
         width: 681,
         height: 166,
@@ -80,7 +81,7 @@ pub fn create_main_menu() -> Hierarchy {
     for i in 0..button_list.len() {
 
 
-        //# Create a BUTTON widget that will be used for input detection
+        //# Create a BUTTON widget that will be used as boundary for input detection only
         let button = Widget::new_in(&mut system, &_button_list, button_list[i], Layout::Solid {
             width: 532,
             height: 75,
@@ -89,7 +90,7 @@ pub fn create_main_menu() -> Hierarchy {
             ..Default::default()
         }.wrap()).unwrap();
 
-        //# Create a button for DECORATION that will be animated
+        //# Create a nameless button that we will style and animate under BUTTON widget
         let button_decor = Widget::new_in(&mut system, &button, "", Layout::Window {
             width_relative: 100.0,
             height_relative: 100.0,
@@ -97,8 +98,11 @@ pub fn create_main_menu() -> Hierarchy {
         }.wrap()).unwrap();
 
         //# Create a data stored in hierarchy for sharing
+        //#
+        //# !!! THIS IS [WIP] !!! subject to change, currently it is an ugly solution, I alredy have improvements in mind.
+        //#
         let data = button_decor.fetch_mut(&mut system, "").unwrap().data_get_mut();
-        *data = Option::Some(Box::new(MainMenuButtonDecoration {alpha: 0.0}));
+        *data = Option::Some(Box::new(ButtonSynchronize {..Default::default()}));
     }
 
     //################################################################################
@@ -106,11 +110,12 @@ pub fn create_main_menu() -> Hierarchy {
     //# This will print out both "normal" and "debug" maps (It's like "ls" command on Linux). The difference is that "debug" will also print out "nameless" widgets.
     //# "Nameless" widgets are hidden because they are NOT IMPORTANT to the main functionality of the system, but are there only for layout purposes.
     //# Displaying them would be considered overwhelming.
-
     println!("{}", system.map_debug());
     println!("{}", system.map());
 
+    //# Return the finished system
     system
+
 }
 
 
@@ -120,6 +125,21 @@ pub fn create_main_menu() -> Hierarchy {
 //# So because each of the buttons are made of a mix of 2 entities that interact between each other, I save the changes of one entity to the Hierarchy as metadata and the other
 //# entity fetches that data and synchronizes itself. This way there is a direct access to data, no looping over querries and finding corresponding entity, etc.
 //# Might not be as much of an ECS solution as people want but it works and it is nice and simple. Sometimes mix of both worlds is the best solution.
+
+//# The struct that is used for synchronization through Hierarchy as a trait object (You need to implement destructurizing by yourself, might want to use "Deku" crate in the future)
+//# I know its a work around right now, but maybe somebody will propose a better solution how to push and pull data from trait object
+#[derive(Default)]
+struct ButtonSynchronize { pub alpha: f32, pub window_x: f32, pub color_slider: f32 }
+impl Data for ButtonSynchronize {
+    fn get_f32s (&self) -> Vec<f32> {
+        vec![self.alpha, self.window_x, self.color_slider]
+    }
+    fn set_f32s (&mut self, value: Vec<f32>) {
+        self.alpha = value[0];
+        self.window_x = value[1];
+        self.color_slider = value[2];
+    }
+}
 
 //# The main entitity that will interact with cursor (Hitbox)
 #[derive(Component)]
@@ -135,54 +155,69 @@ fn button_update(mut systems: Query<&mut Hierarchy>, cursors: Query<&Cursor>, mu
 
         //# Check if the cursor is within the current widget boundaries
         if widget.is_within(&system, "", cursor.position_screen()).unwrap(){
-            
-            //# Fetch the nameless widget layout from Hierarchy and update it (Smooth animation of the decoration widget)
-            let window = widget.fetch_layout_mut(&mut system, "#p0").unwrap().expect_window_mut();
-            window.relative.x = 5.0;
 
-            //# Fetch the nameless widget data from Hierarchy and update it (Image alpha of the decoration widget)
+            //# Fetch the nameless widget data from Hierarchy and update it (Image alpha and layout of the decoration widget)
             match widget.fetch_mut(&mut system, "#p0").unwrap().data_get_mut() {
                 Option::None => (),
                 Option::Some ( _box ) => {
-                    _box.set_f32(0.4);
+                    _box.set_f32s(vec![0.8, 5.0, 1.0]);
                 }
             }
 
-        } else {
-            //# Fetch the nameless widget layout from Hierarchy and update it (Smooth animation of the decoration widget)
-            let window = widget.fetch_layout_mut(&mut system, "#p0").unwrap().expect_window_mut();
-            if window.relative.x > 0.0 {window.relative.x -= 1.0;} else {window.relative.x = 0.0;}
         }
     }
 }
 
 //# The secondary entity that will get updated by the main entity
 #[derive(Component)]
-pub struct MainMenuButtonDecoration { pub alpha: f32 }
-impl Data for MainMenuButtonDecoration {
-    fn get_f32 (&self) -> f32 {
-        self.alpha
-    }
-    fn set_f32 (&mut self, value: f32) {
-        self.alpha = value;
-    }
-}
-fn button_update_decoration(mut systems: Query<&mut Hierarchy>, mut query: Query<(&Widget, &mut Sprite, &MainMenuButtonDecoration)>) {
+pub struct MainMenuButtonDecoration ();
+fn button_update_decoration(mut systems: Query<&mut Hierarchy>, mut query: Query<(&Widget, &mut Sprite, &mut Children, &MainMenuButtonDecoration)>, mut text_query: Query<&mut Text>) {
     
     //# Get Hierarchy
     let mut system = systems.get_single_mut().unwrap();
 
     //# Loop through all widgets in the query (MainMenuButtonDecoration)
-    for (widget, mut sprite,  _) in &mut query {
+    for (widget, mut sprite, children,  _) in &mut query {
 
-        //# Fetch the current widget data from Hierarchy and synchronize itself (Image alpha of the sprite)
+        //# Fetch the current widget data from Hierarchy and synchronize itself
         match widget.fetch_mut(&mut system, "").unwrap().data_get_mut() {
             Option::None => (),
             Option::Some ( _box ) => {
-                let mut alpha = _box.get_f32();
-                if alpha > 0.0 {alpha -= 0.01} else {alpha = 0.0}
-                _box.set_f32(alpha);
+
+                //# Destructurize the data (In the future I want to use crate like "Deku" to do this step for you)
+                let data_pull = _box.get_f32s();
+                let mut alpha = data_pull[0];
+                let mut window_x = data_pull[1];
+                let mut color_slider = data_pull[2];
+
+                //# Smooth alpha transition
+                if alpha > 0.0 {alpha -= 0.03} else {alpha = 0.0}
+
+                //# Smooth layout transition
+                if window_x > 0.0 {window_x -= 1.0} else {window_x = 0.0}
+
+                //# Smooth text color transition
+                if color_slider > 0.0 {color_slider -= 0.03} else {color_slider = 0.0}
+
+                //# Synchronize
+                _box.set_f32s(vec![alpha, window_x, color_slider]);
+
+                //# Update sprite, layout and text color
                 sprite.color.set_a(alpha);
+                let window = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
+                window.relative.x = window_x;
+                
+                for child in &children {
+                    if let Ok(mut text) = text_query.get_mut(*child) {
+                        text.sections[0].style.color = Color::rgba (
+                            tween(204./255., 42./255., color_slider),
+                            tween(56./255., 237./255., color_slider),
+                            tween(51./255., 247./255., color_slider),
+                            1.5
+                        )
+                    }
+                }
+
             }
         }
     }
@@ -195,5 +230,45 @@ impl Plugin for ButtonPlugin {
         app
             .add_system(button_update)
             .add_system(button_update_decoration);
+    }
+}
+
+
+//################################################################################
+//# == Smooth Wiggle effect ==
+//# Here are just some basic systems to update widgets layout in a stacked sine wawe to immitate natural camera movement
+#[derive(Component, Default)]
+pub struct SmoothWiggle {
+    pub x: f32,
+    pub y: f32,
+}
+fn smooth_wiggle (mut query: Query<(&mut SmoothWiggle, &mut Transform)>) {
+    for (mut smoothslider, mut transform) in &mut query {
+        smoothslider.x += 0.005;
+        smoothslider.y += 0.003;
+        transform.translation.x = smoothslider.x.sin()*9.;
+        transform.translation.y = smoothslider.y.sin()*3.;
+    }
+}
+fn smooth_wiggle_widget (mut query: Query<(&mut SmoothWiggle, &Widget)>, mut systems: Query<&mut Hierarchy>) {
+    let mut system = systems.get_single_mut().unwrap();
+    for (mut smoothslider, widget) in &mut query {
+        
+        let pos = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
+        smoothslider.x += 0.007;
+        smoothslider.y += 0.002;
+
+        pos.relative.x = -5.0 + smoothslider.x.sin()*1.3*2.;
+        pos.relative.y = -5.0 + smoothslider.y.sin()*1.0*2.;
+    }
+}
+
+//# Wrap it into plugin for code clarity
+pub struct WigglePlugin;
+impl Plugin for WigglePlugin {
+    fn build(&self, app: &mut App) {
+        app
+            .add_system(smooth_wiggle)
+            .add_system(smooth_wiggle_widget);
     }
 }

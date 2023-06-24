@@ -55,7 +55,7 @@ impl Hierarchy {
     
 }
 
-pub fn hiearchy_update(mut query: Query<&mut Hierarchy>, mut windows: Query<&mut Window>) {
+pub fn hierarchy_update(mut query: Query<&mut Hierarchy>, mut windows: Query<&mut Window>) {
     let window = windows.get_single_mut().unwrap();
     for mut system in &mut query {
         system.width = window.resolution.width();
@@ -70,7 +70,7 @@ pub fn hiearchy_update(mut query: Query<&mut Hierarchy>, mut windows: Query<&mut
 
 
 #[derive(Default)]
-pub struct Branch{
+pub struct Branch {
     name: String,                                                                                                                           //Caches name for debug
     level: f32,                                                                                                                             //How deep it is located (For highlighting)
     container: Container,
@@ -560,11 +560,67 @@ impl Branch {
 
 
 //===========================================================================
-
+pub fn tween (value_1: f32, value_2: f32, slide: f32) -> f32 {
+    let diff = value_2 - value_1;
+    value_1 + diff * slide
+}
 
 pub trait Data {
     fn get_f32 (&self) -> f32 {
         0.0
     }
+    fn get_vec2 (&self) -> Vec2 {
+        Vec2::default()
+    }
+    fn get_vec3 (&self) -> Vec3 {
+        Vec3::default()
+    }
+    fn get_vec4 (&self) -> Vec4 {
+        Vec4::default()
+    }
+    fn get_bool (&self) -> bool {
+        false
+    }
+    fn get_string (&self) -> String {
+        String::new()
+    }
+
+    fn get_f32s (&self) -> Vec<f32> {
+        Vec::new()
+    }
+    fn get_vec2s (&self) -> Vec<Vec2> {
+        Vec::new()
+    }
+    fn get_vec3s (&self) -> Vec<Vec3> {
+        Vec::new()
+    }
+    fn get_vec4s (&self) -> Vec<Vec4> {
+        Vec::new()
+    }
+    fn get_bools (&self) -> Vec<bool> {
+        Vec::new()
+    }
+    fn get_strings (&self) -> Vec<String> {
+        Vec::new()
+    }
+    
+    fn get_buffer (&self) -> Vec<u8> {
+        Vec::new()
+    }
+
     fn set_f32 (&mut self, value: f32) {}
+    fn set_vec2 (&mut self, value: Vec2) {}
+    fn set_vec3 (&mut self, value: Vec3) {}
+    fn set_vec4 (&mut self, value: Vec4) {}
+    fn set_bool (&mut self, value: bool) {}
+    fn set_string (&mut self, value: String) {}
+
+    fn set_f32s (&mut self, value: Vec<f32>) {}
+    fn set_vec2s (&mut self, value: Vec<Vec2>) {}
+    fn set_vec3s (&mut self, value: Vec<Vec3>) {}
+    fn set_vec4s (&mut self, value: Vec<Vec4>) {}
+    fn set_bools (&mut self, value: Vec<bool>) {}
+    fn set_strings (&mut self, value: Vec<String>) {}
+
+    fn set_buffer (&mut self, value: Vec<u8>) {}
 }

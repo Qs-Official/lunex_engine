@@ -44,11 +44,27 @@ impl Widget {
             Err (message) => Err(message),
         }
     }
-
-
+    pub fn fetch_data<'a> (&'a self, system: &'a  Hierarchy, key: &str) -> Result<&Option<Box<dyn Data + Send + Sync>>, String> {
+        match self.fetch(system, key){
+            Ok (branch) => Result::Ok(branch.data_get()),
+            Err (message) => Err(message),
+        }
+    }
+    pub fn fetch_data_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut Option<Box<dyn Data + Send + Sync>>, String> {
+        match self.fetch_mut(system, key){
+            Ok (branch) => Result::Ok(branch.data_get_mut()),
+            Err (message) => Err(message),
+        }
+    }
     pub fn fetch_position<'a> (&'a self, system: &'a Hierarchy, key: &str) -> Result<&Position, String> {
         match self.fetch(&system, key) {
             Ok (branch) => Result::Ok(&branch.container_get().position_get()),
+            Err (message) => Result::Err(message),
+        }
+    }
+    pub fn fetch_position_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut Position, String> {
+        match self.fetch_mut(system, key) {
+            Ok (branch) => Result::Ok(branch.container_get_mut().position_get_mut()),
             Err (message) => Result::Err(message),
         }
     }
@@ -142,7 +158,8 @@ impl Widget {
         }
     }
     
-    pub fn map (&self, system: & Hierarchy) -> Result<String, String> {
+    //OLD, REQUIRES REWORK
+    fn map (&self, system: & Hierarchy) -> Result<String, String> {
         match system.expose().borrow_chain_checked(&self.path){
             Ok (reference) => {
                 let list: Vec<&str> =  self.path.split('/').collect();
@@ -153,7 +170,7 @@ impl Widget {
             Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn map_debug (&self, system: & Hierarchy) -> Result<String, String> {
+    fn map_debug (&self, system: & Hierarchy) -> Result<String, String> {
         match system.expose().borrow_chain_checked(&self.path){
             Ok (reference) => {
                 let list: Vec<&str> =  self.path.split('/').collect();
@@ -164,7 +181,7 @@ impl Widget {
             Err (message) => Err(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn destroy (&self, system: &mut Hierarchy, path : &str) -> Outcome {
+    fn destroy (&self, system: &mut Hierarchy, path : &str) -> Outcome {
         match system.expose_mut().borrow_chain_checked_mut(&self.path){
             Ok (reference) => {
                 reference.destroy_chain_checked(path)
@@ -172,7 +189,7 @@ impl Widget {
             Err (message) => Outcome::Fail(String::from("WIDGET NOT FOUND! #Error: ") + &message),
         }
     }
-    pub fn remove (&self, system: &mut Hierarchy, key : &str) -> Outcome {
+    fn remove (&self, system: &mut Hierarchy, key : &str) -> Outcome {
         match system.expose_mut().borrow_chain_checked_mut(&self.path){
             Ok (reference) => {
                 reference.remove_simple_checked(key)

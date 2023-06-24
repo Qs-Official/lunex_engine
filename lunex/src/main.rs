@@ -17,29 +17,26 @@ use rand::Rng;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-
-        .add_plugin(ButtonPlugin)
-
         .add_startup_system(setup)
 
-        .add_system(image_update)
-        .add_system(smooth_movement)
-        .add_system(smooth_bg_movement)
+        .add_plugin(ButtonPlugin)
+        .add_plugin(WigglePlugin)
+        .add_system(vfx_bloom_update)
 
-        .add_system(effect_update)
-
-        .add_system(hiearchy_update)
+        .add_system(hierarchy_update)
         .add_system(cursor_update)
+        .add_system(image_update)
 
         .run();
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audio>) {
 
+    //# Start playing the main menu music
     let music = asset_server.load("main_menu.ogg");
     audio.play_with_settings(music, PlaybackSettings { repeat: true, volume: 1., speed: 1. });
 
-    //SPAWN 2D CAMERA
+    //# Spawn the camera
     commands.spawn((
         Camera2dBundle {
             transform: Transform {
@@ -64,23 +61,17 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
             },
             composite_mode: BloomCompositeMode::Additive,
         },
-        SmoothSlider {..Default::default()},
+        SmoothWiggle {..Default::default()},
     ));
 
-
-    //SPAWN UI HIEARCHY
-    let system = create_main_menu();
-    commands.spawn ((
-        system,
-    ));
-
-    //SPAWN CURSOR
+    //# Spawn cursor
     commands.spawn ((
         Cursor::new(10.0),
         SpriteBundle {
             texture: asset_server.load("cursor_mouse.png"),
             transform: Transform { translation: Vec3 { x: 0., y: 0., z: 200. } , scale: Vec3 { x: 0.4, y: 0.4, z: 1. }, ..default() },
             sprite: Sprite {
+                color: Color::rgba(1., 1., 1., 2.0),
                 anchor: Anchor::TopLeft,
                 ..default()
             },
@@ -88,16 +79,31 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
         }
     ));
 
+    //################################################################################
+    //# == Widget Spawning ==
+    //# Here we will spawn all the widgets with images.
 
-    //SPAWN BACKGROUND HANGLE MOVEMENT
+    //# Note:
+    //# We defined and created the same "widget" structs in style.rs, which is basically a pointer to a real counterpart stored in "Hierarchy". You can see that
+    //# all the widgets are dropped at the end of "create_main_menu()" and here in main.rs we define them again. Thats for clarity purposes only. It is safer to
+    //# use these widgets that are created from methods. It is less error-prone to make a typo in "path" for example. This is still WIP, so I will probably merge
+    //# this "command.spawn" section and "create_main_menu()" together to show 'how it is supposed to be done' in the future.
+
+    //# Construct and spawn main menu hierarchy
+    let system = create_main_menu();
+    commands.spawn ((
+        system,
+    ));
+
+    //# Spawn background handle for wiggle effect
     commands.spawn ((
         Widget {
             path: "App/Handle".to_string()
         },
-        SmoothSlider {..Default::default()},
+        SmoothWiggle {..Default::default()},
     ));
 
-    //SPAWN BACKGROUND IMAGE
+    //# Spawn background image
     commands.spawn ((
         Widget {
             path: "App/Handle/Background".to_string()
@@ -117,7 +123,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
         }
     ));
 
-    //SPAWN BOARD IMAGE
+    //# Spawn board image
     commands.spawn ((
         Widget {
             path: "App/Board".to_string()
@@ -137,7 +143,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
         }
     ));
 
-    //SPAWN LOGO IMAGE
+    //# Spawn logo image
     commands.spawn ((
         Widget {
             path: "App/Board/Logo".to_string()
@@ -157,7 +163,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
         }
     ));
 
-    //SPAWN LOGO SHADOW IMAGE
+    //# Spawn logo shadow image
     commands.spawn ((
         Widget {
             path: "App/Board/Logo/LogoShadow".to_string()
@@ -179,7 +185,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
     ));
 
 
-    //SPAWN BUTTON IMAGE
+    //################################################################################
+    //# == Button Layout ==
+    //# Here we will spawn all button images with corresponding text that we created earlier.
+    //# 
     let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
     let text_style = TextStyle {
         font: font.clone(),
@@ -202,7 +211,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
             Widget {
                 path: "App/Board/ButtonList/".to_string() + button_list[i] + "/#p0"
             },
-            MainMenuButtonDecoration {alpha: 0.0},
+            MainMenuButtonDecoration (),
             ImageInfo {
                 width: 532.,
                 height: 75.,
@@ -230,6 +239,10 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
 }
 
 
+//################################################################################
+//# == Image Update ==
+//# This is a universal system that does the synchronization magic. It pulls relevant data from Hierarchy and updates all widgets that contain images.
+//# This system will NOT be hard-coded so people can have more control over how they want the layout capabilities of Bevy_Lunex to handle (Maybe 3D?)
 #[derive(Component)]
 struct ImageInfo {
     width: f32,
@@ -252,33 +265,12 @@ fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut Widge
 }
 
 
-//#SMOOTH MENU EFFECTS
-#[derive(Component, Default)]
-struct SmoothSlider {
-    x: f32,
-    y: f32,
-}
-fn smooth_movement (mut query: Query<(&mut SmoothSlider, &mut Transform)>) {
-    for (mut smoothslider, mut transform) in &mut query {
-        smoothslider.x += 0.005;
-        smoothslider.y += 0.003;
-        transform.translation.x = smoothslider.x.sin()*9.;
-        transform.translation.y = smoothslider.y.sin()*3.;
-    }
-}
-fn smooth_bg_movement (mut query: Query<(&mut SmoothSlider, &Widget)>, mut systems: Query<&mut Hierarchy>) {
-    let mut system = systems.get_single_mut().unwrap();
-    for (mut smoothslider, widget) in &mut query {
-        
-        let pos = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
-        smoothslider.x += 0.007;
-        smoothslider.y += 0.002;
 
-        pos.relative.x = -5.0 + smoothslider.x.sin()*1.3*2.;  //25
-        pos.relative.y = -5.0 + smoothslider.y.sin()*1.0*2.;   //16
-    }
-}
-fn effect_update (mut query: Query<&mut BloomSettings>) {
+//################################################################################
+//# == Bloom Update ==
+//# Just a quick system to randomly change bloom threshold (smoothly)
+//# It adds another dynamic layer to static camera
+fn vfx_bloom_update (mut query: Query<&mut BloomSettings>) {
     for mut bloom in &mut query {
         let mut rng = rand::thread_rng();
         if rng.gen_range(0..100) > 20 {break;}
