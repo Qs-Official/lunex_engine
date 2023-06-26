@@ -9,7 +9,7 @@ use super::ui_core::Branch;
 
 //===========================================================================
 
-#[derive(Component)]
+#[derive(Component, Default, Clone, PartialEq)]
 pub struct Widget {
     pub path: String,
 }

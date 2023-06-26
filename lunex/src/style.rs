@@ -1,8 +1,8 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, sprite::Anchor};
 use crate::library::prelude::*;
 
 //# This function constructs the Hierarchy and layout of the main menu.
-pub fn create_main_menu() -> Hierarchy {
+pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let mut system = Hierarchy::new();
 
@@ -13,6 +13,7 @@ pub fn create_main_menu() -> Hierarchy {
         ..Default::default()
     }.wrap()).unwrap();
 
+
     //# Create HANDLE in WIDGET
     let _handle = Widget::new_in(&mut system, &_app, "Handle", Layout::Window {
         relative: Vec2 { x: -5.0, y: -5.0 },
@@ -20,6 +21,12 @@ pub fn create_main_menu() -> Hierarchy {
         height_relative: 110.0,
         ..Default::default()
     }.wrap()).unwrap();
+    //# Spawn handle
+    commands.spawn ((
+        _handle.clone(),
+        SmoothWiggle {..Default::default()},
+    ));
+
 
     //# Create BACKGROUND in HANDLE
     let _background = Widget::new_in(&mut system, &_handle, "Background", Layout::Solid {
@@ -28,6 +35,24 @@ pub fn create_main_menu() -> Hierarchy {
         scaling: Scale::Fill,
         ..Default::default()
     }.wrap()).unwrap();
+    //# Spawn background image
+    commands.spawn ((
+        _background,
+        ImageInfo {
+            width: 2560.,
+            height: 1440.,
+        },
+        SpriteBundle {
+            texture: asset_server.load("background.png"),
+            transform: Transform { ..default() },
+            sprite: Sprite {
+                anchor: Anchor::TopLeft,
+                ..default()
+            },
+            ..default()
+        }
+    ));
+
 
     //# Create BOARD in WIDGET
     let _board = Widget::new_in(&mut system, &_app, "Board", Layout::Solid {
@@ -37,6 +62,24 @@ pub fn create_main_menu() -> Hierarchy {
         scaling: Scale::Fit,
         ..Default::default()
     }.wrap()).unwrap();
+    //# Spawn board image
+    commands.spawn ((
+        _board.clone(),
+        ImageInfo {
+            width: 807.,
+            height: 1432.,
+        },
+        SpriteBundle {
+            texture: asset_server.load("board.png"),
+            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 10. }, ..default() },
+            sprite: Sprite {
+                anchor: Anchor::TopLeft,
+                ..default()
+            },
+            ..default()
+        }
+    ));
+
 
     //# Create nameless widget in BOARD (useful when widget is not important and is used for layout purposes only (no image, not interactive), helps with abstractions)
     //# All nameless widgets are given the name "#pNUMBER", with number being the order they were created. Nameless widgets are hidden from mapping.
@@ -46,6 +89,7 @@ pub fn create_main_menu() -> Hierarchy {
         ..Default::default()
     }.wrap()).unwrap();
 
+
     //# Create LOGO in nameless widget and register LOGO under BOARD (it will be Board/Logo instead Board/nameless/Logo)
     let _logo = Widget::new_in(&mut system, &_board, "#p0/Logo", Layout::Solid {
         width: 681,
@@ -53,13 +97,51 @@ pub fn create_main_menu() -> Hierarchy {
         scaling: Scale::Fit,
         ..Default::default()
     }.wrap()).unwrap();
+    //# Spawn logo image
+    commands.spawn ((
+        _logo.clone(),
+        ImageInfo {
+            width: 681.,
+            height: 166.,
+        },
+        SpriteBundle {
+            texture: asset_server.load("logo.png"),
+            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
+            sprite: Sprite {
+                anchor: Anchor::TopLeft,
+                ..default()
+            },
+            ..default()
+        }
+    ));
+
 
     //# Create LOGOSHADOW in LOGO
-    let _logo_boundary = Widget::new_in(&mut system, &_logo, "LogoShadow", Layout::Relative {
+    let _logo_shadow = Widget::new_in(&mut system, &_logo, "LogoShadow", Layout::Relative {
         relative_1: Vec2 { x: -5.0, y: -10.0 },
         relative_2: Vec2 { x: 105.0, y: 110.0 },
         ..Default::default()
     }.wrap()).unwrap();
+    //# Spawn logo shadow image
+    commands.spawn ((
+        _logo_shadow,
+        ImageInfo {
+            width: 858.,
+            height: 209.,
+        },
+        SpriteBundle {
+            texture: asset_server.load("logo_shadow.png"),
+            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 12. }, ..default() },
+            sprite: Sprite {
+                color: Color::rgba(1., 1., 1., 0.7),
+                anchor: Anchor::TopLeft,
+                ..default()
+            },
+            ..default()
+        }
+    ));
+
+
 
 
     //################################################################################
@@ -73,34 +155,78 @@ pub fn create_main_menu() -> Hierarchy {
         ..Default::default()
     }.wrap()).unwrap();
 
+
     //# Create a list with names for iteration
     let button_list = ["continue", "new_game", "load_game", "settings", "additional_content", "credits", "quit_game"];
+    let button_name_list = ["CONTINUE", "NEW GAME", "LOAD GAME", "SETTINGS", "ADDITIONAL CONTENT", "CREDITS", "QUIT GAME"];
     
+    let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
+    let text_style = TextStyle {
+        font: font.clone(),
+        font_size: 40.0,
+        color: Color::rgb(204./255., 56./255., 51./255.),
+    };
+
     //# Create buttons in BUTTONLIST
     let step = 2.0/button_list.len() as f32;        //Distribute the containers equally
     for i in 0..button_list.len() {
 
 
         //# Create a BUTTON widget that will be used as boundary for input detection only
-        let button = Widget::new_in(&mut system, &_button_list, button_list[i], Layout::Solid {
+        let _button = Widget::new_in(&mut system, &_button_list, button_list[i], Layout::Solid {
             width: 532,
             height: 75,
             scaling: Scale::Fit,
             vertical_anchor: 1.0 - step * i as f32,      //Where should the container be on Y axis (range: 1.0 to -1.0)
             ..Default::default()
         }.wrap()).unwrap();
+        //# Spawn button
+        commands.spawn ((
+            _button.clone(),
+            MainMenuButton {}
+        ));
+
 
         //# Create a nameless button that we will style and animate under BUTTON widget
-        let button_decor = Widget::new_in(&mut system, &button, "", Layout::Window {
+        let _button_decoration = Widget::new_in(&mut system, &_button, "", Layout::Window {
             width_relative: 100.0,
             height_relative: 100.0,
             ..Default::default()
         }.wrap()).unwrap();
+        //# Spawn button decoration image
+        commands.spawn ((
+            _button_decoration.clone(),
+            MainMenuButtonDecoration (),
+            ImageInfo {
+                width: 532.,
+                height: 75.,
+            },
+            SpriteBundle {
+                texture: asset_server.load("button.png"),
+                transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
+                sprite: Sprite {
+                    color: Color::rgba(1., 1., 1., 0.0),
+                    anchor: Anchor::TopLeft,
+                    ..default()
+                },
+                ..default()
+            }
+        )).with_children(|builder| {
+            builder.spawn(Text2dBundle {
+                text: Text::from_section(button_name_list[i], text_style.clone()).with_alignment(TextAlignment::Left),
+                transform: Transform { translation: Vec3 { x: 30., y: -75./2., z: 15. }, ..default() },
+                text_anchor: Anchor::CenterLeft,
+                ..default()
+            });
+        });
+
 
         //# Create a data stored in hierarchy for sharing
-        let data = button_decor.fetch_mut(&mut system, "").unwrap().data_get_mut();
+        let data = _button_decoration.fetch_mut(&mut system, "").unwrap().data_get_mut();
         *data = Option::Some(Data::new());
+
     }
+
 
     //################################################################################
     //# == Hierarchy Debug ==
@@ -110,10 +236,40 @@ pub fn create_main_menu() -> Hierarchy {
     println!("{}", system.map_debug());
     println!("{}", system.map());
 
-    //# Return the finished system
-    system
+    //# spawn the finished system
+    commands.spawn ((
+        system,
+    ));
 
 }
+
+
+
+//################################################################################
+//# == Image Update ==
+//# This is a universal system that does the synchronization magic. It pulls relevant data from Hierarchy and updates all widgets that contain images.
+//# This system will NOT be hard-coded so people can have more control over how they want the layout capabilities of Bevy_Lunex to handle (Maybe 3D?)
+#[derive(Component)]
+pub struct ImageInfo {
+    width: f32,
+    height: f32,
+}
+pub fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut Widget, &ImageInfo, &mut Transform)>) {
+
+    let mut system = systems.get_single_mut().unwrap();     //Unwrap the hiearchy struct
+
+    for (widget, imageinfo, mut transform) in &mut query {
+
+        let dimensions = (system.width, system.height);
+        let pos = widget.fetch_position(&mut system, "").unwrap();
+        transform.translation.x = pos.point_1[0] - dimensions.0/2.;
+        transform.translation.y = pos.point_2[1] - dimensions.1/2.;
+
+        transform.scale.x = pos.width/imageinfo.width;
+        transform.scale.y = pos.height/imageinfo.height;
+    }
+}
+
 
 
 //################################################################################
@@ -224,6 +380,7 @@ impl Plugin for ButtonPlugin {
             .add_system(button_update_decoration);
     }
 }
+
 
 
 //################################################################################
