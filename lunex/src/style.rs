@@ -98,11 +98,8 @@ pub fn create_main_menu() -> Hierarchy {
         }.wrap()).unwrap();
 
         //# Create a data stored in hierarchy for sharing
-        //#
-        //# !!! THIS IS [WIP] !!! subject to change, currently it is an ugly solution, I alredy have improvements in mind.
-        //#
         let data = button_decor.fetch_mut(&mut system, "").unwrap().data_get_mut();
-        *data = Option::Some(Box::new(ButtonSynchronize {..Default::default()}));
+        *data = Option::Some(Data::new());
     }
 
     //################################################################################
@@ -126,21 +123,6 @@ pub fn create_main_menu() -> Hierarchy {
 //# entity fetches that data and synchronizes itself. This way there is a direct access to data, no looping over querries and finding corresponding entity, etc.
 //# Might not be as much of an ECS solution as people want but it works and it is nice and simple. Sometimes mix of both worlds is the best solution.
 
-//# The struct that is used for synchronization through Hierarchy as a trait object (You need to implement destructurizing by yourself, might want to use "Deku" crate in the future)
-//# I know its a work around right now, but maybe somebody will propose a better solution how to push and pull data from trait object
-#[derive(Default)]
-struct ButtonSynchronize { pub alpha: f32, pub window_x: f32, pub color_slider: f32 }
-impl Data for ButtonSynchronize {
-    fn get_f32s (&self) -> Vec<f32> {
-        vec![self.alpha, self.window_x, self.color_slider]
-    }
-    fn set_f32s (&mut self, value: Vec<f32>) {
-        self.alpha = value[0];
-        self.window_x = value[1];
-        self.color_slider = value[2];
-    }
-}
-
 //# The main entitity that will interact with cursor (Hitbox)
 #[derive(Component)]
 pub struct MainMenuButton ();
@@ -159,8 +141,10 @@ fn button_update(mut systems: Query<&mut Hierarchy>, cursors: Query<&Cursor>, mu
             //# Fetch the nameless widget data from Hierarchy and update it (Image alpha and layout of the decoration widget)
             match widget.fetch_mut(&mut system, "#p0").unwrap().data_get_mut() {
                 Option::None => (),
-                Option::Some ( _box ) => {
-                    _box.set_f32s(vec![0.8, 5.0, 1.0]);
+                Option::Some ( data ) => {
+                    data.f32s.insert("alpha".to_string()        , 0.8);
+                    data.f32s.insert("window_x".to_string()     , 5.0);
+                    data.f32s.insert("color_slider".to_string() , 1.0);
                 }
             }
 
@@ -180,41 +164,49 @@ fn button_update_decoration(mut systems: Query<&mut Hierarchy>, mut query: Query
     for (widget, mut sprite, children,  _) in &mut query {
 
         //# Fetch the current widget data from Hierarchy and synchronize itself
-        match widget.fetch_mut(&mut system, "").unwrap().data_get_mut() {
+        let widget = widget.fetch_mut(&mut system, "").unwrap();
+        match widget.data_get_mut() {
             Option::None => (),
-            Option::Some ( _box ) => {
+            Option::Some ( data ) => {
 
-                //# Destructurize the data (In the future I want to use crate like "Deku" to do this step for you)
-                let data_pull = _box.get_f32s();
-                let mut alpha = data_pull[0];
-                let mut window_x = data_pull[1];
-                let mut color_slider = data_pull[2];
+                match data.f32s.get_mut("alpha") {
+                    Option::None => (),
+                    Option::Some(alpha) => {
 
-                //# Smooth alpha transition
-                if alpha > 0.0 {alpha -= 0.03} else {alpha = 0.0}
+                        if *alpha > 0.0 {*alpha -= 0.03} else {*alpha = 0.0}
+                        sprite.color.set_a(*alpha);
 
-                //# Smooth layout transition
-                if window_x > 0.0 {window_x -= 1.0} else {window_x = 0.0}
+                    }
+                }
 
-                //# Smooth text color transition
-                if color_slider > 0.0 {color_slider -= 0.03} else {color_slider = 0.0}
+                match data.f32s.get_mut("color_slider") {
+                    Option::None => (),
+                    Option::Some(color_slider) => {
 
-                //# Synchronize
-                _box.set_f32s(vec![alpha, window_x, color_slider]);
+                        if *color_slider > 0.0 {*color_slider -= 0.03} else {*color_slider = 0.0}
 
-                //# Update sprite, layout and text color
-                sprite.color.set_a(alpha);
-                let window = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
-                window.relative.x = window_x;
-                
-                for child in &children {
-                    if let Ok(mut text) = text_query.get_mut(*child) {
-                        text.sections[0].style.color = Color::rgba (
-                            tween(204./255., 42./255., color_slider),
-                            tween(56./255., 237./255., color_slider),
-                            tween(51./255., 247./255., color_slider),
-                            1.5
-                        )
+                        for child in &children {
+                            if let Ok(mut text) = text_query.get_mut(*child) {
+                                text.sections[0].style.color = Color::rgba (
+                                    tween(204./255., 42./255., *color_slider),
+                                    tween(56./255., 237./255., *color_slider),
+                                    tween(51./255., 247./255., *color_slider),
+                                    1.5
+                                )
+                            }
+                        }
+
+                    }
+                }
+
+                match data.f32s.get_mut("window_x") {
+                    Option::None => (),
+                    Option::Some(value) => {
+
+                        let mut window_x = *value;
+                        if window_x > 0.0 {window_x -= 1.0} else {window_x = 0.0}
+                        let window = widget.layout_get_mut().expect_window_mut();
+                        window.relative.x = window_x;
                     }
                 }
 

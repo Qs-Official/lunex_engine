@@ -74,7 +74,7 @@ pub struct Branch {
     name: String,                                                                                                                           //Caches name for debug
     level: f32,                                                                                                                             //How deep it is located (For highlighting)
     container: Container,
-    data: Option<Box<dyn Data + Send + Sync>>,
+    data: Option<Data>,
     //active: bool,
 
     pernament: Vec<Branch>,
@@ -83,12 +83,20 @@ pub struct Branch {
 }
 impl Branch {
     //#USER EXPOSED CONTROL
-    pub fn data_get (&self) -> &Option<Box<dyn Data + Send + Sync>> {                                                                
+    pub fn data_get (&self) -> &Option<Data> {                                                                
         &self.data
     }
-    pub fn data_get_mut (&mut self) -> &mut Option<Box<dyn Data + Send + Sync>> {                                                                
+    pub fn data_get_mut (&mut self) -> &mut Option<Data> {                                                                
         &mut self.data
     }
+    
+    pub fn layout_get (&self) -> &PositionLayout {                                                                
+        self.container.position_layout_get()
+    }
+    pub fn layout_get_mut (&mut self) -> &mut PositionLayout {                                                                
+        self.container.position_layout_get_mut()
+    }
+    
     pub fn container_get (&self) -> &Container {                                                                
         &self.container
     }
@@ -565,62 +573,23 @@ pub fn tween (value_1: f32, value_2: f32, slide: f32) -> f32 {
     value_1 + diff * slide
 }
 
-pub trait Data {
-    fn get_f32 (&self) -> f32 {
-        0.0
+pub struct Data {
+    pub f32s: HashMap<String, f32>,
+    pub vec2s: HashMap<String, Vec2>,
+    pub vec3s: HashMap<String, Vec3>,
+    pub vec4s: HashMap<String, Vec4>,
+    pub bools: HashMap<String, bool>,
+    pub strings: HashMap<String, String>,
+}
+impl Data {
+    pub fn new () -> Data {
+        Data {
+            f32s: HashMap::new(),
+            vec2s: HashMap::new(),
+            vec3s: HashMap::new(),
+            vec4s: HashMap::new(),
+            bools: HashMap::new(),
+            strings: HashMap::new(),
+        }
     }
-    fn get_vec2 (&self) -> Vec2 {
-        Vec2::default()
-    }
-    fn get_vec3 (&self) -> Vec3 {
-        Vec3::default()
-    }
-    fn get_vec4 (&self) -> Vec4 {
-        Vec4::default()
-    }
-    fn get_bool (&self) -> bool {
-        false
-    }
-    fn get_string (&self) -> String {
-        String::new()
-    }
-
-    fn get_f32s (&self) -> Vec<f32> {
-        Vec::new()
-    }
-    fn get_vec2s (&self) -> Vec<Vec2> {
-        Vec::new()
-    }
-    fn get_vec3s (&self) -> Vec<Vec3> {
-        Vec::new()
-    }
-    fn get_vec4s (&self) -> Vec<Vec4> {
-        Vec::new()
-    }
-    fn get_bools (&self) -> Vec<bool> {
-        Vec::new()
-    }
-    fn get_strings (&self) -> Vec<String> {
-        Vec::new()
-    }
-    
-    fn get_buffer (&self) -> Vec<u8> {
-        Vec::new()
-    }
-
-    fn set_f32 (&mut self, value: f32) {}
-    fn set_vec2 (&mut self, value: Vec2) {}
-    fn set_vec3 (&mut self, value: Vec3) {}
-    fn set_vec4 (&mut self, value: Vec4) {}
-    fn set_bool (&mut self, value: bool) {}
-    fn set_string (&mut self, value: String) {}
-
-    fn set_f32s (&mut self, value: Vec<f32>) {}
-    fn set_vec2s (&mut self, value: Vec<Vec2>) {}
-    fn set_vec3s (&mut self, value: Vec<Vec3>) {}
-    fn set_vec4s (&mut self, value: Vec<Vec4>) {}
-    fn set_bools (&mut self, value: Vec<bool>) {}
-    fn set_strings (&mut self, value: Vec<String>) {}
-
-    fn set_buffer (&mut self, value: Vec<u8>) {}
 }

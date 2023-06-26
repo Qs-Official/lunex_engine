@@ -44,13 +44,13 @@ impl Widget {
             Err (message) => Err(message),
         }
     }
-    pub fn fetch_data<'a> (&'a self, system: &'a  Hierarchy, key: &str) -> Result<&Option<Box<dyn Data + Send + Sync>>, String> {
+    pub fn fetch_data<'a> (&'a self, system: &'a  Hierarchy, key: &str) -> Result<&Option<Data>, String> {
         match self.fetch(system, key){
             Ok (branch) => Result::Ok(branch.data_get()),
             Err (message) => Err(message),
         }
     }
-    pub fn fetch_data_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut Option<Box<dyn Data + Send + Sync>>, String> {
+    pub fn fetch_data_mut<'a> (&'a self, system: &'a mut Hierarchy, key: &str) -> Result<&mut Option<Data>, String> {
         match self.fetch_mut(system, key){
             Ok (branch) => Result::Ok(branch.data_get_mut()),
             Err (message) => Err(message),
