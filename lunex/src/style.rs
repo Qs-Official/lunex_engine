@@ -1,5 +1,5 @@
 use bevy::{prelude::*, sprite::Anchor};
-use crate::library::prelude::*;
+use bevy_lunex::prelude::*;  
 
 //# This function constructs the Hierarchy and layout of the main menu.
 pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -256,17 +256,31 @@ pub struct ImageInfo {
 }
 pub fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut Widget, &ImageInfo, &mut Transform)>) {
 
-    let mut system = systems.get_single_mut().unwrap();     //Unwrap the hiearchy struct
+    let mut system = systems.get_single_mut().unwrap();     //get the single hiearchy struct
 
     for (widget, imageinfo, mut transform) in &mut query {
 
-        let dimensions = (system.width, system.height);
-        let pos = widget.fetch_position(&mut system, "").unwrap();
-        transform.translation.x = pos.point_1[0] - dimensions.0/2.;
-        transform.translation.y = pos.point_2[1] - dimensions.1/2.;
+        //println!("{}", widget.fetch(&system, "").unwrap().is_visible());
 
-        transform.scale.x = pos.width/imageinfo.width;
-        transform.scale.y = pos.height/imageinfo.height;
+        if !widget.fetch(&system, "").unwrap().is_visible() {
+
+            transform.translation.x = -10000.0;
+            transform.translation.y = -10000.0;
+
+        } else {
+
+
+            let dimensions = (system.width, system.height);
+            let pos = widget.fetch_position(&mut system, "").unwrap();      //The widget will locate itself inside the hierarchy
+
+            transform.translation.x = pos.point_1.x - dimensions.0/2.0;
+            transform.translation.y = pos.point_2.y - dimensions.1/2.0;
+            transform.scale.x = pos.width/imageinfo.width;
+            transform.scale.y = pos.height/imageinfo.height;
+
+            widget.fetch_mut(&mut system, "").unwrap().set_visibility(false);
+
+        }
     }
 }
 
@@ -357,12 +371,12 @@ fn button_update_decoration(mut systems: Query<&mut Hierarchy>, mut query: Query
 
                 match data.f32s.get_mut("window_x") {
                     Option::None => (),
-                    Option::Some(value) => {
+                    Option::Some(window_x) => {
 
-                        let mut window_x = *value;
-                        if window_x > 0.0 {window_x -= 1.0} else {window_x = 0.0}
+                        if *window_x > 0.0 {*window_x -= 1.0} else {*window_x = 0.0}
+                        let value = *window_x;
                         let window = widget.layout_get_mut().expect_window_mut();
-                        window.relative.x = window_x;
+                        window.relative.x = value;
                     }
                 }
 

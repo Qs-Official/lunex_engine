@@ -1,8 +1,4 @@
-//# bevy_lunex is located here
-mod library;
-
-//# Importing the main crates
-use crate::library::prelude::*;                                            //Will be replaced with "use bevy_lunex::prelude::*" when the crate is released
+use bevy_lunex::prelude::*;                                            //Will be replaced with "use bevy_lunex::prelude::*" when the crate is released
 use bevy::{prelude::*, sprite::Anchor};
 
 //# This is where Main Menu is styled
@@ -27,6 +23,9 @@ fn main() {
         .add_system(hierarchy_update)
         .add_system(cursor_update)
         .add_system(image_update)
+
+
+        .add_system(mouse_click_system)
 
         .run();
 }
@@ -96,4 +95,20 @@ fn vfx_bloom_update (mut query: Query<&mut BloomSettings>) {
         bloom.intensity += (rng.gen_range(0.25..0.32)-bloom.intensity)/10.;
         bloom.prefilter_settings.threshold += (rng.gen_range(0.2..0.35)-bloom.prefilter_settings.threshold)/10.;
     }
+}
+
+
+fn mouse_click_system(mouse_button_input: Res<Input<MouseButton>>, mut systems: Query<&mut Hierarchy>,) {
+    let mut system = systems.get_single_mut().unwrap();
+
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+
+        let visibility = Widget {path: "App".to_string()}.fetch(&system, "").unwrap().get_visibility();
+        Widget {path: "App".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
+
+        println!("Changed from {} to {}, check is {}", visibility, !visibility, Widget {path: "App".to_string()}.fetch(&system, "").unwrap().is_visible());
+
+    }
+
+
 }

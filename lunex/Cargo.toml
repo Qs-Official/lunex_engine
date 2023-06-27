@@ -15,3 +15,5 @@ ahash = "0.8.3"
 #bevy = "0.10.1"
 bevy = { version = "0.10.1", features = ["dynamic_linking"] }
 rand = "0.8.5"
+
+bevy_lunex = { git = "https://github.com/bytestring-net/bevy_lunex", branch = "dev" }
