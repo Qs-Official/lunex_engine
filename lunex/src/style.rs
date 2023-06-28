@@ -233,8 +233,8 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     //# This will print out both "normal" and "debug" maps (It's like "ls" command on Linux). The difference is that "debug" will also print out "nameless" widgets.
     //# "Nameless" widgets are hidden because they are NOT IMPORTANT to the main functionality of the system, but are there only for layout purposes.
     //# Displaying them would be considered overwhelming.
-    println!("{}", system.map_debug());
-    println!("{}", system.map());
+    println!("{}", system.get_map_debug());
+    println!("{}", system.get_map());
 
     //# spawn the finished system
     commands.spawn ((
@@ -260,8 +260,6 @@ pub fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut W
 
     for (widget, imageinfo, mut transform) in &mut query {
 
-        //println!("{}", widget.fetch(&system, "").unwrap().is_visible());
-
         if !widget.fetch(&system, "").unwrap().is_visible() {
 
             transform.translation.x = -10000.0;
@@ -277,8 +275,6 @@ pub fn image_update(mut systems: Query<&mut Hierarchy>, mut query: Query<(&mut W
             transform.translation.y = pos.point_2.y - dimensions.1/2.0;
             transform.scale.x = pos.width/imageinfo.width;
             transform.scale.y = pos.height/imageinfo.height;
-
-            widget.fetch_mut(&mut system, "").unwrap().set_visibility(false);
 
         }
     }

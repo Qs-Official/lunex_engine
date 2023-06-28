@@ -16,4 +16,6 @@ ahash = "0.8.3"
 bevy = { version = "0.10.1", features = ["dynamic_linking"] }
 rand = "0.8.5"
 
-bevy_lunex = { git = "https://github.com/bytestring-net/bevy_lunex", branch = "dev" }
+#bevy_lunex = { git = "https://github.com/bytestring-net/bevy_lunex", branch = "dev" }
+
+bevy_lunex = { path = "/home/dominik/Projects/Bytestring/bevy_lunex" }

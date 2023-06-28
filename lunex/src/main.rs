@@ -1,4 +1,4 @@
-use bevy_lunex::prelude::*;                                            //Will be replaced with "use bevy_lunex::prelude::*" when the crate is released
+use bevy_lunex::prelude::*;
 use bevy::{prelude::*, sprite::Anchor};
 
 //# This is where Main Menu is styled
@@ -78,7 +78,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
             ..default()
         }
     ));
-    
 }
 
 
@@ -105,8 +104,6 @@ fn mouse_click_system(mouse_button_input: Res<Input<MouseButton>>, mut systems: 
 
         let visibility = Widget {path: "App".to_string()}.fetch(&system, "").unwrap().get_visibility();
         Widget {path: "App".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
-
-        println!("Changed from {} to {}, check is {}", visibility, !visibility, Widget {path: "App".to_string()}.fetch(&system, "").unwrap().is_visible());
 
     }
 
