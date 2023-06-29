@@ -13,6 +13,7 @@ pub fn setup_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..Default::default()
     }.wrap()).unwrap();
 
+    _app.fetch_mut(&mut system, "").unwrap().set_visibility(true);
 
     //# Create HANDLE in WIDGET
     let _handle = Widget::new_in(&mut system, &_app, "Handle", Layout::Window {
