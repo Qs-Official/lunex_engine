@@ -1,9 +1,18 @@
+use bevy::audio::Volume;
 use bevy_lunex::prelude::*;
 use bevy::{prelude::*, sprite::Anchor};
 
+
+
 //# This is where Main Menu is styled
-mod style;
-use style::*;
+mod general;
+use general::*;
+
+mod menu_settings;
+use menu_settings::*;
+
+mod menu_main;
+use menu_main::*;
 
 //# For visual effects only
 use bevy::core_pipeline::bloom::{BloomSettings, BloomPrefilterSettings, BloomCompositeMode};
@@ -13,28 +22,41 @@ use rand::Rng;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_startup_system(setup)
-        .add_startup_system(setup_main_menu)
-
-        .add_plugin(ButtonPlugin)
-        .add_plugin(WigglePlugin)
-        .add_system(vfx_bloom_update)
-
-        .add_system(hierarchy_update)
-        .add_system(cursor_update)
-        .add_system(image_update)
 
 
-        .add_system(mouse_click_system)
+        .add_systems(Startup, (setup, apply_deferred).chain())
+
+        //Debug
+        .add_plugins(LunexDebugPlugin)
+
+
+        .add_plugins(ButtonPlugin)
+        .add_plugins(WigglePlugin)
+
+        .add_systems(Update, (hierarchy_update, cursor_update).chain().before(image_update))
+        .add_systems(Update, image_update)
+
+        //GLOBAL VFX
+        .add_systems(Update, vfx_bloom_update)
+
+
+        //WILL BE REMOVED
+        //.add_systems(Update, mouse_click_system)
 
         .run();
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audio>) {
+
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     //# Start playing the main menu music
-    let music = asset_server.load("main_menu.ogg");
-    audio.play_with_settings(music, PlaybackSettings { repeat: true, volume: 1., speed: 1. });
+    commands.spawn(
+        AudioBundle {
+            source: asset_server.load("main_menu.ogg"),
+            settings: PlaybackSettings::LOOP.with_volume(Volume::new_relative(0.5)),
+        }
+    );
+    
 
     //# Spawn the camera
     commands.spawn((
@@ -61,7 +83,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
             },
             composite_mode: BloomCompositeMode::Additive,
         },
-        SmoothWiggle {..Default::default()},
+        //SmoothWiggle {..Default::default()},
     ));
 
     //# Spawn cursor
@@ -69,7 +91,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
         Cursor::new(10.0),
         SpriteBundle {
             texture: asset_server.load("cursor_mouse.png"),
-            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 200. } , scale: Vec3 { x: 0.4, y: 0.4, z: 1. }, ..default() },
+            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 800. } , scale: Vec3 { x: 0.4, y: 0.4, z: 1. }, ..default() },
             sprite: Sprite {
                 color: Color::rgba(1., 1., 1., 2.0),
                 anchor: Anchor::TopLeft,
@@ -78,6 +100,26 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, audio: Res<Audi
             ..default()
         }
     ));
+
+
+    let mut system = Hierarchy::new();
+    setup_menu_main(&mut commands, &asset_server, &mut system);
+    setup_menu_settings(&mut commands, &asset_server, &mut system);
+    
+    //################################################################################
+    //# == Hierarchy Debug ==
+    //# This will print out both "normal" and "debug" maps (It's like "ls" command on Linux). The difference is that "debug" will also print out "nameless" widgets.
+    //# "Nameless" widgets are hidden because they are NOT IMPORTANT to the main functionality of the system, but are there only for layout purposes.
+    //# Displaying them would be considered overwhelming.
+    println!("{}", system.get_map_debug());
+    println!("{}", system.get_map());
+
+    //# spawn the finished system
+    commands.spawn ((
+        system,
+        UIPlacement { offset: Vec2::default()}
+    ));
+
 }
 
 
@@ -97,15 +139,17 @@ fn vfx_bloom_update (mut query: Query<&mut BloomSettings>) {
 }
 
 
-fn mouse_click_system(mouse_button_input: Res<Input<MouseButton>>, mut systems: Query<&mut Hierarchy>,) {
+/*fn mouse_click_system(mouse_button_input: Res<Input<MouseButton>>, mut systems: Query<&mut Hierarchy>,) {
     let mut system = systems.get_single_mut().unwrap();
 
     if mouse_button_input.just_pressed(MouseButton::Left) {
 
-        let visibility = Widget {path: "App".to_string()}.fetch(&system, "").unwrap().get_visibility();
-        Widget {path: "App".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
+        let visibility = Widget {path: "Main_Menu".to_string()}.fetch(&system, "").unwrap().get_visibility();
+        Widget {path: "Main_Menu".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
+
+        Widget {path: "Settings".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(visibility);
 
     }
 
 
-}
+}*/
