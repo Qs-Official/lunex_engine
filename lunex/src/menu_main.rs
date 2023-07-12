@@ -1,43 +1,50 @@
 use bevy::{prelude::*, sprite::Anchor};
 use bevy_lunex::prelude::*;
-
 use crate::general::*;
 
-pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>, system: &mut Hierarchy) {
 
-    //# Create APP widget
-    let _app = Widget::new(system, "Main_Menu", Layout::Relative {
+pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>, system: &mut Hierarchy) {
+
+
+    //# Create MAIN_MENU widget
+    let main_menu = Widget::create(system, "main_menu", Layout::Relative {
         relative_1: Vec2 { x: 0.0, y: 0.0 },
         relative_2: Vec2 { x: 100.0, y: 100.0 },
         ..Default::default()
     }.wrap()).unwrap();
 
-    _app.fetch_mut(system, "").unwrap().set_visibility(true);
+    //# All widgets created in ROOT have visibility == false by default
+    main_menu.fetch_mut(system, "").unwrap().set_visibility(true);
+    
 
-    //# Create HANDLE in WIDGET
-    let _handle = Widget::new_in(system, &_app, "Handle", Layout::Window {
+
+    //# Create BACKGROUND in MAIN_MENU
+    let background = Widget::create(system, &main_menu.end("background"), Layout::Window {
         relative: Vec2 { x: -5.0, y: -5.0 },
         width_relative: 110.0,
         height_relative: 110.0,
         ..Default::default()
     }.wrap()).unwrap();
-    //# Spawn handle
+    
+    //# Spawn entity with widget for querying
     commands.spawn ((
-        _handle.clone(),
+        background.clone(),
         SmoothWiggle {..Default::default()},
     ));
 
 
-    //# Create BACKGROUND in HANDLE
-    let _background = Widget::new_in(system, &_handle, "Background", Layout::Solid {
+
+    //# Create 'nameless' widget in BACKGROUND (useful when widget is not important and is used only for layout purposes (no interaction), it is skipped in path)
+    let image = Widget::create(system, &background.end(""), Layout::Solid {
         width: 2560,
         height: 1440,
         scaling: Scale::Fill,
         ..Default::default()
     }.wrap()).unwrap();
-    //# Spawn background image
+    
+    //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
-        _background.clone(),
+        image.clone(),
         SpriteBundle {
             texture: asset_server.load("background.png"),
             transform: Transform { ..default() },
@@ -48,20 +55,24 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
             ..default()
         }
     ));
-    
-    _background.fetch_mut(system, "").unwrap().set_depth(90.0);
 
-    //# Create BOARD in WIDGET
-    let _board = Widget::new_in(system, &_app, "Board", Layout::Solid {
+    //# Set depth to IMAGE widget so the image renders behind other widgets (All widgets start at 100 + level == Menu/Display -> 102, Menu/Display/Button -> 103)
+    image.fetch_mut(system, "").unwrap().set_depth(90.0);
+
+
+
+    //# Create BOARD in MAIN_MENU
+    let board = Widget::create(system, &main_menu.end("board"), Layout::Solid {
         width: 807,
         height: 1432,
         horizontal_anchor: -0.80,
         scaling: Scale::Fit,
         ..Default::default()
     }.wrap()).unwrap();
-    //# Spawn board image
+    
+    //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
-        _board.clone(),
+        board.clone(),
         SpriteBundle {
             texture: asset_server.load("board.png"),
             transform: Transform { translation: Vec3 { x: 0., y: 0., z: 10. }, ..default() },
@@ -74,25 +85,27 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
     ));
 
 
-    //# Create nameless widget in BOARD (useful when widget is not important and is used for layout purposes only (no image, not interactive), helps with abstractions)
-    //# All nameless widgets are given the name "#pNUMBER", with number being the order they were created. Nameless widgets are hidden from mapping.
-    let _logo_boundary = Widget::new_in(system, &_board, "", Layout::Relative {
+
+    //# Create 'nameless' widget in BOARD
+    let nameless_boundary = Widget::create(system, &board.end(""), Layout::Relative {
         relative_1: Vec2 { x: -5.0, y: 15.0 },
         relative_2: Vec2 { x: 105.0, y: 30.0 },
         ..Default::default()
     }.wrap()).unwrap();
 
 
-    //# Create LOGO in nameless widget and register LOGO under BOARD (it will be Board/Logo instead Board/nameless/Logo)
-    let _logo = Widget::new_in(system, &_board, "#p0/Logo", Layout::Solid {
+
+    //# Create LOGO in 'nameless' widget and omit 'nameless' from path (BOARD/'nameless'/LOGO -> BOARD/LOGO)
+    let logo = Widget::create(system, &nameless_boundary.end("logo"), Layout::Solid {
         width: 681,
         height: 166,
         scaling: Scale::Fit,
         ..Default::default()
     }.wrap()).unwrap();
-    //# Spawn logo image
+
+    //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
-        _logo.clone(),
+        logo.clone(),
         SpriteBundle {
             texture: asset_server.load("logo.png"),
             transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
@@ -105,15 +118,17 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
     ));
 
 
-    //# Create LOGOSHADOW in LOGO
-    let _logo_shadow = Widget::new_in(system, &_logo, "LogoShadow", Layout::Relative {
+
+    //# Create 'nameless' widget in LOGO. Further down in the application the widget is not used, so we can leave it nameless and forget about it.
+    let logo_shadow = Widget::create(system, &logo.end(""), Layout::Relative {
         relative_1: Vec2 { x: -5.0, y: -10.0 },
         relative_2: Vec2 { x: 105.0, y: 110.0 },
         ..Default::default()
     }.wrap()).unwrap();
+    
     //# Spawn logo shadow image
     commands.spawn ((
-        _logo_shadow,
+        logo_shadow,
         SpriteBundle {
             texture: asset_server.load("logo_shadow.png"),
             transform: Transform { translation: Vec3 { x: 0., y: 0., z: 12. }, ..default() },
@@ -134,7 +149,7 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
     //# Here we will create a ButtonList widget which will contain all the buttons.
 
     //# Create BUTTONLIST in BOARD
-    let _button_list = Widget::new_in(system, &_board, "ButtonList", Layout::Relative {
+    let _button_list = Widget::create(system, &board.end("buttons"), Layout::Relative {
         relative_1: Vec2 { x: 17.0, y: 33.0 },
         relative_2: Vec2 { x: 82.0, y: 79.0 },
         ..Default::default()
@@ -158,7 +173,7 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
         //# Create a BUTTON widget that will be used as boundary for input detection only
-        let _button = Widget::new_in(system, &_button_list, button_list[i], Layout::Solid {
+        let _button = Widget::create(system, &_button_list.end(button_list[i]), Layout::Solid {
             width: 532,
             height: 75,
             scaling: Scale::Fit,
@@ -173,7 +188,7 @@ pub fn setup_menu_main(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
         //# Create a nameless button that we will style and animate under BUTTON widget
-        let _button_decoration = Widget::new_in(system, &_button, "", Layout::Window {
+        let _button_decoration = Widget::create(system, &_button.end(""), Layout::Window {
             width_relative: 100.0,
             height_relative: 100.0,
             ..Default::default()
@@ -244,9 +259,9 @@ fn button_update(mut systems: Query<(&mut Hierarchy, &UIPlacement)>, cursors: Qu
             }
 
             if mouse_button_input.just_pressed(MouseButton::Left) && widget.fetch(&mut system, "").unwrap().get_name() == "settings" {
-                let visibility = Widget {path: "Main_Menu".to_string()}.fetch(&system, "").unwrap().get_visibility();
-                Widget {path: "Main_Menu".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
-                Widget {path: "Settings".to_string()}.fetch_mut(&mut system, "").unwrap().set_visibility(visibility);
+                let visibility = Widget::from_path("main_menu").fetch(&system, "").unwrap().get_visibility();
+                Widget::from_path("main_menu").fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
+                Widget::from_path("settings").fetch_mut(&mut system, "").unwrap().set_visibility(visibility);
             }
 
 

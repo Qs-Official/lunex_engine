@@ -34,7 +34,8 @@ fn main() {
         .add_plugins(WigglePlugin)
 
         .add_systems(Update, (hierarchy_update, cursor_update).chain().before(image_update))
-        .add_systems(Update, image_update)
+        .add_systems(Update, (image_update, element_update))
+        
 
         //GLOBAL VFX
         .add_systems(Update, vfx_bloom_update)
@@ -103,7 +104,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 
     let mut system = Hierarchy::new();
-    setup_menu_main(&mut commands, &asset_server, &mut system);
+    setup_main_menu(&mut commands, &asset_server, &mut system);
     setup_menu_settings(&mut commands, &asset_server, &mut system);
     
     //################################################################################
