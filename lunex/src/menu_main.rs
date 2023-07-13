@@ -249,7 +249,7 @@ fn button_update(mut systems: Query<(&mut Hierarchy, &UIPlacement)>, cursors: Qu
         if widget.is_within(&system, "", &vec_convert(cursor.position_world(), &placement.offset)).unwrap(){
 
             //# Fetch the nameless widget data from Hierarchy and update it (Image alpha and layout of the decoration widget)
-            match widget.fetch_mut(&mut system, "#p0").unwrap().data_get_mut() {
+            match widget.fetch_mut(&mut system, "#0").unwrap().data_get_mut() {
                 Option::Some ( data ) => {
                     data.f32s.insert("alpha".to_string()        , 0.8);
                     data.f32s.insert("window_x".to_string()     , 5.0);
@@ -259,9 +259,9 @@ fn button_update(mut systems: Query<(&mut Hierarchy, &UIPlacement)>, cursors: Qu
             }
 
             if mouse_button_input.just_pressed(MouseButton::Left) && widget.fetch(&mut system, "").unwrap().get_name() == "settings" {
-                let visibility = Widget::from_path("main_menu").fetch(&system, "").unwrap().get_visibility();
-                Widget::from_path("main_menu").fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
-                Widget::from_path("settings").fetch_mut(&mut system, "").unwrap().set_visibility(visibility);
+                let visibility = Widget::new("main_menu").fetch(&system, "").unwrap().get_visibility();
+                Widget::new("main_menu").fetch_mut(&mut system, "").unwrap().set_visibility(!visibility);
+                Widget::new("settings").fetch_mut(&mut system, "").unwrap().set_visibility(visibility);
             }
 
 
@@ -365,7 +365,7 @@ fn smooth_wiggle_widget (mut query: Query<(&mut SmoothWiggle, &Widget)>, mut sys
     let mut system = systems.get_single_mut().unwrap();
     for (mut smoothslider, widget) in &mut query {
         
-        let pos = widget.fetch_layout_mut(&mut system, "").unwrap().expect_window_mut();
+        let pos = widget.fetch_mut(&mut system, "").unwrap().layout_get_mut().expect_window_mut();
         smoothslider.x += 0.007;
         smoothslider.y += 0.002;
 

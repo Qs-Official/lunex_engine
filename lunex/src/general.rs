@@ -30,7 +30,7 @@ pub fn image_update(mut systems: Query<(&mut Hierarchy, &mut UIPlacement)>, mut 
 
                     transform.translation.z = branch.get_depth();
 
-                    let pos = widget.fetch_position(&mut system, "").unwrap().invert_y();      //The widget will locate itself inside the hierarchy
+                    let pos = widget.fetch(&mut system, "").unwrap().container_get().position_get().invert_y();      //The widget will locate itself inside the hierarchy
                     transform.translation.x = pos.point_1.x + placement.offset.x;
                     transform.translation.y = pos.point_1.y + placement.offset.y;
 
@@ -68,7 +68,7 @@ pub fn _text_update(mut systems: Query<(&mut Hierarchy, &mut UIPlacement)>, mut 
 
                     transform.translation.z = branch.get_depth();
 
-                    let pos = widget.fetch_position(&mut system, "").unwrap().invert_y();      //The widget will locate itself inside the hierarchy
+                    let pos = widget.fetch(&mut system, "").unwrap().container_get().position_get().invert_y();      //The widget will locate itself inside the hierarchy
                     transform.translation.x = pos.point_1.x + placement.offset.x;
                     transform.translation.y = pos.point_1.y + placement.offset.y;
 
@@ -101,7 +101,7 @@ pub fn element_update(mut systems: Query<(&mut Hierarchy, &mut UIPlacement)>, mu
 
                     transform.translation.z = branch.get_depth();
 
-                    let pos = widget.fetch_position(&mut system, "").unwrap().invert_y();
+                    let pos = widget.fetch(&mut system, "").unwrap().container_get().position_get().invert_y();
                     let vec = pos.get_pos_y_inverted(element.relative);
                     transform.translation.x = vec.x + placement.offset.x;
                     transform.translation.y = vec.y + placement.offset.y;

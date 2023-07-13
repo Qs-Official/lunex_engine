@@ -27,7 +27,7 @@ fn main() {
         .add_systems(Startup, (setup, apply_deferred).chain())
 
         //Debug
-        .add_plugins(LunexDebugPlugin)
+        //.add_plugins(LunexDebugPlugin)
 
 
         .add_plugins(ButtonPlugin)

@@ -100,7 +100,7 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
     
     for x in 0..xx {
         for y in 0..yy{
-            let _container = Widget::from_path(&boundary.chain_str(grid[x][y]));
+            let _container = Widget::new(&boundary.end(grid[x][y]));
             commands.spawn (
                 ElementBundle {
                     widget: _container,
