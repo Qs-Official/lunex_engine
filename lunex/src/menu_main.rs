@@ -7,11 +7,11 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create MAIN_MENU widget
-    let main_menu = Widget::create(system, "main_menu", Layout::Relative {
+    let main_menu = Widget::create(system, "main_menu", Box::Relative {
         relative_1: Vec2 { x: 0.0, y: 0.0 },
         relative_2: Vec2 { x: 100.0, y: 100.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
     //# All widgets created in ROOT have visibility == false by default
     main_menu.fetch_mut(system, "").unwrap().set_visibility(true);
@@ -19,12 +19,12 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create BACKGROUND in MAIN_MENU
-    let background = Widget::create(system, &main_menu.end("background"), Layout::Window {
+    let background = Widget::create(system, &main_menu.end("background"), Box::Window {
         relative: Vec2 { x: -5.0, y: -5.0 },
         width_relative: 110.0,
         height_relative: 110.0,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     //# Spawn entity with widget for querying
     commands.spawn ((
@@ -35,12 +35,12 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create 'nameless' widget in BACKGROUND (useful when widget is not important and is used only for layout purposes (no interaction), it is skipped in path)
-    let image = Widget::create(system, &background.end(""), Layout::Solid {
+    let image = Widget::create(system, &background.end(""), Box::Solid {
         width: 2560,
         height: 1440,
-        scaling: Scale::Fill,
+        scaling: SolidScale::Fill,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
@@ -62,13 +62,13 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create BOARD in MAIN_MENU
-    let board = Widget::create(system, &main_menu.end("board"), Layout::Solid {
+    let board = Widget::create(system, &main_menu.end("board"), Box::Solid {
         width: 807,
         height: 1432,
         horizontal_anchor: -0.80,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
@@ -87,21 +87,21 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create 'nameless' widget in BOARD
-    let nameless_boundary = Widget::create(system, &board.end(""), Layout::Relative {
+    let nameless_boundary = Widget::create(system, &board.end(""), Box::Relative {
         relative_1: Vec2 { x: -5.0, y: 15.0 },
         relative_2: Vec2 { x: 105.0, y: 30.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
 
 
     //# Create LOGO in 'nameless' widget and omit 'nameless' from path (BOARD/'nameless'/LOGO -> BOARD/LOGO)
-    let logo = Widget::create(system, &nameless_boundary.end("logo"), Layout::Solid {
+    let logo = Widget::create(system, &nameless_boundary.end("logo"), Box::Solid {
         width: 681,
         height: 166,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
     //# Spawn entity with widget for querying (Sprite)
     commands.spawn ((
@@ -120,11 +120,11 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
     //# Create 'nameless' widget in LOGO. Further down in the application the widget is not used, so we can leave it nameless and forget about it.
-    let logo_shadow = Widget::create(system, &logo.end(""), Layout::Relative {
+    let logo_shadow = Widget::create(system, &logo.end(""), Box::Relative {
         relative_1: Vec2 { x: -5.0, y: -10.0 },
         relative_2: Vec2 { x: 105.0, y: 110.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     //# Spawn logo shadow image
     commands.spawn ((
@@ -149,11 +149,11 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     //# Here we will create a ButtonList widget which will contain all the buttons.
 
     //# Create BUTTONLIST in BOARD
-    let _button_list = Widget::create(system, &board.end("buttons"), Layout::Relative {
+    let _button_list = Widget::create(system, &board.end("buttons"), Box::Relative {
         relative_1: Vec2 { x: 17.0, y: 33.0 },
         relative_2: Vec2 { x: 82.0, y: 79.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
 
     //# Create a list with names for iteration
@@ -173,13 +173,13 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
         //# Create a BUTTON widget that will be used as boundary for input detection only
-        let _button = Widget::create(system, &_button_list.end(button_list[i]), Layout::Solid {
+        let _button = Widget::create(system, &_button_list.end(button_list[i]), Box::Solid {
             width: 532,
             height: 75,
-            scaling: Scale::Fit,
+            scaling: SolidScale::Fit,
             vertical_anchor: -1.0 + step * i as f32,      //Where should the container be on Y axis (range: 1.0 to -1.0)
             ..Default::default()
-        }.wrap()).unwrap();
+        }.pack()).unwrap();
         //# Spawn button
         commands.spawn ((
             _button.clone(),
@@ -188,11 +188,11 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 
 
         //# Create a nameless button that we will style and animate under BUTTON widget
-        let _button_decoration = Widget::create(system, &_button.end(""), Layout::Window {
+        let _button_decoration = Widget::create(system, &_button.end(""), Box::Window {
             width_relative: 100.0,
             height_relative: 100.0,
             ..Default::default()
-        }.wrap()).unwrap();
+        }.pack()).unwrap();
         //# Spawn button decoration image
         commands.spawn ((
             _button_decoration.clone(),

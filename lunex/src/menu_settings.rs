@@ -6,30 +6,30 @@ use bevy_lunex::prelude::*;
 
 pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetServer>, system: &mut Hierarchy) {
 
-    let settings = Widget::create(system, "settings", Layout::Relative {
+    let settings = Widget::create(system, "settings", Box::Relative {
         relative_1: Vec2 { x: 0.0, y: 0.0 },
         relative_2: Vec2 { x: 100.0, y: 100.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
 
     //# BACKGROUND ===================================================================================================
 
     //# Create BACKGROUND in SETTINGS
-    let background = Widget::create(system, &settings.end("background"), Layout::Window {
+    let background = Widget::create(system, &settings.end("background"), Box::Window {
         relative: Vec2 { x: 0.0, y: 0.0 },
         width_relative: 100.0,
         height_relative: 100.0,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
     //# Create 'nameless' widget in BACKGROUND
-    let image = Widget::create(system, &background.end(""), Layout::Solid {
+    let image = Widget::create(system, &background.end(""), Box::Solid {
         width: 3840,
         height: 2160,
-        scaling: Scale::Fill,
+        scaling: SolidScale::Fill,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     commands.spawn ((
         image.clone(),
@@ -49,35 +49,35 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
 
 
     //# ===============================================================================================================
-    let boundary = Widget::create(system, &settings.end(""), Layout::Relative {
+    let boundary = Widget::create(system, &settings.end(""), Box::Relative {
         relative_1: Vec2 { x: 2.0, y: 2.0 },
         relative_2: Vec2 { x: 10.0, y: 8.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
-    let button_return = Widget::create(system, &boundary.end("return"), Layout::Solid {
+    let _button_return = Widget::create(system, &boundary.end("return"), Box::Solid {
         width: 3,
         height: 1,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         horizontal_anchor: -1.0,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
 
 
 
-    let bar = Widget::create(system, &settings.end("bar"), Layout::Relative {
+    let bar = Widget::create(system, &settings.end("bar"), Box::Relative {
         relative_1: Vec2 { x: 12.0, y: 2.0 },
         relative_2: Vec2 { x: 88.0, y: 8.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
-    let boundary = Widget::create(system, &bar.end(""), Layout::Solid {
+    let boundary = Widget::create(system, &bar.end(""), Box::Solid {
         width: 28,
         height: 1,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
     let grid = [["sound"].to_vec(), ["controls"].to_vec(), ["video"].to_vec(), ["interface"].to_vec()].to_vec();
     Widget::generate_grid_inside(system, &boundary, &grid, &WidgetListStyle {
@@ -125,37 +125,37 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
 
 
     //# ===============================================================================================================
-    let boundary1 = Widget::create(system, &settings.end(""), Layout::Relative {
+    let boundary1 = Widget::create(system, &settings.end(""), Box::Relative {
         relative_1: Vec2 { x: 5.0, y: 14.0 },
         relative_2: Vec2 { x: 95.0, y: 100.0 },
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
-    let boundary2 = Widget::create(system, &boundary1.end(""), Layout::Solid {
+    let boundary2 = Widget::create(system, &boundary1.end(""), Box::Solid {
         width: 105,
         height: 100,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         vertical_anchor: -1.0,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
 
     //println!("{}", &settings.add(&boundary1).add(&boundary2).end("Display"));
 
-    let display = Widget::create(system, &settings.add(&boundary1).add(&boundary2).end("display"), Layout::Window {
+    let display = Widget::create(system, &settings.add(&boundary1).add(&boundary2).end("display"), Box::Window {
         relative: Vec2::new(0.0, 0.0),
         width_relative: 100.0,
         height_relative: 40.0,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
 
-    let category = Widget::create(system, &display.end(""), Layout::Solid {
+    let category = Widget::create(system, &display.end(""), Box::Solid {
         width: 1934,
         height: 96,
         vertical_anchor: -1.0,
-        scaling: Scale::Fit,
+        scaling: SolidScale::Fit,
         ..Default::default()
-    }.wrap()).unwrap();
+    }.pack()).unwrap();
     
     let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
     let text_style = TextStyle {
