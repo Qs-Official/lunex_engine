@@ -1,7 +1,6 @@
 use bevy::{prelude::*, sprite::Anchor};
 use bevy_lunex::prelude::*;
-
-//use crate::general::*;
+use crate::general::*;
 
 
 pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetServer>, system: &mut Hierarchy) {
@@ -31,7 +30,7 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
         ..Default::default()
     }.pack()).unwrap();
     
-    commands.spawn ((
+    /*commands.spawn ((
         image.clone(),
         SpriteBundle {
             texture: asset_server.load("settings/background.png"),
@@ -42,7 +41,9 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
             },
             ..default()
         }
-    ));
+    ));*/
+
+    spawn_image(commands, asset_server, image.clone(), "settings/background.png");
 
     //# Set depth to IMAGE
     image.fetch_mut(system, "").unwrap().set_depth(90.0);
@@ -55,13 +56,21 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
         ..Default::default()
     }.pack()).unwrap();
 
-    let _button_return = Widget::create(system, &boundary.end("return"), Box::Solid {
+    let button_return = Widget::create(system, &boundary.end("return"), Box::Solid {
         width: 3,
         height: 1,
         scaling: SolidScale::Fit,
         horizontal_anchor: -1.0,
         ..Default::default()
     }.pack()).unwrap();
+
+    let font = asset_server.load("Rajdhani/Rajdhani-Bold.ttf");
+    let text_style = TextStyle {
+        font: font.clone(),
+        font_size: 40.0,
+        color: Color::rgb(204./255., 56./255., 51./255.),
+    };
+    spawn_text(commands, button_return, "RETURN", text_style.clone());
 
 
 
@@ -79,17 +88,18 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
         ..Default::default()
     }.pack()).unwrap();
 
-    let grid = [["sound"].to_vec(), ["controls"].to_vec(), ["video"].to_vec(), ["interface"].to_vec()].to_vec();
-    Widget::generate_grid_inside(system, &boundary, &grid, &WidgetListStyle {
+    let map = [["sound"].to_vec(), ["controls"].to_vec(), ["video"].to_vec(), ["interface"].to_vec()].to_vec();
+    
+    Grid {
         width_relative: 100.0,
         height_relative: 20.0,
         width_padding_gap: true,
         gap_relative: Vec2::new(10.0, 0.0),
         ..Default::default()
-    }).unwrap();
+    }.create_inside(system, &boundary, &map).unwrap();
 
-    let xx = grid.len();
-    let yy = grid[0].len();
+    let xx = map.len();
+    let yy = map[0].len();
 
     let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
     let text_style = TextStyle {
@@ -99,25 +109,11 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
     };
     
     for x in 0..xx {
-        for y in 0..yy{
-            let _container = Widget::new(&boundary.end(grid[x][y]));
-            commands.spawn (
-                ElementBundle {
-                    widget: _container,
-                    element: Element {
-                        relative: Vec2::new(50.0, 50.0),
-                        size: Vec2::new(50.0, 50.0),
-                        ..default()
-                    },
-                    ..Default::default()
-                }
-            ).with_children(|builder| {
-                builder.spawn(Text2dBundle {
-                    text: Text::from_section(grid[x][y].to_uppercase(), text_style.clone()).with_alignment(TextAlignment::Center),
-                    transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
-                    ..default()
-                });
-            });
+        for y in 0..yy {
+
+            let widget = Widget::new(&boundary.end(map[x][y]));
+            spawn_text(commands, widget, &map[x][y].to_uppercase(), text_style.clone());
+
         }
     }
 
@@ -149,6 +145,7 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
         ..Default::default()
     }.pack()).unwrap();
 
+
     let category = Widget::create(system, &display.end(""), Box::Solid {
         width: 1934,
         height: 96,
@@ -163,41 +160,42 @@ pub fn setup_menu_settings (commands: &mut Commands, asset_server: &Res<AssetSer
         font_size: 60.0,
         color: Color::rgb(199./255., 186./255., 174./255.),
     };
-    commands.spawn ((
-        category,
-        SpriteBundle {
-            texture: asset_server.load("settings/category.png"),
-            transform: Transform {
-                ..default()
-            },
-            sprite: Sprite {
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-            ..default()
-        }
-    )).with_children(|builder| {
-        builder.spawn(Text2dBundle {
-            text: Text::from_section("Display", text_style.clone()).with_alignment(TextAlignment::Left),
-            transform: Transform { translation: Vec3 { x: 30., y: -96./2., z: 15. }, ..default() },
-            text_anchor: Anchor::CenterLeft,
-            ..default()
-        });
-    });
+    spawn_image_with_text(commands, asset_server, category, "settings/category.png", "Display", Vec2::new(30., -96./2.), text_style);
 
 
-    let grid = [["fullscreen","window_mode","resolution", "monitor", "vsync"].to_vec()].to_vec();
-    Widget::generate_grid(system, &display.end("List"), &grid, Vec2::new(0.0, 16.0), &WidgetListStyle {
+    let map = [["fullscreen","window_mode","resolution", "monitor", "vsync"].to_vec()].to_vec();
+
+    let grid = Grid {
         width_relative: 96.0,
         height_relative: 11.0,
         width_padding_gap: true,
         height_padding_gap: true,
         gap_relative: Vec2::new(2.0, 2.0),
         ..Default::default()
-    }).unwrap();
+    };
+    let widget = grid.create(system, &display.end("list"), &map, Vec2::new(0.0, 16.0)).unwrap();
 
+    let xx = map.len();
+    let yy = map[0].len();
 
+    let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
+    let text_style = TextStyle {
+        font: font.clone(),
+        font_size: 40.0,
+        color: Color::rgb(204./255., 56./255., 51./255.),
+    };
+    
+    for x in 0..xx {
+        for y in 0..yy {
+
+            let _widget = Widget::new(&widget.end(map[x][y]));
+            spawn_text(commands, _widget, &map[x][y].to_uppercase(), text_style.clone());
+
+        }
+    }
 
 
 
 }
+
+

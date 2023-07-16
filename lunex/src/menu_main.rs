@@ -31,6 +31,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
         background.clone(),
         SmoothWiggle {..Default::default()},
     ));
+    
 
 
 
@@ -43,10 +44,10 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     }.pack()).unwrap();
     
     //# Spawn entity with widget for querying (Sprite)
-    commands.spawn ((
+    /*commands.spawn ((
         image.clone(),
         SpriteBundle {
-            texture: asset_server.load("background.png"),
+            texture: asset_server.load(include!("assets/background.png")),
             transform: Transform { ..default() },
             sprite: Sprite {
                 anchor: Anchor::TopLeft,
@@ -54,7 +55,8 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
             },
             ..default()
         }
-    ));
+    ));*/
+    spawn_image(commands, asset_server, image.clone(), "background.png");
 
     //# Set depth to IMAGE widget so the image renders behind other widgets (All widgets start at 100 + level == Menu/Display -> 102, Menu/Display/Button -> 103)
     image.fetch_mut(system, "").unwrap().set_depth(90.0);
@@ -71,7 +73,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     }.pack()).unwrap();
     
     //# Spawn entity with widget for querying (Sprite)
-    commands.spawn ((
+    /*commands.spawn ((
         board.clone(),
         SpriteBundle {
             texture: asset_server.load("board.png"),
@@ -82,7 +84,8 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
             },
             ..default()
         }
-    ));
+    ));*/
+    spawn_image(commands, asset_server, board.clone(), "board.png");
 
 
 
@@ -104,7 +107,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     }.pack()).unwrap();
 
     //# Spawn entity with widget for querying (Sprite)
-    commands.spawn ((
+    /*commands.spawn ((
         logo.clone(),
         SpriteBundle {
             texture: asset_server.load("logo.png"),
@@ -115,7 +118,8 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
             },
             ..default()
         }
-    ));
+    ));*/
+    spawn_image(commands, asset_server, logo.clone(), "logo.png");
 
 
 
@@ -127,7 +131,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     }.pack()).unwrap();
     
     //# Spawn logo shadow image
-    commands.spawn ((
+    /*commands.spawn ((
         logo_shadow,
         SpriteBundle {
             texture: asset_server.load("logo_shadow.png"),
@@ -139,7 +143,8 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
             },
             ..default()
         }
-    ));
+    ));*/
+    spawn_image(commands, asset_server, logo_shadow.clone(), "logo_shadow.png");
 
 
 
@@ -236,7 +241,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
 //# The main entitity that will interact with cursor (Hitbox)
 #[derive(Component)]
 pub struct MainMenuButton ();
-fn button_update(mut systems: Query<(&mut Hierarchy, &UIPlacement)>, cursors: Query<&Cursor>, mut query: Query<(&mut Widget, &MainMenuButton)>, mouse_button_input: Res<Input<MouseButton>>) {
+fn button_update(mut systems: Query<(&mut Hierarchy, &UserInterface)>, cursors: Query<&Cursor>, mut query: Query<(&mut Widget, &MainMenuButton)>, mouse_button_input: Res<Input<MouseButton>>) {
     
     //# Get Hierarchy and cursor
     let (mut system, placement) = systems.get_single_mut().unwrap();

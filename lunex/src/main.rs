@@ -23,18 +23,17 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
 
-
         .add_systems(Startup, (setup, apply_deferred).chain())
 
         //Debug
-        //.add_plugins(LunexDebugPlugin)
+        .add_plugins(LunexDebugPlugin)
 
 
         .add_plugins(ButtonPlugin)
         .add_plugins(WigglePlugin)
 
         .add_systems(Update, (hierarchy_update, cursor_update).chain().before(image_update))
-        .add_systems(Update, (image_update, element_update))
+        .add_plugins(AlignPlugin)
         
 
         //GLOBAL VFX
@@ -118,7 +117,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     //# spawn the finished system
     commands.spawn ((
         system,
-        UIPlacement { offset: Vec2::default()}
+        UserInterface { offset: Vec2::default()}
     ));
 
 }
