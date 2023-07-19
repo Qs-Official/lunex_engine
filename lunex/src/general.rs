@@ -1,71 +1,18 @@
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;  
 
-// ===========================================================
-// === SPAWN COMMADS ===
+pub const RED_COLOR: Color = Color::rgba(255./255., 98./255., 81./255., 1.1);
+pub const RED_COLOR_DIM: Color = Color::rgba(204./255., 56./255., 51./255., 1.0);
+pub const BLUE_COLOR: Color = Color::rgba(42./255., 237./255., 247./255., 1.3);
+pub const PURPLE_COLOR: Color = Color::rgba(255./255., 34./255., 245./255., 1.3);
+pub const YELLOW_COLOR: Color = Color::rgba(255./255., 245./255., 34./255., 1.3);
+pub const GREY_COLOR: Color = Color::rgba(199./255., 186./255., 174./255., 1.0);
 
-pub fn spawn_text (commands: &mut Commands, widget: Widget, text: &str, text_style: TextStyle) {
-    commands.spawn (
-        TextElementBundle {
-            widget,
-            element: Element {
-                relative: Vec2::new(50.0, 50.0),
-                boundary: text_compute_size_simple(text, text_style.font_size),
-                scale: 40.0,
-                ..default()
-            },
-            text: Text::from_section(text, text_style.clone()).with_alignment(TextAlignment::Center),
-            ..Default::default()
-        }
-    );
-}
 
-pub fn spawn_image (commands: &mut Commands, asset_server: &Res<AssetServer>, widget: Widget, path: &str) {
-    commands.spawn (
-        ImageElementBundle {
-            widget,
-            element: Element {
-                relative: Vec2::new(0.0, 0.0),
-                scale: 100.0,
-                ..default()
-            },
-            texture: asset_server.load(path),
-            sprite: Sprite {
-                anchor: bevy::sprite::Anchor::TopLeft,
-                ..default()
-            },
-            ..Default::default()
-        }
-    );
-    
-}
-
-pub fn spawn_image_with_text (commands: &mut Commands, asset_server: &Res<AssetServer>, widget: Widget, imgpath: &str, text: &str, text_pos: Vec2, text_style: TextStyle) {
-    commands.spawn (
-        ImageElementBundle {
-            widget,
-            element: Element {
-                relative: Vec2::new(0.0, 0.0),
-                scale: 100.0,
-                ..default()
-            },
-            texture: asset_server.load(imgpath),
-            sprite: Sprite {
-                anchor: bevy::sprite::Anchor::TopLeft,
-                ..default()
-            },
-            ..Default::default()
-        }
-    ).with_children(|builder| {
-        builder.spawn(Text2dBundle {
-            text: Text::from_section(text, text_style.clone()).with_alignment(TextAlignment::Center),
-            transform: Transform { translation: Vec3 { x: text_pos.x, y: text_pos.y, z: 5. }, ..default() },
-            text_anchor: bevy::sprite::Anchor::CenterLeft,
-            ..default()
-        });
-    });
-}
-
+pub const GLOBAL_COLOR_STANDBY: Color = RED_COLOR;
+pub const GLOBAL_COLOR_HOVER: Color = BLUE_COLOR;
+pub const MAIN_MENU_COLOR_STANDBY: Color = GLOBAL_COLOR_STANDBY;
+pub const SETTINGS_COLOR_CATEGORY: Color = GREY_COLOR;
 
 // ===========================================================
 // === LUNEX SYNC TO ENTITIES ===

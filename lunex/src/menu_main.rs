@@ -2,7 +2,6 @@ use bevy::{prelude::*, sprite::Anchor};
 use bevy_lunex::prelude::*;
 use crate::general::*;
 
-
 pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>, system: &mut Hierarchy) {
 
 
@@ -42,21 +41,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
         scaling: SolidScale::Fill,
         ..Default::default()
     }.pack()).unwrap();
-    
-    //# Spawn entity with widget for querying (Sprite)
-    /*commands.spawn ((
-        image.clone(),
-        SpriteBundle {
-            texture: asset_server.load(include!("assets/background.png")),
-            transform: Transform { ..default() },
-            sprite: Sprite {
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-            ..default()
-        }
-    ));*/
-    spawn_image(commands, asset_server, image.clone(), "background.png");
+    spawn_image(commands, asset_server, image.clone(), ImageParams::default(), "background.png");
 
     //# Set depth to IMAGE widget so the image renders behind other widgets (All widgets start at 100 + level == Menu/Display -> 102, Menu/Display/Button -> 103)
     image.fetch_mut(system, "").unwrap().set_depth(90.0);
@@ -71,21 +56,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
         scaling: SolidScale::Fit,
         ..Default::default()
     }.pack()).unwrap();
-    
-    //# Spawn entity with widget for querying (Sprite)
-    /*commands.spawn ((
-        board.clone(),
-        SpriteBundle {
-            texture: asset_server.load("board.png"),
-            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 10. }, ..default() },
-            sprite: Sprite {
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-            ..default()
-        }
-    ));*/
-    spawn_image(commands, asset_server, board.clone(), "board.png");
+    spawn_image(commands, asset_server, board.clone(), ImageParams::default(), "board.png");
 
 
 
@@ -105,21 +76,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
         scaling: SolidScale::Fit,
         ..Default::default()
     }.pack()).unwrap();
-
-    //# Spawn entity with widget for querying (Sprite)
-    /*commands.spawn ((
-        logo.clone(),
-        SpriteBundle {
-            texture: asset_server.load("logo.png"),
-            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 15. }, ..default() },
-            sprite: Sprite {
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-            ..default()
-        }
-    ));*/
-    spawn_image(commands, asset_server, logo.clone(), "logo.png");
+    spawn_image(commands, asset_server, logo.clone(), ImageParams::default(), "logo.png");
 
 
 
@@ -129,22 +86,7 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
         relative_2: Vec2 { x: 105.0, y: 110.0 },
         ..Default::default()
     }.pack()).unwrap();
-    
-    //# Spawn logo shadow image
-    /*commands.spawn ((
-        logo_shadow,
-        SpriteBundle {
-            texture: asset_server.load("logo_shadow.png"),
-            transform: Transform { translation: Vec3 { x: 0., y: 0., z: 12. }, ..default() },
-            sprite: Sprite {
-                color: Color::rgba(1., 1., 1., 0.7),
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-            ..default()
-        }
-    ));*/
-    spawn_image(commands, asset_server, logo_shadow.clone(), "logo_shadow.png");
+    spawn_image(commands, asset_server, logo_shadow.clone(), ImageParams::default(), "logo_shadow.png");
 
 
 
@@ -165,11 +107,11 @@ pub fn setup_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>,
     let button_list = ["continue", "new_game", "load_game", "settings", "additional_content", "credits", "quit_game"];
     let button_name_list = ["CONTINUE", "NEW GAME", "LOAD GAME", "SETTINGS", "ADDITIONAL CONTENT", "CREDITS", "QUIT GAME"];
     
-    let font = asset_server.load("Rajdhani/Rajdhani-Medium.ttf");
+    let font = asset_server.load("Fonts/Rajdhani/Rajdhani-Medium.ttf");
     let text_style = TextStyle {
         font: font.clone(),
         font_size: 40.0,
-        color: Color::rgb(204./255., 56./255., 51./255.),
+        color: MAIN_MENU_COLOR_STANDBY,
     };
 
     //# Create buttons in BUTTONLIST
@@ -310,12 +252,11 @@ fn button_update_decoration(mut systems: Query<&mut Hierarchy>, mut query: Query
 
                         for child in &children {
                             if let Ok(mut text) = text_query.get_mut(*child) {
-                                text.sections[0].style.color = Color::rgba (
-                                    tween(204./255., 42./255., *color_slider),
-                                    tween(56./255., 237./255., *color_slider),
-                                    tween(51./255., 247./255., *color_slider),
-                                    1.5
-                                )
+                                let color = tween_color_hsla_short(MAIN_MENU_COLOR_STANDBY, GLOBAL_COLOR_HOVER, *color_slider);
+                                text.sections[0].style.color = color;
+                                sprite.color.set_r(color.r());
+                                sprite.color.set_g(color.g());
+                                sprite.color.set_b(color.b());
                             }
                         }
 
