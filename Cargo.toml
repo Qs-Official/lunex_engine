@@ -1,0 +1,21 @@
+[workspace]
+  resolver = "2"
+  members = [
+    "crates/*",
+    "examples/*",
+  ]
+
+[workspace.package]
+  authors     = ["Dominik Kaspar"]
+  version     = "0.0.1"
+  edition     = "2021"
+  license     = "MIT OR Apache-2.0"
+  repository  = "https://github.com/bytestring-net/bevy-lunex"
+  keywords    = ["ui", "layout", "bevy", "lunex", "bevy-lunex"]
+  categories  = ["gui", "mathematics", "game-development"]
+
+[workspace.dependencies]
+  bevy         = { version = "0.12.1", features = ["dynamic_linking"] }
+  lunex_core   = { path = "crates/lunex_core" }
+  lunex_layout = { path = "crates/lunex_layout" }
+  lunex_theme  = { path = "crates/lunex_theme" }
