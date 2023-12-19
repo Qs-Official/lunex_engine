@@ -251,40 +251,6 @@ pub mod typographic {
     pub struct B;
 
 
-    pub enum Size {
-        XS,
-        SM,
-        MD,
-        LG,
-        XL,
-        XL2,
-        XL3,
-        XL4,
-        XL5,
-        XL6,
-        XL7,
-        Custom(f32)
-    }
-
-
-    pub struct Opacity(pub f32);
-    //pub struct FontColor(pub ColorOption);
-    pub enum Rounded {
-        None,
-        XS,
-        SM,
-        MD,
-        LG,
-        XL,
-        XL2,
-        XL3,
-        XL4,
-        XL5,
-        XL6,
-        XL7,
-        Full,
-        Custom(f32)
-    }
 
 }
 

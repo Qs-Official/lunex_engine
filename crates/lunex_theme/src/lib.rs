@@ -2,8 +2,7 @@ use bevy::prelude::*;
 
 
 // Theme Plugin (has system looping through all containers)
-// NoTheme component
-// 
+
 
 /// # Lunex Theme
 /// Containes all ECS components for styling the container.
@@ -11,18 +10,40 @@ use bevy::prelude::*;
 pub mod ltm {
     use bevy::ecs::component::Component;
 
+    /// # Container
+    /// Marker component to apply container styling to the container
     #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
     pub struct Container;
 
+
+    /// # Base Color
+    /// Color of the container elements
     #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
     pub struct BaseColor(pub crate::ThemeColor);
 
+    /// # Text Color
+    /// Color of the container's text
     #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
-    pub struct FontColor(pub crate::ThemeColor);
+    pub struct TextColor(pub crate::ThemeColor);
+
+    /// # Opacity
+    /// Overall opacity of the container
+    #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
+    pub struct Opacity(pub f32);
+
+    /// # Base Opacity
+    /// Opacity of the container elements
+    #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
+    pub struct BaseOpacity(pub f32);
+
+    /// # Font Opacity
+    /// Opacity of the container's text
+    #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
+    pub struct TextOpacity(pub f32);
 }
 
 
-
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct ColorPair {
     pub base_color: Color,
     pub text_color: Color,
@@ -33,7 +54,11 @@ impl ColorPair {
     }
 }
 
-
+/// # Mode
+/// 
+/// * [Mode::Light]
+/// * [Mode::Dark]
+/// * [Mode::Neutral]
 pub enum Mode {
     /// Use colors offset for light mode
     Light,
@@ -45,7 +70,7 @@ pub enum Mode {
 
 pub struct Theme {
     pub name: String,
-    pub mode: Mode,
+    pub mode: Mode,         // Should be in CurrentTheme struct instead of the preset?
 
     pub primary   : ColorPair,
     pub secondary : ColorPair,
@@ -68,9 +93,26 @@ pub struct Theme {
     pub border_color      : ThemeColor,
 }
 
+pub enum Rounded {
+    None,
+    XS,
+    SM,
+    MD,
+    LG,
+    XL,
+    XL2,
+    XL3,
+    XL4,
+    XL5,
+    XL6,
+    XL7,
+    Full,
+    Custom(f32)
+}
 
 /// # Theme Color
-/// 
+/// A specific color picked from predefined color pool.
+/// Allows for easy color swapping.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ThemeColor {
     Primary(f32),
@@ -83,9 +125,7 @@ pub enum ThemeColor {
     Error(f32),
     Surface(f32),
     Neutral(f32),
-    // White(f32)
-    // Black(f32)
-    // Custom(ColorPair, f32)
+    Custom(ColorPair, f32),
 }
 impl ThemeColor {
     pub const PRIMARY_50: ThemeColor = ThemeColor::Primary(50.0);

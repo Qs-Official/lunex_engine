@@ -1,3 +1,5 @@
+use lunex_core::Amount;
+
 pub mod prelude {
     pub use super::lui;
 }
@@ -26,8 +28,11 @@ pub mod lui {
 
 /// # Align
 /// Type used for aligning items in parametric containers.
-/// * _Range_ : `-1.0 for START to 1.0 for CENTER`
-/// * use `Align::START`, `Align::CENTER`, `Align::END`
+/// 
+/// _Range_ : `-1.0 for START to 1.0 for END`
+/// * `Align::START`
+/// * `Align::CENTER`
+/// * `Align::END`
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Align (pub f32);
 impl Align {
@@ -60,6 +65,45 @@ pub enum Layout {
 }
 
 
+pub struct Size(Amount<f32>);
+impl Size {
+    /// ## Extra-small
+    pub const XS: Size = Size(Amount::Rem(8.0));
+    /// ## Small
+    pub const SM: Size = Size(Amount::Rem(8.0));
+    /// ## Medium
+    pub const MD: Size = Size(Amount::Rem(8.0));
+    /// ## Large
+    pub const LG: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large
+    pub const XL: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 2
+    pub const XL2: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 3
+    pub const XL3: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 4
+    pub const XL4: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 5
+    pub const XL5: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 6
+    pub const XL6: Size = Size(Amount::Rem(8.0));
+    /// ## Extra-large 7
+    pub const XL7: Size = Size(Amount::Rem(8.0));
+}
+
+
+pub enum Sizing2 {
+    Min,
+    Max,
+}
+
+pub enum Sizing {
+    Full,
+    Exact(Size),
+    //Custom(Amount<Vec2>)
+    //Custom(Rem)
+}
+
 /// # Declarative Layouts
 /// Contains declarative type of containers.
 /// You define their exact position. They don't rely on context.
@@ -81,7 +125,7 @@ pub mod declarative {
     impl Window {
         /// # Full Window
         /// Covers 100% of the parenting container
-        pub const FULL: Window = Window { pos : Amount::Rt(Vec2::ZERO), size: Amount::Rt(Vec2::splat(100.0)) };
+        pub const FULL: Window = Window { pos : Amount::Prc(Vec2::ZERO), size: Amount::Prc(Vec2::splat(100.0)) };
         /// # New
         /// Creates new Window container
         pub fn new() -> Self {
@@ -196,7 +240,19 @@ pub mod declarative {
 /// * [List]
 /// * [Grid]
 pub mod parametric {
-    pub struct Div; // Most basic type, basically every div is List
+    use bevy::math::Vec4;
+    //use crate::Align;
+    use crate::{Sizing, Size};
+
+    pub struct Div { // Most basic type, basically every div is List
+        //pub font_align: Align, //Maybe move to theming as components? Typography??? - MUST BE IN MASTER STRUCT BCS ITS GENERAL TO ALL CONTAINERS
+        pub width: Sizing,
+        pub max_width: Option<Size>,
+        pub height: Sizing,
+        pub max_height: Option<Size>,
+        pub padding: Vec4,
+        pub margin: Vec4,
+    }
 
     pub struct Br; // Just div with new line class
     pub struct List; //Ver or Hor (Flex) or Chain?
