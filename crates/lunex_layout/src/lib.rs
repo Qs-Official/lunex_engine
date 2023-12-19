@@ -1,8 +1,20 @@
 pub mod prelude {
-    pub use super::dec;
+    pub use super::lui;
 }
 
-pub use declarative as dec;
+/// # Lunex UI
+/// Contains all containers available in
+/// ### Declarative
+/// * [Window]
+/// * [Solid]
+/// ### Parametric
+/// * [Div]
+/// * [List]
+/// * [Grid]
+pub mod lui {
+    pub use crate::declarative::*;
+    pub use crate::parametric::*;
+}
 
 
 
@@ -28,22 +40,39 @@ impl Align {
 }
 
 
-pub enum Container {
-    Window,
-    Solid,
-    //Window3D
-    //etc..
-    // Modifiers: {} // Here pub general modifiers
+pub struct Container {
+    layout: Layout,
+
+    depth: f32,
+
+    roll: f32,
+    yaw: f32,
+    pitch: f32
 }
 
 
-/// # Declarative
-/// Contains declarative type of containers
+pub enum Layout {
+    Window(declarative::Window),
+    Solid(declarative::Solid),
+    //Window3D
+    //Div
+    //Br
+}
+
+
+/// # Declarative Layouts
+/// Contains declarative type of containers.
+/// You define their exact position. They don't rely on context.
+/// They are the primitives of this library.
+/// * [Window]
+/// * [Solid]
 pub mod declarative {
     use bevy::prelude::*;
     use lunex_core::prelude::*;
     use crate::Align;
+    use crate::Layout;
 
+    /// # Window Layout
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Window {
         pub pos : Amount<Vec2>,
@@ -98,7 +127,13 @@ pub mod declarative {
             self
         }
     }
+    impl Into<Layout> for Window {
+        fn into(self) -> Layout {
+            Layout::Window(self)
+        }
+    }
 
+    /// # Solid Layout
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Solid {
         pub size: Amount<Vec2>,
@@ -146,18 +181,24 @@ pub mod declarative {
             self
         }
     }
-
-    pub struct Relative;
+    impl Into<Layout> for Solid {
+        fn into(self) -> Layout {
+            Layout::Solid(self)
+        }
+    }
 }
 
-
-
-
-
+/// # Parametric Layouts
+/// Contains parametric type of containers.
+/// You define how they behave based on their neighboring containers.
+/// They rely on context. They work similarly as HTML (padding, margin, etc.)
+/// * [Div]
+/// * [List]
+/// * [Grid]
 pub mod parametric {
     pub struct Div; // Most basic type, basically every div is List
 
-    pub struct Br; // Just div with new line
+    pub struct Br; // Just div with new line class
     pub struct List; //Ver or Hor (Flex) or Chain?
     pub struct Grid;    // (Grid)
 }

@@ -4,6 +4,7 @@ use bevy::{
 };
 
 use lunex_core::Amount;
+use lunex_layout::lui;
 
 fn main() {
     App::new()
@@ -195,7 +196,7 @@ pub struct Interface {
 struct InterfaceBox {
     rect: Rect,
     modifier: (),   //Z, Tilt, Yaw, Roll, etc...
-    layout: declarative::Window,
+    layout: lui::Window,
 
     nested: Vec<InterfaceBox>
 }
@@ -233,7 +234,7 @@ pub mod predefined {
 }
 
 pub mod typographic {
-    use crate::ColorOption;
+    //use crate::ColorOption;
 
     pub struct H1;
     pub struct H2;
@@ -267,7 +268,7 @@ pub mod typographic {
 
 
     pub struct Opacity(pub f32);
-    pub struct FontColor(pub ColorOption);
+    //pub struct FontColor(pub ColorOption);
     pub enum Rounded {
         None,
         XS,
@@ -287,187 +288,3 @@ pub mod typographic {
 
 }
 
-
-pub struct StyleColor {
-    pub color: Color,
-}
-impl StyleColor {
-    pub fn v(self, l: f32) -> Color {
-        self.color.with_l((1000.0 - l)/1000.0)
-    }
-    pub fn v50(self) -> Color {
-        self.color.with_l(0.95)
-    }
-    pub fn v100(self) -> Color {
-        self.color.with_l(0.9)
-    }
-    pub fn v200(self) -> Color {
-        self.color.with_l(0.8)
-    }
-    pub fn v300(self) -> Color {
-        self.color.with_l(0.7)
-    }
-    pub fn v400(self) -> Color {
-        self.color.with_l(0.6)
-    }
-    pub fn v500(self) -> Color {
-        self.color.with_l(0.5)
-    }
-    pub fn v600(self) -> Color {
-        self.color.with_l(0.4)
-    }
-    pub fn v700(self) -> Color {
-        self.color.with_l(0.3)
-    }
-    pub fn v800(self) -> Color {
-        self.color.with_l(0.2)
-    }
-    pub fn v900(self) -> Color {
-        self.color.with_l(0.1)
-    }
-}
-
-pub struct StyleTheme {
-    primary   : StyleColor,
-    secondary : StyleColor,
-    tertiary  : StyleColor,
-    quaternery: StyleColor,
-    info   : StyleColor,
-    warning: StyleColor,
-    success: StyleColor,
-    error  : StyleColor,
-    surface: StyleColor,
-
-    rounding_container: f32,
-    rounding_base: f32,
-    border_width: f32,
-    border_color: ColorOption,
-}
-
-
-
-
-
-pub enum ColorOption {
-    Primary(f32),
-    Secondary(f32),
-    Tertiary(f32),
-    Quaternery(f32),
-    Info(f32),
-    Warning(f32),
-    Success(f32),
-    Error(f32),
-    Surface(f32),
-    Neutral(f32),
-}
-impl ColorOption {
-    pub const PRIMARY_50: ColorOption = ColorOption::Primary(50.0);
-    pub const PRIMARY_100: ColorOption = ColorOption::Primary(100.0);
-    pub const PRIMARY_200: ColorOption = ColorOption::Primary(200.0);
-    pub const PRIMARY_300: ColorOption = ColorOption::Primary(300.0);
-    pub const PRIMARY_400: ColorOption = ColorOption::Primary(400.0);
-    pub const PRIMARY_500: ColorOption = ColorOption::Primary(500.0);
-    pub const PRIMARY_600: ColorOption = ColorOption::Primary(600.0);
-    pub const PRIMARY_700: ColorOption = ColorOption::Primary(700.0);
-    pub const PRIMARY_800: ColorOption = ColorOption::Primary(800.0);
-    pub const PRIMARY_900: ColorOption = ColorOption::Primary(900.0);
-
-    pub const SECONDARY_50: ColorOption = ColorOption::Secondary(50.0);
-    pub const SECONDARY_100: ColorOption = ColorOption::Secondary(100.0);
-    pub const SECONDARY_200: ColorOption = ColorOption::Secondary(200.0);
-    pub const SECONDARY_300: ColorOption = ColorOption::Secondary(300.0);
-    pub const SECONDARY_400: ColorOption = ColorOption::Secondary(400.0);
-    pub const SECONDARY_500: ColorOption = ColorOption::Secondary(500.0);
-    pub const SECONDARY_600: ColorOption = ColorOption::Secondary(600.0);
-    pub const SECONDARY_700: ColorOption = ColorOption::Secondary(700.0);
-    pub const SECONDARY_800: ColorOption = ColorOption::Secondary(800.0);
-    pub const SECONDARY_900: ColorOption = ColorOption::Secondary(900.0);
-
-    pub const TERTIARY_50: ColorOption = ColorOption::Tertiary(50.0);
-    pub const TERTIARY_100: ColorOption = ColorOption::Tertiary(100.0);
-    pub const TERTIARY_200: ColorOption = ColorOption::Tertiary(200.0);
-    pub const TERTIARY_300: ColorOption = ColorOption::Tertiary(300.0);
-    pub const TERTIARY_400: ColorOption = ColorOption::Tertiary(400.0);
-    pub const TERTIARY_500: ColorOption = ColorOption::Tertiary(500.0);
-    pub const TERTIARY_600: ColorOption = ColorOption::Tertiary(600.0);
-    pub const TERTIARY_700: ColorOption = ColorOption::Tertiary(700.0);
-    pub const TERTIARY_800: ColorOption = ColorOption::Tertiary(800.0);
-    pub const TERTIARY_900: ColorOption = ColorOption::Tertiary(900.0);
-
-    pub const QUATERNARY_50: ColorOption = ColorOption::Quaternery(50.0);
-    pub const QUATERNARY_100: ColorOption = ColorOption::Quaternery(100.0);
-    pub const QUATERNARY_200: ColorOption = ColorOption::Quaternery(200.0);
-    pub const QUATERNARY_300: ColorOption = ColorOption::Quaternery(300.0);
-    pub const QUATERNARY_400: ColorOption = ColorOption::Quaternery(400.0);
-    pub const QUATERNARY_500: ColorOption = ColorOption::Quaternery(500.0);
-    pub const QUATERNARY_600: ColorOption = ColorOption::Quaternery(600.0);
-    pub const QUATERNARY_700: ColorOption = ColorOption::Quaternery(700.0);
-    pub const QUATERNARY_800: ColorOption = ColorOption::Quaternery(800.0);
-    pub const QUATERNARY_900: ColorOption = ColorOption::Quaternery(900.0);
-
-    pub const INFO_50: ColorOption = ColorOption::Info(50.0);
-    pub const INFO_100: ColorOption = ColorOption::Info(100.0);
-    pub const INFO_200: ColorOption = ColorOption::Info(200.0);
-    pub const INFO_300: ColorOption = ColorOption::Info(300.0);
-    pub const INFO_400: ColorOption = ColorOption::Info(400.0);
-    pub const INFO_500: ColorOption = ColorOption::Info(500.0);
-    pub const INFO_600: ColorOption = ColorOption::Info(600.0);
-    pub const INFO_700: ColorOption = ColorOption::Info(700.0);
-    pub const INFO_800: ColorOption = ColorOption::Info(800.0);
-    pub const INFO_900: ColorOption = ColorOption::Info(900.0);
-
-    pub const WARNING_50: ColorOption = ColorOption::Warning(50.0);
-    pub const WARNING_100: ColorOption = ColorOption::Warning(100.0);
-    pub const WARNING_200: ColorOption = ColorOption::Warning(200.0);
-    pub const WARNING_300: ColorOption = ColorOption::Warning(300.0);
-    pub const WARNING_400: ColorOption = ColorOption::Warning(400.0);
-    pub const WARNING_500: ColorOption = ColorOption::Warning(500.0);
-    pub const WARNING_600: ColorOption = ColorOption::Warning(600.0);
-    pub const WARNING_700: ColorOption = ColorOption::Warning(700.0);
-    pub const WARNING_800: ColorOption = ColorOption::Warning(800.0);
-    pub const WARNING_900: ColorOption = ColorOption::Warning(900.0);
-
-    pub const SUCCESS_50: ColorOption = ColorOption::Success(50.0);
-    pub const SUCCESS_100: ColorOption = ColorOption::Success(100.0);
-    pub const SUCCESS_200: ColorOption = ColorOption::Success(200.0);
-    pub const SUCCESS_300: ColorOption = ColorOption::Success(300.0);
-    pub const SUCCESS_400: ColorOption = ColorOption::Success(400.0);
-    pub const SUCCESS_500: ColorOption = ColorOption::Success(500.0);
-    pub const SUCCESS_600: ColorOption = ColorOption::Success(600.0);
-    pub const SUCCESS_700: ColorOption = ColorOption::Success(700.0);
-    pub const SUCCESS_800: ColorOption = ColorOption::Success(800.0);
-    pub const SUCCESS_900: ColorOption = ColorOption::Success(900.0);
-
-    pub const ERROR_50: ColorOption = ColorOption::Error(50.0);
-    pub const ERROR_100: ColorOption = ColorOption::Error(100.0);
-    pub const ERROR_200: ColorOption = ColorOption::Error(200.0);
-    pub const ERROR_300: ColorOption = ColorOption::Error(300.0);
-    pub const ERROR_400: ColorOption = ColorOption::Error(400.0);
-    pub const ERROR_500: ColorOption = ColorOption::Error(500.0);
-    pub const ERROR_600: ColorOption = ColorOption::Error(600.0);
-    pub const ERROR_700: ColorOption = ColorOption::Error(700.0);
-    pub const ERROR_800: ColorOption = ColorOption::Error(800.0);
-    pub const ERROR_900: ColorOption = ColorOption::Error(900.0);
-
-    pub const SURFACE_50: ColorOption = ColorOption::Surface(50.0);
-    pub const SURFACE_100: ColorOption = ColorOption::Surface(100.0);
-    pub const SURFACE_200: ColorOption = ColorOption::Surface(200.0);
-    pub const SURFACE_300: ColorOption = ColorOption::Surface(300.0);
-    pub const SURFACE_400: ColorOption = ColorOption::Surface(400.0);
-    pub const SURFACE_500: ColorOption = ColorOption::Surface(500.0);
-    pub const SURFACE_600: ColorOption = ColorOption::Surface(600.0);
-    pub const SURFACE_700: ColorOption = ColorOption::Surface(700.0);
-    pub const SURFACE_800: ColorOption = ColorOption::Surface(800.0);
-    pub const SURFACE_900: ColorOption = ColorOption::Surface(900.0);
-
-    pub const NEUTRAL_50: ColorOption = ColorOption::Neutral(50.0);
-    pub const NEUTRAL_100: ColorOption = ColorOption::Neutral(100.0);
-    pub const NEUTRAL_200: ColorOption = ColorOption::Neutral(200.0);
-    pub const NEUTRAL_300: ColorOption = ColorOption::Neutral(300.0);
-    pub const NEUTRAL_400: ColorOption = ColorOption::Neutral(400.0);
-    pub const NEUTRAL_500: ColorOption = ColorOption::Neutral(500.0);
-    pub const NEUTRAL_600: ColorOption = ColorOption::Neutral(600.0);
-    pub const NEUTRAL_700: ColorOption = ColorOption::Neutral(700.0);
-    pub const NEUTRAL_800: ColorOption = ColorOption::Neutral(800.0);
-    pub const NEUTRAL_900: ColorOption = ColorOption::Neutral(900.0);
-}
