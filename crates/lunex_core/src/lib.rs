@@ -4,5 +4,5 @@ pub use amount::*;
 
 pub mod prelude {
     pub use super::Amount;
-    pub use super::ToAmount;
+    //pub use super::ToAmount;
 }

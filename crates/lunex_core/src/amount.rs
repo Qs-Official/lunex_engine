@@ -1,42 +1,29 @@
 use std::ops::Add;
+use std::ops::AddAssign;
+
 use bevy::prelude::*;
 
 // # TEST
 #[cfg(test)]
 mod test {
-    use super::{Amount, ToAmount, ToAmountArray};
-    use super::Vec2;
+    use super::{Abs, Prc, Rem, Amount};
     #[test]
-    fn simple () {
-        let val = 1.0.to_em() + 2.0.to_rt() + 3.0.to_rt();
-        assert_eq!(Amount::RemPrc(1.0, 5.0), val);
+    fn all () {
 
-        assert_eq!(Amount::Rem(1.0), Amount::Rem(2.0).set(Amount::Rem(1.0)));
-        assert_eq!(Amount::Prc(1.0), Amount::Prc(2.0).set(Amount::Prc(1.0)));
-        assert_eq!(Amount::RemPrc(1.0, 2.0), Amount::Rem(1.0).set(Amount::Prc(2.0)));
-        assert_eq!(Amount::RemPrc(1.0, 2.0), Amount::Prc(2.0).set(Amount::Rem(1.0)));
+        assert_eq!(Amount::new().with_abs(Abs(5)) + Abs(5) + Abs(5), Amount::new().with_abs(Abs(15)));
+        assert_eq!(Amount::new().with_prc(Prc(5)) + Prc(5) + Prc(5), Amount::new().with_prc(Prc(15)));
+        assert_eq!(Amount::new().with_rem(Rem(5)) + Rem(5) + Rem(5), Amount::new().with_rem(Rem(15)));
 
-        let val = Vec2::splat(1.0).to_em() + Vec2::splat(2.0).to_rt() + Vec2::splat(3.0).to_rt();
-        assert_eq!([Vec2::splat(1.0), Vec2::splat(5.0)].to_emrt(), val);
+        let amount = Abs(5) + Prc(10) + Rem(15); //??? now working another ADD
+        assert_eq!(amount, Amount::new().with_abs(Abs(5)).with_prc(Prc(10)).with_rem(Rem(15)));
 
-        assert_eq!(Vec2::splat(1.0).to_em(), Vec2::splat(2.0).to_em().set(Vec2::splat(1.0).to_em()));
-        assert_eq!(Vec2::splat(1.0).to_rt(), Vec2::splat(2.0).to_rt().set(Vec2::splat(1.0).to_rt()));
-        assert_eq!([Vec2::splat(1.0), Vec2::splat(2.0)].to_emrt(), Vec2::splat(1.0).to_em().set(Vec2::splat(2.0).to_rt()));
-        assert_eq!([Vec2::splat(1.0), Vec2::splat(2.0)].to_emrt(), Vec2::splat(2.0).to_rt().set(Vec2::splat(1.0).to_em()));
+        let mut new_amount = amount + Abs(20);
+
+        new_amount += Prc(20);
+        new_amount += amount;
+
+        assert_eq!(new_amount, Amount::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
     }
-    #[test]
-    fn complex () {
-
-        let val1 = [Vec2::new(1., 2.), Vec2::new(7., 3.)].to_emrt();
-        let val2 = [Vec2::new(4., 2.), Vec2::new(5., 3.)].to_emrt();
-        assert_eq!(val1, val2.set_x([1_f32, 7_f32].to_emrt()));
-
-        let val1 = [Vec2::new(1., 2.), Vec2::new(1., 3.)].to_emrt();
-        let val2 = [Vec2::new(1., 4.), Vec2::new(1., 5.)].to_emrt();
-        assert_eq!(val1, val2.set_y([2_f32, 3_f32].to_emrt()));
-
-    }
-
 }
 
 
@@ -44,16 +31,102 @@ mod test {
 
 /// ## Absolute
 /// Represents non-changing unit. Scale can vary but by default `1Abs = 1Px`.
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Abs<T>(T);
 /// ## Percentage
 /// `0% to 100%`. Overflow allowed.
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Prc<T>(T);
 /// ## Rem
 /// Size of symbol `M` which is `16px` with `font size 16px` and so on.
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rem<T>(T);
 
+// # Impl `Abs(T) -> Amount(T)`
+impl <T> Into<Amount<T>> for Abs<T> {
+    fn into(self) -> Amount<T> {
+        Amount::new().with_abs(self)
+    }
+}
+// # Impl `Prc(T) -> Amount(T)`
+impl <T> Into<Amount<T>> for Prc<T> {
+    fn into(self) -> Amount<T> {
+        Amount::new().with_prc(self)
+    }
+}
+// # Impl `Rem(T) -> Amount(T)`
+impl <T> Into<Amount<T>> for Rem<T> {
+    fn into(self) -> Amount<T> {
+        Amount::new().with_rem(self)
+    }
+}
 
 
+// # Impl `Abs(T) + Abs(T)`
+impl<T: Add<Output = T>> Add for Abs<T> {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+        Abs(self.0 + other.0)
+    }
+}
+// # Impl `Abs(T) + Prc(T)`
+impl<T: Add<Output = T>> Add<Prc<T>> for Abs<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Prc<T>) -> Self::Output {
+        Amount::new().with_abs(self).with_prc(other)
+    }
+}
+// # Impl `Abs(T) + Rem(T)`
+impl<T: Add<Output = T>> Add<Rem<T>> for Abs<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Rem<T>) -> Self::Output {
+        Amount::new().with_abs(self).with_rem(other)
+    }
+}
+
+// # Impl `Prc(T) + Prc(T)`
+impl<T: Add<Output = T>> Add for Prc<T> {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+        Prc(self.0 + other.0)
+    }
+}
+// # Impl `Prc(T) + Abs(T)`
+impl<T: Add<Output = T>> Add<Abs<T>> for Prc<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Abs<T>) -> Self::Output {
+        Amount::new().with_prc(self).with_abs(other)
+    }
+}
+// # Impl `Prc(T) + Rem(T)`
+impl<T: Add<Output = T>> Add<Rem<T>> for Prc<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Rem<T>) -> Self::Output {
+        Amount::new().with_prc(self).with_rem(other)
+    }
+}
+
+// # Impl `Rem(T) + Rem(T)`
+impl<T: Add<Output = T>> Add for Rem<T> {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+        Rem(self.0 + other.0)
+    }
+}
+// # Impl `Rem(T) + Abs(T)`
+impl<T: Add<Output = T>> Add<Abs<T>> for Rem<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Abs<T>) -> Self::Output {
+        Amount::new().with_rem(self).with_abs(other)
+    }
+}
+// # Impl `Rem(T) + Prc(T)`
+impl<T: Add<Output = T>> Add<Prc<T>> for Rem<T> {
+    type Output = Amount<T>;
+    fn add(self, other: Prc<T>) -> Self::Output {
+        Amount::new().with_rem(self).with_prc(other)
+    }
+}
 
 
 
@@ -72,7 +145,7 @@ pub struct Rem<T>(T);
 /// let size: Amount<f32> = Amount::RemPrc(12.0, 5.0);
 /// let size: Amount<f32> = 12.0.to_em() + 5.0.to_rt();
 /// ```
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Amount<T> {
     /// ## Absolute
     /// Represents non-changing unit. Scale can vary but by default `1Abs = 1Px`.
@@ -84,15 +157,149 @@ pub struct Amount<T> {
     /// Size of symbol `M` which is `16px` with `font size 16px` and so on.
     rem: Option<T>,
 }
-// Impl add for Amount
-// impl add for Abs, Prc, Rem so `Abs(10.0) + Rem(5) = Amount`
+impl <T> Amount<T> {
+    /// # New
+    /// Creates new empty amount
+    pub fn new() -> Self {
+        Amount {
+            abs: None,
+            prc: None,
+            rem: None,
+        }
+    }
+    pub fn with_abs(mut self, abs: Abs<T>) -> Self {
+        self.abs = Some(abs.0);
+        self
+    }
+    pub fn with_prc(mut self, prc: Prc<T>) -> Self {
+        self.prc = Some(prc.0);
+        self
+    }
+    pub fn with_rem(mut self, rem: Rem<T>) -> Self {
+        self.rem = Some(rem.0);
+        self
+    }
 
-// Just default implementation
-impl <T: Default> Default for Amount<T> {
-    fn default() -> Self {
-        Amount::Rem(T::default())
+    pub fn set_abs(&mut self, abs: Abs<T>) {
+        self.abs = Some(abs.0);
+    }
+    pub fn set_prc(&mut self, prc: Prc<T>) {
+        self.prc = Some(prc.0);
+    }
+    pub fn set_rem(&mut self, rem: Rem<T>) {
+        self.rem = Some(rem.0);
     }
 }
+
+// # Impl `Amount(T) + Amount(T)`
+impl<T: Add<Output = T> + Add> Add for Amount<T> {
+    type Output = Self;
+    fn add(self, other: Self) -> Self::Output {
+
+        let mut output = Amount::new();
+
+        if let Some(v1) = self.abs {
+            match other.abs {
+                Some(v2) => output.set_abs(Abs(v1 + v2)),
+                None => output.set_abs(Abs(v1)),
+            }
+        }
+
+        if let Some(v1) = self.prc {
+            match other.prc {
+                Some(v2) => output.set_prc(Prc(v1 + v2)),
+                None => output.set_prc(Prc(v1)),
+            }
+        }
+
+        if let Some(v1) = self.rem {
+            match other.rem {
+                Some(v2) => output.set_rem(Rem(v1 + v2)),
+                None => output.set_rem(Rem(v1)),
+            }
+        }
+        
+        output
+    }
+}
+// # Impl `Amount(T) + Abs(T)`
+impl<T: Add<Output = T> + Add> Add<Abs<T>> for Amount<T> {
+    type Output = Self;
+    fn add(mut self, other: Abs<T>) -> Self::Output {
+        match self.abs {
+            Some(v) => {
+                self.abs = Some(v + other.0);
+                self
+            },
+            None => self.with_abs(other),
+        }
+    }
+}
+// # Impl `Amount(T) + Prc(T)`
+impl<T: Add<Output = T> + Add> Add<Prc<T>> for Amount<T> {
+    type Output = Self;
+    fn add(mut self, other: Prc<T>) -> Self::Output {
+        match self.prc {
+            Some(v) => {
+                self.prc = Some(v + other.0);
+                self
+            },
+            None => self.with_prc(other),
+        }
+    }
+}
+// # Impl `Amount(T) + Rem(T)`
+impl<T: Add<Output = T> + Add> Add<Rem<T>> for Amount<T> {
+    type Output = Self;
+    fn add(mut self, other: Rem<T>) -> Self::Output {
+        match self.rem {
+            Some(v) => {
+                self.rem = Some(v + other.0);
+                self
+            },
+            None => self.with_rem(other),
+        }
+    }
+}
+
+// # Impl `Amount(T) += Amount(T)`
+impl<T: Add<Output = T> + Copy> AddAssign for Amount<T> {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs
+    }
+}
+// # Impl `Amount(T) += Abs(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for Amount<T> {
+    fn add_assign(&mut self, rhs: Abs<T>) {
+        match self.abs {
+            Some(v) => self.set_abs(Abs(v + rhs.0)),
+            None => self.set_abs(rhs),
+        }
+    }
+}
+// # Impl `Amount(T) += Prc(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for Amount<T> {
+    fn add_assign(&mut self, rhs: Prc<T>) {
+        match self.prc {
+            Some(v) => self.set_prc(Prc(v + rhs.0)),
+            None => self.set_prc(rhs),
+        }
+    }
+}
+// # Impl `Amount(T) += Rem(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for Amount<T> {
+    fn add_assign(&mut self, rhs: Rem<T>) {
+        match self.rem {
+            Some(v) => self.set_rem(Rem(v + rhs.0)),
+            None => self.set_rem(rhs),
+        }
+    }
+}
+
+
+
+/*
+
 
 // # IMPLEMENTS EVALUATE
 // The code that actually computes the final measurment
@@ -513,4 +720,4 @@ impl ToAmountArray<Vec3> for [Vec3; 2] {
     fn to_emrt(self) -> Amount<Vec3> {
         Amount::RemPrc(self[0], self[1])
     }
-}
+}*/
