@@ -1,5 +1,7 @@
 use std::ops::Add;
 use std::ops::AddAssign;
+use std::ops::Mul;  // For * f32
+use std::ops::MulAssign;
 use bevy::prelude::*;
 
 
@@ -61,19 +63,26 @@ pub struct Prc<T>(pub T);
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rem<T>(pub T);
 
-/// ## Widget measurement
+/// # Node Size
 /// A struct holding size measurement data used in UI.
 /// It can be constructed from the following units:
 /// * [Abs]
 /// * [Prc]
 /// * [Rem]
+/// 
+/// size 1 = 0.25rem = 4px
+/// ### Support
+/// First class implementations for (T)
+/// * [f32]
+/// * [Vec2]
+/// * [Vec3]
+/// * [Vec4]
 /// ### Example
 /// ```
 /// # use lunex_core::{Measurement, Abs, Rem};
 /// let a: Measurement<f32> = Abs(4.0) + Rem(16.0); // -> 4px + (16rem == 256px with font size 16px)
 /// let b: Measurement<f32> = Prc(50.0).into();   // -> 50%
 /// ```
-/// size 1 = 0.25rem = 4px
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Measurement<T> {
     /// ## Absolute
@@ -92,15 +101,6 @@ pub struct Measurement<T> {
 // #=== GENERIC IMPLEMENTATIONS ===#
 
 impl <T> Measurement<T> {
-    /// ## New
-    /// Creates new empty measurement
-    pub fn new() -> Self {
-        Measurement {
-            abs: None,
-            prc: None,
-            rem: None,
-        }
-    }
     /// ## With
     /// Replaces the value of appropriate units with the new value.
     pub fn with(mut self, other: Measurement<T>) -> Self {
@@ -345,9 +345,11 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for Measurement<T> {
 // #================================#
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
+/// ## Measurement Evaluate
+/// Trait for implementing evaluation logic for (T)
 pub trait MeasurementEvaluate<T> {
     /// ## Evaluate
-    /// Evaluates the measurement 
+    /// Evaluates the measurement for (T)
     fn evaluate(&self, parent_size: T, font_size: T) -> T;
 }
 
@@ -534,17 +536,84 @@ impl Measurement<Vec4> {
 // #================================#
 // #=== CONSTANT IMPLEMENTATIONS ===#
 
-impl Measurement<f32> {
-    pub const S1F:Measurement<f32> = Rem(0.25).to_measurement();
-    pub const S2F:Measurement<f32> = Rem(0.50).to_measurement();
-    pub const S3F:Measurement<f32> = Rem(0.75).to_measurement();
-}
-impl Rem<f32> {
-    const fn to_measurement(self) -> Measurement<f32> {
+impl <T> Measurement<T> {
+    /// ## New
+    /// Creates new empty measurement
+    pub const fn new() -> Self {
         Measurement {
             abs: None,
             prc: None,
-            rem: Some(self.0),
+            rem: None,
         }
     }
+    /// ## From absolute
+    /// Creates new measurement
+    pub const fn from_abs(abs: T) -> Measurement<T> {
+        Measurement {
+            abs: Some(abs),
+            prc: None,
+            rem: None,
+        }
+    }
+    /// ## From percentage
+    /// Creates new measurement
+    pub const fn from_prc(abs: T) -> Measurement<T> {
+        Measurement {
+            abs: None,
+            prc: Some(abs),
+            rem: None,
+        }
+    }
+    /// ## From rem
+    /// Creates new measurement
+    pub const fn from_rem(abs: T) -> Measurement<T> {
+        Measurement {
+            abs: None,
+            prc: None,
+            rem: Some(abs),
+        }
+    }
+
+    /// ## From absolute & percentage
+    /// Creates new measurement
+    pub const fn from_abs_prc(abs: T, prc: T) -> Measurement<T> {
+        Measurement {
+            abs: Some(abs),
+            prc: Some(prc),
+            rem: None,
+        }
+    }
+    /// ## From absolute & rem
+    /// Creates new measurement
+    pub const fn from_abs_rem(abs: T, rem: T) -> Measurement<T> {
+        Measurement {
+            abs: Some(abs),
+            prc: None,
+            rem: Some(rem),
+        }
+    }
+    /// ## From percentage & rem
+    /// Creates new measurement
+    pub const fn from_prc_rem(prc: T, rem: T) -> Measurement<T> {
+        Measurement {
+            abs: None,
+            prc: Some(prc),
+            rem: Some(rem),
+        }
+    }
+    /// ## From absolute & percentage & rem
+    /// Creates new measurement
+    pub const fn from_abs_prc_rem(abs: T, prc: T, rem: T) -> Measurement<T> {
+        Measurement {
+            abs: Some(abs),
+            prc: Some(prc),
+            rem: Some(rem),
+        }
+    }
+}
+
+impl Measurement<f32> {
+    pub const S1:Measurement<f32> = Measurement::from_rem(1.0 * 0.25);
+    pub const S2:Measurement<f32> = Measurement::from_rem(2.0);
+    pub const S3:Measurement<f32> = Measurement::from_rem(3.0);
 }
