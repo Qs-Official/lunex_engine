@@ -2,7 +2,7 @@ use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Mul;  // For * f32
 use std::ops::MulAssign;
-use bevy::prelude::*;
+use bevy::prelude::{Vec2, Vec3, Vec4};
 
 
 // #====================#
@@ -345,6 +345,67 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for Measurement<T> {
 // #================================#
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
+// # Impl from_standard TailwindCSS scale
+impl Measurement<f32> {
+    /// ## From Standard
+    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// * `0.5 == 0.125rem`
+    /// * `1 == 0.25rem`
+    /// * `2 == 0.5rem`
+    /// * `3 == 0.75rem`
+    /// * `4 == 1rem`
+    /// * _and so on..._
+    /// 
+    pub fn from_standard(size: f32) -> Measurement<f32> {
+        Rem(size * 0.25).into()
+    }
+}
+// # Impl from_standard TailwindCSS scale
+impl Measurement<Vec2> {
+    /// ## From Standard
+    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// * `0.5 == 0.125rem`
+    /// * `1 == 0.25rem`
+    /// * `2 == 0.5rem`
+    /// * `3 == 0.75rem`
+    /// * `4 == 1rem`
+    /// * _and so on..._
+    /// 
+    pub fn from_standard(size: impl Into<Vec2>) -> Measurement<Vec2> {
+        Rem(size.into() * 0.25).into()
+    }
+}
+// # Impl from_standard TailwindCSS scale
+impl Measurement<Vec3> {
+    /// ## From Standard
+    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// * `0.5 == 0.125rem`
+    /// * `1 == 0.25rem`
+    /// * `2 == 0.5rem`
+    /// * `3 == 0.75rem`
+    /// * `4 == 1rem`
+    /// * _and so on..._
+    /// 
+    pub fn from_standard(size: impl Into<Vec3>) -> Measurement<Vec3> {
+        Rem(size.into() * 0.25).into()
+    }
+}
+// # Impl from_standard TailwindCSS scale
+impl Measurement<Vec4> {
+    /// ## From Standard
+    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// * `0.5 == 0.125rem`
+    /// * `1 == 0.25rem`
+    /// * `2 == 0.5rem`
+    /// * `3 == 0.75rem`
+    /// * `4 == 1rem`
+    /// * _and so on..._
+    /// 
+    pub fn from_standard(size: impl Into<Vec4>) -> Measurement<Vec4> {
+        Rem(size.into() * 0.25).into()
+    }
+}
+
 /// ## Measurement Evaluate
 /// Trait for implementing evaluation logic for (T)
 pub trait MeasurementEvaluate<T> {
@@ -557,23 +618,22 @@ impl <T> Measurement<T> {
     }
     /// ## From percentage
     /// Creates new measurement
-    pub const fn from_prc(abs: T) -> Measurement<T> {
+    pub const fn from_prc(prc: T) -> Measurement<T> {
         Measurement {
             abs: None,
-            prc: Some(abs),
+            prc: Some(prc),
             rem: None,
         }
     }
     /// ## From rem
     /// Creates new measurement
-    pub const fn from_rem(abs: T) -> Measurement<T> {
+    pub const fn from_rem(rem: T) -> Measurement<T> {
         Measurement {
             abs: None,
             prc: None,
-            rem: Some(abs),
+            rem: Some(rem),
         }
     }
-
     /// ## From absolute & percentage
     /// Creates new measurement
     pub const fn from_abs_prc(abs: T, prc: T) -> Measurement<T> {
@@ -610,10 +670,4 @@ impl <T> Measurement<T> {
             rem: Some(rem),
         }
     }
-}
-
-impl Measurement<f32> {
-    pub const S1:Measurement<f32> = Measurement::from_rem(1.0 * 0.25);
-    pub const S2:Measurement<f32> = Measurement::from_rem(2.0);
-    pub const S3:Measurement<f32> = Measurement::from_rem(3.0);
 }

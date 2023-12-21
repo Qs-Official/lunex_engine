@@ -66,31 +66,31 @@ pub enum Layout {
 
 
 pub struct Size(Measurement<f32>);
-/* 
+
 impl Size {
     /// ## Extra-small
-    pub const XS: Size = Size(Measurement::Rem(8.0));
+    pub const XS: Size = Size(Measurement::from_rem(8.0));
     /// ## Small
-    pub const SM: Size = Size(Measurement::Rem(8.0));
+    pub const SM: Size = Size(Measurement::from_rem(8.0));
     /// ## Medium
-    pub const MD: Size = Size(Measurement::Rem(8.0));
+    pub const MD: Size = Size(Measurement::from_rem(8.0));
     /// ## Large
-    pub const LG: Size = Size(Measurement::Rem(8.0));
+    pub const LG: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large
-    pub const XL: Size = Size(Measurement::Rem(8.0));
+    pub const XL: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 2
-    pub const XL2: Size = Size(Measurement::Rem(8.0));
+    pub const XL2: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 3
-    pub const XL3: Size = Size(Measurement::Rem(8.0));
+    pub const XL3: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 4
-    pub const XL4: Size = Size(Measurement::Rem(8.0));
+    pub const XL4: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 5
-    pub const XL5: Size = Size(Measurement::Rem(8.0));
+    pub const XL5: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 6
-    pub const XL6: Size = Size(Measurement::Rem(8.0));
+    pub const XL6: Size = Size(Measurement::from_rem(8.0));
     /// ## Extra-large 7
-    pub const XL7: Size = Size(Measurement::Rem(8.0));
-}*/
+    pub const XL7: Size = Size(Measurement::from_rem(8.0));
+}
 
 
 pub enum Sizing2 {
@@ -121,9 +121,10 @@ pub mod declarative {
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Window {
         /// ## Position
-        /// position of the top-left corner
+        /// Position of the top-left corner.
         pub pos : Measurement<Vec2>,
-        /// ##
+        /// ## Size
+        /// Size of the container.
         pub size: Measurement<Vec2>,
     }
     impl Window {
