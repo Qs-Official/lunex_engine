@@ -1,4 +1,4 @@
-use lunex_core::Measurement;
+use lunex_core::Size;
 
 pub mod prelude {
     pub use super::lui;
@@ -65,32 +65,6 @@ pub enum Layout {
 }
 
 
-pub struct Size(Measurement<f32>);
-
-impl Size {
-    /// ## Extra-small
-    pub const XS: Size = Size(Measurement::from_rem(8.0));
-    /// ## Small
-    pub const SM: Size = Size(Measurement::from_rem(8.0));
-    /// ## Medium
-    pub const MD: Size = Size(Measurement::from_rem(8.0));
-    /// ## Large
-    pub const LG: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large
-    pub const XL: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 2
-    pub const XL2: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 3
-    pub const XL3: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 4
-    pub const XL4: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 5
-    pub const XL5: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 6
-    pub const XL6: Size = Size(Measurement::from_rem(8.0));
-    /// ## Extra-large 7
-    pub const XL7: Size = Size(Measurement::from_rem(8.0));
-}
 
 
 pub enum Sizing2 {
@@ -101,7 +75,7 @@ pub enum Sizing2 {
 pub enum Sizing {
     Full,
     Exact(Size),
-    //Custom(Measurement<Vec2>)
+    //Custom(NodeSize<Vec2>)
     //Custom(Rem)
 }
 
@@ -122,56 +96,56 @@ pub mod declarative {
     pub struct Window {
         /// ## Position
         /// Position of the top-left corner.
-        pub pos : Measurement<Vec2>,
+        pub pos : NodeSize<Vec2>,
         /// ## Size
         /// Size of the container.
-        pub size: Measurement<Vec2>,
+        pub size: NodeSize<Vec2>,
     }
     impl Window {
         /// # Full Window
         /// Covers 100% of the parenting container
-        pub const FULL: Window = Window { pos : Measurement::from_prc(Vec2::ZERO), size: Measurement::from_prc(Vec2::splat(100.0)) };
+        pub const FULL: Window = Window { pos : NodeSize::from_prc(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
         /// # New
         /// Creates new Window container
         pub const fn new() -> Self {
             Window {
-                pos : Measurement::from_prc(Vec2::ZERO),
-                size: Measurement::from_prc(Vec2::ZERO),
+                pos : NodeSize::from_prc(Vec2::ZERO),
+                size: NodeSize::from_prc(Vec2::ZERO),
             }
         }
         /// # With Pos
         /// Modifies the container with the new position
-        pub fn with_pos(mut self, pos: Measurement<Vec2>) -> Self {
+        pub fn with_pos(mut self, pos: NodeSize<Vec2>) -> Self {
             self.pos = pos;
             self
         }
         /// # With X
         /// Modifies the container with the new x
-        pub fn with_x(mut self, width: Measurement<f32>) -> Self {
+        pub fn with_x(mut self, width: NodeSize<f32>) -> Self {
             self.pos.set_x(width);
             self
         }
         /// # With Y
         /// Modifies the container with the new y
-        pub fn with_y(mut self, height: Measurement<f32>) -> Self {
+        pub fn with_y(mut self, height: NodeSize<f32>) -> Self {
             self.pos.set_y(height);
             self
         }
         /// # With Size
         /// Modifies the container with the new size
-        pub fn with_size(mut self, size: Measurement<Vec2>) -> Self {
+        pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
             self.size = size;
             self
         }
         /// # With Width
         /// Modifies the container with the new width
-        pub fn with_width(mut self, width: Measurement<f32>) -> Self {
+        pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
             self.size.set_x(width);
             self
         }
         /// # With Height
         /// Modifies the container with the new height
-        pub fn with_height(mut self, height: Measurement<f32>) -> Self {
+        pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
             self.size.set_y(height);
             self
         }
@@ -185,7 +159,7 @@ pub mod declarative {
     /// ## Solid Layout
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Solid {
-        pub size: Measurement<Vec2>,
+        pub size: NodeSize<Vec2>,
         pub align_x: Align,
         pub align_y: Align
     }
@@ -201,19 +175,19 @@ pub mod declarative {
         }
         /// # With Size
         /// Modifies the container with the new size
-        pub fn with_size(mut self, size: Measurement<Vec2>) -> Self {
+        pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
             self.size = size;
             self
         }
         /// # With Width
         /// Modifies the container with the new width
-        pub fn with_width(mut self, width: Measurement<f32>) -> Self {
+        pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
             self.size.set_x(width);
             self
         }
         /// # With Height
         /// Modifies the container with the new height
-        pub fn with_height(mut self, height: Measurement<f32>) -> Self {
+        pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
             self.size.set_y(height);
             self
         }

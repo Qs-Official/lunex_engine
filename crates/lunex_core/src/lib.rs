@@ -4,5 +4,6 @@ pub use size::*;
 
 pub mod prelude {
     pub use super::{Abs, Prc, Rem};
-    pub use super::Measurement;
+    pub use super::NodeSize;
+    pub use super::Size;
 }

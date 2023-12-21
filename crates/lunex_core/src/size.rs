@@ -10,24 +10,25 @@ use bevy::prelude::{Vec2, Vec3, Vec4};
 
 #[cfg(test)]
 mod test {
-    use super::{Abs, Prc, Rem, Measurement};
+    use super::{Abs, Prc, Rem, Size, NodeSize};
     #[test]
     fn all () {
-        assert_eq!(Measurement::new().with_abs(Abs(5)) + Abs(5) + Abs(5), Measurement::new().with_abs(Abs(15)));
-        assert_eq!(Measurement::new().with_prc(Prc(5)) + Prc(5) + Prc(5), Measurement::new().with_prc(Prc(15)));
-        assert_eq!(Measurement::new().with_rem(Rem(5)) + Rem(5) + Rem(5), Measurement::new().with_rem(Rem(15)));
+        assert_eq!(NodeSize::new().with_abs(Abs(5)) + Abs(5) + Abs(5), NodeSize::new().with_abs(Abs(15)));
+        assert_eq!(NodeSize::new().with_prc(Prc(5)) + Prc(5) + Prc(5), NodeSize::new().with_prc(Prc(15)));
+        assert_eq!(NodeSize::new().with_rem(Rem(5)) + Rem(5) + Rem(5), NodeSize::new().with_rem(Rem(15)));
 
         let amount = Abs(5) + Prc(10) + Rem(15);
-        assert_eq!(amount, Measurement::new().with_abs(Abs(5)).with_prc(Prc(10)).with_rem(Rem(15)));
+        assert_eq!(amount, NodeSize::new().with_abs(Abs(5)).with_prc(Prc(10)).with_rem(Rem(15)));
 
         let mut new_amount = amount + Abs(20);
-        assert_eq!(new_amount, Measurement::new().with_abs(Abs(25)).with_prc(Prc(10)).with_rem(Rem(15)));
+        assert_eq!(new_amount, NodeSize::new().with_abs(Abs(25)).with_prc(Prc(10)).with_rem(Rem(15)));
 
         new_amount += Prc(20);
-        assert_eq!(new_amount, Measurement::new().with_abs(Abs(25)).with_prc(Prc(30)).with_rem(Rem(15)));
+        assert_eq!(new_amount, NodeSize::new().with_abs(Abs(25)).with_prc(Prc(30)).with_rem(Rem(15)));
 
         new_amount += amount;
-        assert_eq!(new_amount, Measurement::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
+        assert_eq!(new_amount, NodeSize::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
+        let _ = Size::SM;
     }
 }
 
@@ -64,7 +65,7 @@ pub struct Prc<T>(pub T);
 pub struct Rem<T>(pub T);
 
 /// # Node Size
-/// A struct holding size measurement data used in UI.
+/// A struct holding size NodeSize data used in UI.
 /// It can be constructed from the following units:
 /// * [Abs]
 /// * [Prc]
@@ -79,12 +80,12 @@ pub struct Rem<T>(pub T);
 /// * [Vec4]
 /// ### Example
 /// ```
-/// # use lunex_core::{Measurement, Abs, Rem};
-/// let a: Measurement<f32> = Abs(4.0) + Rem(16.0); // -> 4px + (16rem == 256px with font size 16px)
-/// let b: Measurement<f32> = Prc(50.0).into();   // -> 50%
+/// # use lunex_core::{NodeSize, Abs, Rem};
+/// let a: NodeSize<f32> = Abs(4.0) + Rem(16.0); // -> 4px + (16rem == 256px with font size 16px)
+/// let b: NodeSize<f32> = Prc(50.0).into();   // -> 50%
 /// ```
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub struct Measurement<T> {
+pub struct NodeSize<T> {
     /// ## Absolute
     /// Represents non-changing unit. Scale can vary but by default `1Abs = 1Px`.
     pub abs: Option<T>,
@@ -100,10 +101,10 @@ pub struct Measurement<T> {
 // #===============================#
 // #=== GENERIC IMPLEMENTATIONS ===#
 
-impl <T> Measurement<T> {
+impl <T> NodeSize<T> {
     /// ## With
     /// Replaces the value of appropriate units with the new value.
-    pub fn with(mut self, other: Measurement<T>) -> Self {
+    pub fn with(mut self, other: NodeSize<T>) -> Self {
         if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { *v1 = v2 } else { self.abs = Some(v2) } }
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { *v1 = v2 } else { self.prc = Some(v2) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { *v1 = v2 } else { self.rem = Some(v2) } }
@@ -129,7 +130,7 @@ impl <T> Measurement<T> {
     }
     /// ## Set
     /// Sets the value of appropriate units to the new value.
-    pub fn set(&mut self, other: Measurement<T>) {
+    pub fn set(&mut self, other: NodeSize<T>) {
         if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { *v1 = v2 } else { self.abs = Some(v2) } }
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { *v1 = v2 } else { self.prc = Some(v2) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { *v1 = v2 } else { self.rem = Some(v2) } }
@@ -151,22 +152,22 @@ impl <T> Measurement<T> {
     }
 }
 
-// # Impl into `Abs(T) -> Measurement(T)`
-impl <T> Into<Measurement<T>> for Abs<T> {
-    fn into(self) -> Measurement<T> {
-        Measurement::new().with_abs(self)
+// # Impl into `Abs(T) -> NodeSize(T)`
+impl <T> Into<NodeSize<T>> for Abs<T> {
+    fn into(self) -> NodeSize<T> {
+        NodeSize::new().with_abs(self)
     }
 }
-// # Impl into `Prc(T) -> Measurement(T)`
-impl <T> Into<Measurement<T>> for Prc<T> {
-    fn into(self) -> Measurement<T> {
-        Measurement::new().with_prc(self)
+// # Impl into `Prc(T) -> NodeSize(T)`
+impl <T> Into<NodeSize<T>> for Prc<T> {
+    fn into(self) -> NodeSize<T> {
+        NodeSize::new().with_prc(self)
     }
 }
-// # Impl into `Rem(T) -> Measurement(T)`
-impl <T> Into<Measurement<T>> for Rem<T> {
-    fn into(self) -> Measurement<T> {
-        Measurement::new().with_rem(self)
+// # Impl into `Rem(T) -> NodeSize(T)`
+impl <T> Into<NodeSize<T>> for Rem<T> {
+    fn into(self) -> NodeSize<T> {
+        NodeSize::new().with_rem(self)
     }
 }
 
@@ -179,16 +180,16 @@ impl<T: Add<Output = T>> Add for Abs<T> {
 }
 // # Impl `Abs(T) + Prc(T)`
 impl<T: Add<Output = T>> Add<Prc<T>> for Abs<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Prc<T>) -> Self::Output {
-        Measurement::new().with_abs(self).with_prc(other)
+        NodeSize::new().with_abs(self).with_prc(other)
     }
 }
 // # Impl `Abs(T) + Rem(T)`
 impl<T: Add<Output = T>> Add<Rem<T>> for Abs<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Rem<T>) -> Self::Output {
-        Measurement::new().with_abs(self).with_rem(other)
+        NodeSize::new().with_abs(self).with_rem(other)
     }
 }
 
@@ -201,16 +202,16 @@ impl<T: Add<Output = T>> Add for Prc<T> {
 }
 // # Impl `Prc(T) + Abs(T)`
 impl<T: Add<Output = T>> Add<Abs<T>> for Prc<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Abs<T>) -> Self::Output {
-        Measurement::new().with_prc(self).with_abs(other)
+        NodeSize::new().with_prc(self).with_abs(other)
     }
 }
 // # Impl `Prc(T) + Rem(T)`
 impl<T: Add<Output = T>> Add<Rem<T>> for Prc<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Rem<T>) -> Self::Output {
-        Measurement::new().with_prc(self).with_rem(other)
+        NodeSize::new().with_prc(self).with_rem(other)
     }
 }
 
@@ -223,25 +224,25 @@ impl<T: Add<Output = T>> Add for Rem<T> {
 }
 // # Impl `Rem(T) + Abs(T)`
 impl<T: Add<Output = T>> Add<Abs<T>> for Rem<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Abs<T>) -> Self::Output {
-        Measurement::new().with_rem(self).with_abs(other)
+        NodeSize::new().with_rem(self).with_abs(other)
     }
 }
 // # Impl `Rem(T) + Prc(T)`
 impl<T: Add<Output = T>> Add<Prc<T>> for Rem<T> {
-    type Output = Measurement<T>;
+    type Output = NodeSize<T>;
     fn add(self, other: Prc<T>) -> Self::Output {
-        Measurement::new().with_rem(self).with_prc(other)
+        NodeSize::new().with_rem(self).with_prc(other)
     }
 }
 
-// # Impl `Measurement(T) + Measurement(T)`
-impl<T: Add<Output = T> + Add> Add for Measurement<T> {
+// # Impl `NodeSize(T) + NodeSize(T)`
+impl<T: Add<Output = T> + Add> Add for NodeSize<T> {
     type Output = Self;
     fn add(self, other: Self) -> Self::Output {
 
-        let mut output = Measurement::new();
+        let mut output = NodeSize::new();
 
         if let Some(v1) = self.abs {
             match other.abs {
@@ -267,8 +268,8 @@ impl<T: Add<Output = T> + Add> Add for Measurement<T> {
         output
     }
 }
-// # Impl `Measurement(T) + Abs(T)`
-impl<T: Add<Output = T> + Add> Add<Abs<T>> for Measurement<T> {
+// # Impl `NodeSize(T) + Abs(T)`
+impl<T: Add<Output = T> + Add> Add<Abs<T>> for NodeSize<T> {
     type Output = Self;
     fn add(mut self, other: Abs<T>) -> Self::Output {
         match self.abs {
@@ -280,8 +281,8 @@ impl<T: Add<Output = T> + Add> Add<Abs<T>> for Measurement<T> {
         }
     }
 }
-// # Impl `Measurement(T) + Prc(T)`
-impl<T: Add<Output = T> + Add> Add<Prc<T>> for Measurement<T> {
+// # Impl `NodeSize(T) + Prc(T)`
+impl<T: Add<Output = T> + Add> Add<Prc<T>> for NodeSize<T> {
     type Output = Self;
     fn add(mut self, other: Prc<T>) -> Self::Output {
         match self.prc {
@@ -293,8 +294,8 @@ impl<T: Add<Output = T> + Add> Add<Prc<T>> for Measurement<T> {
         }
     }
 }
-// # Impl `Measurement(T) + Rem(T)`
-impl<T: Add<Output = T> + Add> Add<Rem<T>> for Measurement<T> {
+// # Impl `NodeSize(T) + Rem(T)`
+impl<T: Add<Output = T> + Add> Add<Rem<T>> for NodeSize<T> {
     type Output = Self;
     fn add(mut self, other: Rem<T>) -> Self::Output {
         match self.rem {
@@ -307,14 +308,14 @@ impl<T: Add<Output = T> + Add> Add<Rem<T>> for Measurement<T> {
     }
 }
 
-// # Impl `Measurement(T) += Measurement(T)`
-impl<T: Add<Output = T> + Copy> AddAssign for Measurement<T> {
+// # Impl `NodeSize(T) += NodeSize(T)`
+impl<T: Add<Output = T> + Copy> AddAssign for NodeSize<T> {
     fn add_assign(&mut self, rhs: Self) {
         *self = *self + rhs
     }
 }
-// # Impl `Measurement(T) += Abs(T)`
-impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for Measurement<T> {
+// # Impl `NodeSize(T) += Abs(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Abs<T>) {
         match self.abs {
             Some(v) => self.set_abs(Abs(v + rhs.0)),
@@ -322,8 +323,8 @@ impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for Measurement<T> {
         }
     }
 }
-// # Impl `Measurement(T) += Prc(T)`
-impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for Measurement<T> {
+// # Impl `NodeSize(T) += Prc(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Prc<T>) {
         match self.prc {
             Some(v) => self.set_prc(Prc(v + rhs.0)),
@@ -331,8 +332,8 @@ impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for Measurement<T> {
         }
     }
 }
-// # Impl `Measurement(T) += Rem(T)`
-impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for Measurement<T> {
+// # Impl `NodeSize(T) += Rem(T)`
+impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Rem<T>) {
         match self.rem {
             Some(v) => self.set_rem(Rem(v + rhs.0)),
@@ -346,9 +347,9 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for Measurement<T> {
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
 // # Impl from_standard TailwindCSS scale
-impl Measurement<f32> {
+impl NodeSize<f32> {
     /// ## From Standard
-    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
     /// * `0.5 == 0.125rem`
     /// * `1 == 0.25rem`
     /// * `2 == 0.5rem`
@@ -356,14 +357,14 @@ impl Measurement<f32> {
     /// * `4 == 1rem`
     /// * _and so on..._
     /// 
-    pub fn from_standard(size: f32) -> Measurement<f32> {
+    pub fn from_standard(size: f32) -> NodeSize<f32> {
         Rem(size * 0.25).into()
     }
 }
 // # Impl from_standard TailwindCSS scale
-impl Measurement<Vec2> {
+impl NodeSize<Vec2> {
     /// ## From Standard
-    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
     /// * `0.5 == 0.125rem`
     /// * `1 == 0.25rem`
     /// * `2 == 0.5rem`
@@ -371,14 +372,14 @@ impl Measurement<Vec2> {
     /// * `4 == 1rem`
     /// * _and so on..._
     /// 
-    pub fn from_standard(size: impl Into<Vec2>) -> Measurement<Vec2> {
+    pub fn from_standard(size: impl Into<Vec2>) -> NodeSize<Vec2> {
         Rem(size.into() * 0.25).into()
     }
 }
 // # Impl from_standard TailwindCSS scale
-impl Measurement<Vec3> {
+impl NodeSize<Vec3> {
     /// ## From Standard
-    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
     /// * `0.5 == 0.125rem`
     /// * `1 == 0.25rem`
     /// * `2 == 0.5rem`
@@ -386,14 +387,14 @@ impl Measurement<Vec3> {
     /// * `4 == 1rem`
     /// * _and so on..._
     /// 
-    pub fn from_standard(size: impl Into<Vec3>) -> Measurement<Vec3> {
+    pub fn from_standard(size: impl Into<Vec3>) -> NodeSize<Vec3> {
         Rem(size.into() * 0.25).into()
     }
 }
 // # Impl from_standard TailwindCSS scale
-impl Measurement<Vec4> {
+impl NodeSize<Vec4> {
     /// ## From Standard
-    /// Creates new measurement from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
     /// * `0.5 == 0.125rem`
     /// * `1 == 0.25rem`
     /// * `2 == 0.5rem`
@@ -401,20 +402,20 @@ impl Measurement<Vec4> {
     /// * `4 == 1rem`
     /// * _and so on..._
     /// 
-    pub fn from_standard(size: impl Into<Vec4>) -> Measurement<Vec4> {
+    pub fn from_standard(size: impl Into<Vec4>) -> NodeSize<Vec4> {
         Rem(size.into() * 0.25).into()
     }
 }
 
-/// ## Measurement Evaluate
+/// ## NodeSize Evaluate
 /// Trait for implementing evaluation logic for (T)
-pub trait MeasurementEvaluate<T> {
+pub trait NodeSizeEvaluate<T> {
     /// ## Evaluate
-    /// Evaluates the measurement for (T)
+    /// Evaluates the NodeSize for (T)
     fn evaluate(&self, parent_size: T, font_size: T) -> T;
 }
 
-impl MeasurementEvaluate<f32> for Measurement<f32> {
+impl NodeSizeEvaluate<f32> for NodeSize<f32> {
     fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.abs { out += v }
@@ -423,7 +424,7 @@ impl MeasurementEvaluate<f32> for Measurement<f32> {
         out
     }
 }
-impl MeasurementEvaluate<Vec2> for Measurement<Vec2> {
+impl NodeSizeEvaluate<Vec2> for NodeSize<Vec2> {
     fn evaluate(&self, parent_size: Vec2, font_size: Vec2) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.abs { out += v }
@@ -432,7 +433,7 @@ impl MeasurementEvaluate<Vec2> for Measurement<Vec2> {
         out
     }
 }
-impl MeasurementEvaluate<Vec3> for Measurement<Vec3> {
+impl NodeSizeEvaluate<Vec3> for NodeSize<Vec3> {
     fn evaluate(&self, parent_size: Vec3, font_size: Vec3) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.abs { out += v }
@@ -441,7 +442,7 @@ impl MeasurementEvaluate<Vec3> for Measurement<Vec3> {
         out
     }
 }
-impl MeasurementEvaluate<Vec4> for Measurement<Vec4> {
+impl NodeSizeEvaluate<Vec4> for NodeSize<Vec4> {
     fn evaluate(&self, parent_size: Vec4, font_size: Vec4) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.abs { out += v }
@@ -451,10 +452,10 @@ impl MeasurementEvaluate<Vec4> for Measurement<Vec4> {
     }
 }
 
-impl Measurement<Vec2> {
+impl NodeSize<Vec2> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: Measurement<f32>) -> Self {
+    pub fn with_x(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
@@ -462,14 +463,14 @@ impl Measurement<Vec2> {
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: Measurement<f32>) {
+    pub fn set_x(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: Measurement<f32>) -> Self {
+    pub fn with_y(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
@@ -477,16 +478,16 @@ impl Measurement<Vec2> {
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: Measurement<f32>) {
+    pub fn set_y(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
     }
 }
-impl Measurement<Vec3> {
+impl NodeSize<Vec3> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: Measurement<f32>) -> Self {
+    pub fn with_x(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
@@ -494,14 +495,14 @@ impl Measurement<Vec3> {
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: Measurement<f32>) {
+    pub fn set_x(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: Measurement<f32>) -> Self {
+    pub fn with_y(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
@@ -509,14 +510,14 @@ impl Measurement<Vec3> {
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: Measurement<f32>) {
+    pub fn set_y(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
     }
     /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
-    pub fn with_z(self, other: Measurement<f32>) -> Self {
+    pub fn with_z(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
@@ -524,16 +525,16 @@ impl Measurement<Vec3> {
     }
     /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
-    pub fn set_z(&mut self, other: Measurement<f32>) {
+    pub fn set_z(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
     }
 }
-impl Measurement<Vec4> {
+impl NodeSize<Vec4> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: Measurement<f32>) -> Self {
+    pub fn with_x(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
@@ -541,14 +542,14 @@ impl Measurement<Vec4> {
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: Measurement<f32>) {
+    pub fn set_x(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: Measurement<f32>) -> Self {
+    pub fn with_y(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
@@ -556,14 +557,14 @@ impl Measurement<Vec4> {
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: Measurement<f32>) {
+    pub fn set_y(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
     }
     /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
-    pub fn with_z(self, other: Measurement<f32>) -> Self {
+    pub fn with_z(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
@@ -571,14 +572,14 @@ impl Measurement<Vec4> {
     }
     /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
-    pub fn set_z(&mut self, other: Measurement<f32>) {
+    pub fn set_z(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
     }
     /// ## With W
     /// Replaces the W value of appropriate units with the new value.
-    pub fn with_w(self, other: Measurement<f32>) -> Self {
+    pub fn with_w(self, other: NodeSize<f32>) -> Self {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.w = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.w = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.w = v2 } }
@@ -586,7 +587,7 @@ impl Measurement<Vec4> {
     }
     /// ## Set W
     /// Sets the W value of appropriate units with the new value.
-    pub fn set_w(&mut self, other: Measurement<f32>) {
+    pub fn set_w(&mut self, other: NodeSize<f32>) {
         if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.w = v2 } }
         if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.w = v2 } }
         if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.w = v2 } }
@@ -597,77 +598,105 @@ impl Measurement<Vec4> {
 // #================================#
 // #=== CONSTANT IMPLEMENTATIONS ===#
 
-impl <T> Measurement<T> {
+impl <T> NodeSize<T> {
     /// ## New
-    /// Creates new empty measurement
+    /// Creates new empty NodeSize
     pub const fn new() -> Self {
-        Measurement {
+        NodeSize {
             abs: None,
             prc: None,
             rem: None,
         }
     }
     /// ## From absolute
-    /// Creates new measurement
-    pub const fn from_abs(abs: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_abs(abs: T) -> NodeSize<T> {
+        NodeSize {
             abs: Some(abs),
             prc: None,
             rem: None,
         }
     }
     /// ## From percentage
-    /// Creates new measurement
-    pub const fn from_prc(prc: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_prc(prc: T) -> NodeSize<T> {
+        NodeSize {
             abs: None,
             prc: Some(prc),
             rem: None,
         }
     }
     /// ## From rem
-    /// Creates new measurement
-    pub const fn from_rem(rem: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_rem(rem: T) -> NodeSize<T> {
+        NodeSize {
             abs: None,
             prc: None,
             rem: Some(rem),
         }
     }
     /// ## From absolute & percentage
-    /// Creates new measurement
-    pub const fn from_abs_prc(abs: T, prc: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_abs_prc(abs: T, prc: T) -> NodeSize<T> {
+        NodeSize {
             abs: Some(abs),
             prc: Some(prc),
             rem: None,
         }
     }
     /// ## From absolute & rem
-    /// Creates new measurement
-    pub const fn from_abs_rem(abs: T, rem: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_abs_rem(abs: T, rem: T) -> NodeSize<T> {
+        NodeSize {
             abs: Some(abs),
             prc: None,
             rem: Some(rem),
         }
     }
     /// ## From percentage & rem
-    /// Creates new measurement
-    pub const fn from_prc_rem(prc: T, rem: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_prc_rem(prc: T, rem: T) -> NodeSize<T> {
+        NodeSize {
             abs: None,
             prc: Some(prc),
             rem: Some(rem),
         }
     }
     /// ## From absolute & percentage & rem
-    /// Creates new measurement
-    pub const fn from_abs_prc_rem(abs: T, prc: T, rem: T) -> Measurement<T> {
-        Measurement {
+    /// Creates new NodeSize
+    pub const fn from_abs_prc_rem(abs: T, prc: T, rem: T) -> NodeSize<T> {
+        NodeSize {
             abs: Some(abs),
             prc: Some(prc),
             rem: Some(rem),
         }
     }
 }
+
+
+impl NodeSize<f32> {
+    /// ## Extra-small
+    pub const XS: NodeSize<f32> = NodeSize::from_rem(1.0);
+    /// ## Small
+    pub const SM: NodeSize<f32> = NodeSize::from_rem(2.0);
+    /// ## Medium
+    pub const MD: NodeSize<f32> = NodeSize::from_rem(3.0);
+    /// ## Large
+    pub const LG: NodeSize<f32> = NodeSize::from_rem(4.0);
+    /// ## Extra-large
+    pub const XL: NodeSize<f32> = NodeSize::from_rem(6.0);
+    /// ## Extra-large 2
+    pub const XL2: NodeSize<f32> = NodeSize::from_rem(8.0);
+    /// ## Extra-large 3
+    pub const XL3: NodeSize<f32> = NodeSize::from_rem(10.0);
+    /// ## Extra-large 4
+    pub const XL4: NodeSize<f32> = NodeSize::from_rem(12.0);
+    /// ## Extra-large 5
+    pub const XL5: NodeSize<f32> = NodeSize::from_rem(14.0);
+    /// ## Extra-large 6
+    pub const XL6: NodeSize<f32> = NodeSize::from_rem(16.0);
+    /// ## Extra-large 7
+    pub const XL7: NodeSize<f32> = NodeSize::from_rem(18.0);
+}
+
+pub type Size = NodeSize<f32>;
