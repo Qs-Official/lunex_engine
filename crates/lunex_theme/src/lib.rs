@@ -110,7 +110,7 @@ pub enum Rounded {
     Custom(f32)
 }
 
-/// # Theme Color
+/// ## Theme Color
 /// A specific color picked from predefined color pool.
 /// Allows for easy color swapping.
 #[derive(Debug, Clone, Copy, PartialEq)]

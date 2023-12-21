@@ -1,4 +1,4 @@
-use lunex_core::Size;
+use lunex_core::NodeSize;
 
 pub mod prelude {
     pub use super::lui;
@@ -22,7 +22,13 @@ pub mod lui {
 
 
 
+pub struct TextCapsule {
+    pub align_x: Align, // Style
+    pub align_y: Align, // Style
 
+    pub text: String, // text
+    pub wrap: bool,   // Auto wrap lines at width
+}
 
 
 
@@ -47,6 +53,7 @@ impl Align {
 
 pub struct Container {
     layout: Layout,
+    text: Option<TextCapsule>, // It modifies ContentSize though?
 
     depth: f32,
 
@@ -66,28 +73,32 @@ pub enum Layout {
 
 
 
-
-pub enum Sizing2 {
+/// ## Div Size
+/// 
+/// * [DivSize::Min]
+/// * [DivSize::Max]
+/// * [DivSize::Exact]
+pub enum DivSize<T> {
+    /// ## Min
+    /// Div will be as little as it can be while still encapsulating it's content and following set rules.
     Min,
+    /// ## Max
+    /// Div will be as big as it can be while following set rules. If `max_width` is not set then fill `100%` of the parent layout.
     Max,
+    /// ## Exact
+    /// Div will be sized as specified while still following set rules.
+    Exact(NodeSize<T>),
 }
 
-pub enum Sizing {
-    Full,
-    Exact(Size),
-    //Custom(NodeSize<Vec2>)
-    //Custom(Rem)
-}
-
-/// # Declarative Layouts
-/// Contains declarative type of containers.
+/// ## Declarative Layouts
+/// Contains declarative type of layouts.
 /// You define their exact position. They don't rely on context.
 /// They are the primitives of this library.
 /// * [Window]
 /// * [Solid]
 pub mod declarative {
-    use bevy::prelude::*;
-    use lunex_core::prelude::*;
+    use bevy::math::Vec2;
+    use lunex_core::{Prc, NodeSize};
     use crate::Align;
     use crate::Layout;
 
@@ -98,53 +109,53 @@ pub mod declarative {
         /// Position of the top-left corner.
         pub pos : NodeSize<Vec2>,
         /// ## Size
-        /// Size of the container.
+        /// Size of the layout.
         pub size: NodeSize<Vec2>,
     }
     impl Window {
-        /// # Full Window
-        /// Covers 100% of the parenting container
+        /// ## Full Window
+        /// Covers 100% of the parent layout.
         pub const FULL: Window = Window { pos : NodeSize::from_prc(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
-        /// # New
-        /// Creates new Window container
+        /// ## New
+        /// Creates new Window layout.
         pub const fn new() -> Self {
             Window {
                 pos : NodeSize::from_prc(Vec2::ZERO),
                 size: NodeSize::from_prc(Vec2::ZERO),
             }
         }
-        /// # With Pos
-        /// Modifies the container with the new position
+        /// ## With pos
+        /// Replaces the position with the new value.
         pub fn with_pos(mut self, pos: NodeSize<Vec2>) -> Self {
             self.pos = pos;
             self
         }
-        /// # With X
-        /// Modifies the container with the new x
+        /// ## With x
+        /// Replaces the x position with the new value.
         pub fn with_x(mut self, width: NodeSize<f32>) -> Self {
             self.pos.set_x(width);
             self
         }
-        /// # With Y
-        /// Modifies the container with the new y
+        /// ## With y
+        /// Replaces the y position with the new value.
         pub fn with_y(mut self, height: NodeSize<f32>) -> Self {
             self.pos.set_y(height);
             self
         }
-        /// # With Size
-        /// Modifies the container with the new size
+        /// ## With size
+        /// Replaces the size with the new value.
         pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
             self.size = size;
             self
         }
-        /// # With Width
-        /// Modifies the container with the new width
+        /// ## With width
+        /// Replaces the width with the new value.
         pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
             self.size.set_x(width);
             self
         }
-        /// # With Height
-        /// Modifies the container with the new height
+        /// ## With height
+        /// Replaces the height with the new value.
         pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
             self.size.set_y(height);
             self
@@ -159,13 +170,19 @@ pub mod declarative {
     /// ## Solid Layout
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Solid {
+        /// ## Size
+        /// Aspect ratio of the sides of the rectangular layout. `1:1 == 10:10 == 100:100`.
         pub size: NodeSize<Vec2>,
+        /// ## Align X
+        /// Horizontal alignment within parent.
         pub align_x: Align,
+        /// ## Align Y
+        /// Vertical alignment within parent.
         pub align_y: Align
     }
     impl Solid {
-        /// # New
-        /// Creates new Solid container
+        /// ## New
+        /// Creates new Solid layout.
         pub fn new() -> Self {
             Solid {
                 size: Prc(Vec2::ONE).into(),
@@ -173,32 +190,32 @@ pub mod declarative {
                 align_y: Align::CENTER,
             }
         }
-        /// # With Size
-        /// Modifies the container with the new size
+        /// ## With size
+        /// Replaces the size with the new value.
         pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
             self.size = size;
             self
         }
-        /// # With Width
-        /// Modifies the container with the new width
+        /// ## With width
+        /// Replaces the width with the new value.
         pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
             self.size.set_x(width);
             self
         }
-        /// # With Height
-        /// Modifies the container with the new height
+        /// ## With height
+        /// Replaces the height with the new value.
         pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
             self.size.set_y(height);
             self
         }
-        /// # With Align X
-        /// Modifies the container with the new alignment on X axis
+        /// ## With align x
+        /// Replaces the x alignment with the new value.
         pub fn with_align_x(mut self, align: Align) -> Self {
             self.align_x = align;
             self
         }
-        /// # With Align Y
-        /// Modifies the container with the new alignment on Y axis
+        /// ## With align y
+        /// Replaces the y alignment with the new value.
         pub fn with_align_y(mut self, align: Align) -> Self {
             self.align_y = align;
             self
@@ -211,9 +228,11 @@ pub mod declarative {
     }
 }
 
-/// # Parametric Layouts
-/// Contains parametric type of containers.
-/// You define how they behave based on their neighboring containers.
+
+
+/// ## Parametric Layouts
+/// Contains parametric type of layouts.
+/// You define how they behave based on their neighboring nodes.
 /// They rely on context. They work similarly as HTML (padding, margin, etc.)
 /// * [Div]
 /// * [List]
@@ -221,16 +240,20 @@ pub mod declarative {
 pub mod parametric {
     use bevy::math::Vec4;
     //use crate::Align;
-    use crate::{Sizing, Size};
+    use crate::DivSize;
+    use lunex_core::{Prc, NodeSize};
 
-    pub struct Div { // Most basic type, basically every div is List
-        //pub font_align: Align, //Maybe move to theming as components? Typography??? - MUST BE IN MASTER STRUCT BCS ITS GENERAL TO ALL CONTAINERS
-        pub width: Sizing,
-        pub max_width: Option<Size>,
-        pub height: Sizing,
-        pub max_height: Option<Size>,
-        pub padding: Vec4,
-        pub margin: Vec4,
+    pub struct Div { // Most basic type, basically every div is List 
+        pub width: DivSize<f32>,
+        pub min_width: Option<NodeSize<f32>>,
+        pub max_width: Option<NodeSize<f32>>,
+
+        pub height: DivSize<f32>,
+        pub min_height: Option<NodeSize<f32>>,
+        pub max_height: Option<NodeSize<f32>>,
+
+        pub padding: NodeSize<Vec4>,
+        pub margin: NodeSize<Vec4>,
     }
 
     pub struct Br; // Just div with new line class

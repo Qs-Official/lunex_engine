@@ -15,7 +15,9 @@
   categories  = ["gui", "mathematics", "game-development"]
 
 [workspace.dependencies]
-  bevy         = { version = "0.12.1", features = ["dynamic_linking"] }
-  lunex_core   = { path = "crates/lunex_core" }
-  lunex_layout = { path = "crates/lunex_layout" }
-  lunex_theme  = { path = "crates/lunex_theme" }
+  bevy              = { version = "0.12.1", features = ["dynamic_linking"] }
+  lunex_core        = { path = "crates/lunex_core" }
+  lunex_layout      = { path = "crates/lunex_layout" }
+  lunex_preset      = { path = "crates/lunex_preset" }
+  lunex_theme       = { path = "crates/lunex_theme" }
+  lunex_typographic = { path = "crates/lunex_typographic" }

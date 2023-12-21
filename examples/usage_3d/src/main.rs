@@ -3,7 +3,6 @@ use bevy::{
     prelude::*,
 };
 
-use lunex_core::Amount;
 use lunex_layout::lui;
 
 fn main() {
@@ -203,54 +202,8 @@ struct InterfaceBox {
 impl InterfaceBox {
     fn compute(&mut self, parent: &Rect) {
 
-        let pos = self.layout.pos.evaluate(40.0, parent.size);
+        //let pos = self.layout.pos.evaluate(40.0, parent.size);
 
     }
-}
-
-
-
-
-
-pub mod interactive {
-    pub struct Button;
-    pub struct Toggle;
-    pub struct Selector;
-    pub struct RangeSlider;
-    pub struct Radio;
-}
-
-pub mod predefined {
-    pub struct Badge;
-    pub struct Chip;
-    pub struct Avatar;
-    pub struct ProgressBar;
-    pub struct ProgressRadial;
-    pub struct Tabs;
-    pub struct Popup;
-    pub struct Modal;
-    pub struct Toast;
-    pub struct Drawer;
-}
-
-pub mod typographic {
-    //use crate::ColorOption;
-
-    pub struct H1;
-    pub struct H2;
-    pub struct H3;
-    pub struct H4;
-    pub struct H5;
-    pub struct H6;
-
-    /// # Pararaph
-    pub struct P;
-    /// # Italic
-    pub struct I;
-    /// # Bold
-    pub struct B;
-
-
-
 }
 
