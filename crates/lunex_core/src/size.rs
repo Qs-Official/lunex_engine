@@ -28,7 +28,7 @@ mod test {
 
         new_amount += amount;
         assert_eq!(new_amount, NodeSize::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
-        let _ = Size::SM;
+        let _ = Size::S_65;
     }
 }
 
@@ -598,6 +598,7 @@ impl NodeSize<Vec4> {
 // #================================#
 // #=== CONSTANT IMPLEMENTATIONS ===#
 
+// # Impl Constructors
 impl <T> NodeSize<T> {
     /// ## New
     /// Creates new empty NodeSize
@@ -673,7 +674,7 @@ impl <T> NodeSize<T> {
     }
 }
 
-
+// # Impl CONSTS
 impl NodeSize<f32> {
     /// ## Extra-small
     pub const XS: NodeSize<f32> = NodeSize::from_rem(1.0);
@@ -697,6 +698,208 @@ impl NodeSize<f32> {
     pub const XL6: NodeSize<f32> = NodeSize::from_rem(16.0);
     /// ## Extra-large 7
     pub const XL7: NodeSize<f32> = NodeSize::from_rem(18.0);
+
+
+    /// ## Standard Size 1
+    pub const S_1: NodeSize<f32> = NodeSize::from_rem(1.0 * 0.25);
+    /// ## Standard Size 2
+    pub const S_2: NodeSize<f32> = NodeSize::from_rem(2.0 * 0.25);
+    /// ## Standard Size 3
+    pub const S_3: NodeSize<f32> = NodeSize::from_rem(3.0 * 0.25);
+    /// ## Standard Size 4
+    pub const S_4: NodeSize<f32> = NodeSize::from_rem(4.0 * 0.25);
+    /// ## Standard Size 5
+    pub const S_5: NodeSize<f32> = NodeSize::from_rem(5.0 * 0.25);
+    /// ## Standard Size 6
+    pub const S_6: NodeSize<f32> = NodeSize::from_rem(6.0 * 0.25);
+    /// ## Standard Size 7
+    pub const S_7: NodeSize<f32> = NodeSize::from_rem(7.0 * 0.25);
+    /// ## Standard Size 8
+    pub const S_8: NodeSize<f32> = NodeSize::from_rem(8.0 * 0.25);
+    /// ## Standard Size 9
+    pub const S_9: NodeSize<f32> = NodeSize::from_rem(9.0 * 0.25);
+    /// ## Standard Size 10
+    pub const S_10: NodeSize<f32> = NodeSize::from_rem(10.0 * 0.25);
+    /// ## Standard Size 11
+    pub const S_11: NodeSize<f32> = NodeSize::from_rem(11.0 * 0.25);
+    /// ## Standard Size 12
+    pub const S_12: NodeSize<f32> = NodeSize::from_rem(12.0 * 0.25);
+    /// ## Standard Size 13
+    pub const S_13: NodeSize<f32> = NodeSize::from_rem(13.0 * 0.25);
+    /// ## Standard Size 14
+    pub const S_14: NodeSize<f32> = NodeSize::from_rem(14.0 * 0.25);
+    /// ## Standard Size 15
+    pub const S_15: NodeSize<f32> = NodeSize::from_rem(15.0 * 0.25);
+    /// ## Standard Size 16
+    pub const S_16: NodeSize<f32> = NodeSize::from_rem(16.0 * 0.25);
+    /// ## Standard Size 17
+    pub const S_17: NodeSize<f32> = NodeSize::from_rem(17.0 * 0.25);
+    /// ## Standard Size 18
+    pub const S_18: NodeSize<f32> = NodeSize::from_rem(18.0 * 0.25);
+    /// ## Standard Size 19
+    pub const S_19: NodeSize<f32> = NodeSize::from_rem(19.0 * 0.25);
+    /// ## Standard Size 20
+    pub const S_20: NodeSize<f32> = NodeSize::from_rem(20.0 * 0.25);
+    /// ## Standard Size 21
+    pub const S_21: NodeSize<f32> = NodeSize::from_rem(21.0 * 0.25);
+    /// ## Standard Size 22
+    pub const S_22: NodeSize<f32> = NodeSize::from_rem(22.0 * 0.25);
+    /// ## Standard Size 23
+    pub const S_23: NodeSize<f32> = NodeSize::from_rem(23.0 * 0.25);
+    /// ## Standard Size 24
+    pub const S_24: NodeSize<f32> = NodeSize::from_rem(24.0 * 0.25);
+    /// ## Standard Size 25
+    pub const S_25: NodeSize<f32> = NodeSize::from_rem(25.0 * 0.25);
+    /// ## Standard Size 26
+    pub const S_26: NodeSize<f32> = NodeSize::from_rem(26.0 * 0.25);
+    /// ## Standard Size 27
+    pub const S_27: NodeSize<f32> = NodeSize::from_rem(27.0 * 0.25);
+    /// ## Standard Size 28
+    pub const S_28: NodeSize<f32> = NodeSize::from_rem(28.0 * 0.25);
+    /// ## Standard Size 29
+    pub const S_29: NodeSize<f32> = NodeSize::from_rem(29.0 * 0.25);
+    /// ## Standard Size 30
+    pub const S_30: NodeSize<f32> = NodeSize::from_rem(30.0 * 0.25);
+    /// ## Standard Size 31
+    pub const S_31: NodeSize<f32> = NodeSize::from_rem(31.0 * 0.25);
+    /// ## Standard Size 32
+    pub const S_32: NodeSize<f32> = NodeSize::from_rem(32.0 * 0.25);
+    /// ## Standard Size 33
+    pub const S_33: NodeSize<f32> = NodeSize::from_rem(33.0 * 0.25);
+    /// ## Standard Size 34
+    pub const S_34: NodeSize<f32> = NodeSize::from_rem(34.0 * 0.25);
+    /// ## Standard Size 35
+    pub const S_35: NodeSize<f32> = NodeSize::from_rem(35.0 * 0.25);
+    /// ## Standard Size 36
+    pub const S_36: NodeSize<f32> = NodeSize::from_rem(36.0 * 0.25);
+    /// ## Standard Size 37
+    pub const S_37: NodeSize<f32> = NodeSize::from_rem(37.0 * 0.25);
+    /// ## Standard Size 38
+    pub const S_38: NodeSize<f32> = NodeSize::from_rem(38.0 * 0.25);
+    /// ## Standard Size 39
+    pub const S_39: NodeSize<f32> = NodeSize::from_rem(39.0 * 0.25);
+    /// ## Standard Size 40
+    pub const S_40: NodeSize<f32> = NodeSize::from_rem(40.0 * 0.25);
+    /// ## Standard Size 41
+    pub const S_41: NodeSize<f32> = NodeSize::from_rem(41.0 * 0.25);
+    /// ## Standard Size 42
+    pub const S_42: NodeSize<f32> = NodeSize::from_rem(42.0 * 0.25);
+    /// ## Standard Size 43
+    pub const S_43: NodeSize<f32> = NodeSize::from_rem(43.0 * 0.25);
+    /// ## Standard Size 44
+    pub const S_44: NodeSize<f32> = NodeSize::from_rem(44.0 * 0.25);
+    /// ## Standard Size 45
+    pub const S_45: NodeSize<f32> = NodeSize::from_rem(45.0 * 0.25);
+    /// ## Standard Size 46
+    pub const S_46: NodeSize<f32> = NodeSize::from_rem(46.0 * 0.25);
+    /// ## Standard Size 47
+    pub const S_47: NodeSize<f32> = NodeSize::from_rem(47.0 * 0.25);
+    /// ## Standard Size 48
+    pub const S_48: NodeSize<f32> = NodeSize::from_rem(48.0 * 0.25);
+    /// ## Standard Size 49
+    pub const S_49: NodeSize<f32> = NodeSize::from_rem(49.0 * 0.25);
+    /// ## Standard Size 50
+    pub const S_50: NodeSize<f32> = NodeSize::from_rem(50.0 * 0.25);
+    /// ## Standard Size 51
+    pub const S_51: NodeSize<f32> = NodeSize::from_rem(51.0 * 0.25);
+    /// ## Standard Size 52
+    pub const S_52: NodeSize<f32> = NodeSize::from_rem(52.0 * 0.25);
+    /// ## Standard Size 53
+    pub const S_53: NodeSize<f32> = NodeSize::from_rem(53.0 * 0.25);
+    /// ## Standard Size 54
+    pub const S_54: NodeSize<f32> = NodeSize::from_rem(54.0 * 0.25);
+    /// ## Standard Size 55
+    pub const S_55: NodeSize<f32> = NodeSize::from_rem(55.0 * 0.25);
+    /// ## Standard Size 56
+    pub const S_56: NodeSize<f32> = NodeSize::from_rem(56.0 * 0.25);
+    /// ## Standard Size 57
+    pub const S_57: NodeSize<f32> = NodeSize::from_rem(57.0 * 0.25);
+    /// ## Standard Size 58
+    pub const S_58: NodeSize<f32> = NodeSize::from_rem(58.0 * 0.25);
+    /// ## Standard Size 59
+    pub const S_59: NodeSize<f32> = NodeSize::from_rem(59.0 * 0.25);
+    /// ## Standard Size 64
+    pub const S_60: NodeSize<f32> = NodeSize::from_rem(60.0 * 0.25);
+    /// ## Standard Size 61
+    pub const S_61: NodeSize<f32> = NodeSize::from_rem(61.0 * 0.25);
+    /// ## Standard Size 62
+    pub const S_62: NodeSize<f32> = NodeSize::from_rem(62.0 * 0.25);
+    /// ## Standard Size 63
+    pub const S_63: NodeSize<f32> = NodeSize::from_rem(63.0 * 0.25);
+    /// ## Standard Size 64
+    pub const S_64: NodeSize<f32> = NodeSize::from_rem(64.0 * 0.25);
+    /// ## Standard Size 65
+    pub const S_65: NodeSize<f32> = NodeSize::from_rem(65.0 * 0.25);
+    /// ## Standard Size 66
+    pub const S_66: NodeSize<f32> = NodeSize::from_rem(66.0 * 0.25);
+    /// ## Standard Size 67
+    pub const S_67: NodeSize<f32> = NodeSize::from_rem(67.0 * 0.25);
+    /// ## Standard Size 68
+    pub const S_68: NodeSize<f32> = NodeSize::from_rem(68.0 * 0.25);
+    /// ## Standard Size 69
+    pub const S_69: NodeSize<f32> = NodeSize::from_rem(69.0 * 0.25);
+    /// ## Standard Size 70
+    pub const S_70: NodeSize<f32> = NodeSize::from_rem(70.0 * 0.25);
+    /// ## Standard Size 71
+    pub const S_71: NodeSize<f32> = NodeSize::from_rem(71.0 * 0.25);
+    /// ## Standard Size 72
+    pub const S_72: NodeSize<f32> = NodeSize::from_rem(72.0 * 0.25);
+    /// ## Standard Size 73
+    pub const S_73: NodeSize<f32> = NodeSize::from_rem(73.0 * 0.25);
+    /// ## Standard Size 74
+    pub const S_74: NodeSize<f32> = NodeSize::from_rem(74.0 * 0.25);
+    /// ## Standard Size 75
+    pub const S_75: NodeSize<f32> = NodeSize::from_rem(75.0 * 0.25);
+    /// ## Standard Size 76
+    pub const S_76: NodeSize<f32> = NodeSize::from_rem(76.0 * 0.25);
+    /// ## Standard Size 77
+    pub const S_77: NodeSize<f32> = NodeSize::from_rem(77.0 * 0.25);
+    /// ## Standard Size 78
+    pub const S_78: NodeSize<f32> = NodeSize::from_rem(78.0 * 0.25);
+    /// ## Standard Size 79
+    pub const S_79: NodeSize<f32> = NodeSize::from_rem(79.0 * 0.25);
+    /// ## Standard Size 80
+    pub const S_80: NodeSize<f32> = NodeSize::from_rem(80.0 * 0.25);
+    /// ## Standard Size 81
+    pub const S_81: NodeSize<f32> = NodeSize::from_rem(81.0 * 0.25);
+    /// ## Standard Size 82
+    pub const S_82: NodeSize<f32> = NodeSize::from_rem(82.0 * 0.25);
+    /// ## Standard Size 83
+    pub const S_83: NodeSize<f32> = NodeSize::from_rem(83.0 * 0.25);
+    /// ## Standard Size 84
+    pub const S_84: NodeSize<f32> = NodeSize::from_rem(84.0 * 0.25);
+    /// ## Standard Size 85
+    pub const S_85: NodeSize<f32> = NodeSize::from_rem(85.0 * 0.25);
+    /// ## Standard Size 86
+    pub const S_86: NodeSize<f32> = NodeSize::from_rem(86.0 * 0.25);
+    /// ## Standard Size 87
+    pub const S_87: NodeSize<f32> = NodeSize::from_rem(87.0 * 0.25);
+    /// ## Standard Size 88
+    pub const S_88: NodeSize<f32> = NodeSize::from_rem(88.0 * 0.25);
+    /// ## Standard Size 89
+    pub const S_89: NodeSize<f32> = NodeSize::from_rem(89.0 * 0.25);
+    /// ## Standard Size 90
+    pub const S_90: NodeSize<f32> = NodeSize::from_rem(90.0 * 0.25);
+    /// ## Standard Size 91
+    pub const S_91: NodeSize<f32> = NodeSize::from_rem(91.0 * 0.25);
+    /// ## Standard Size 92
+    pub const S_92: NodeSize<f32> = NodeSize::from_rem(92.0 * 0.25);
+    /// ## Standard Size 93
+    pub const S_93: NodeSize<f32> = NodeSize::from_rem(93.0 * 0.25);
+    /// ## Standard Size 94
+    pub const S_94: NodeSize<f32> = NodeSize::from_rem(94.0 * 0.25);
+    /// ## Standard Size 95
+    pub const S_95: NodeSize<f32> = NodeSize::from_rem(95.0 * 0.25);
+    /// ## Standard Size 96
+    pub const S_96: NodeSize<f32> = NodeSize::from_rem(96.0 * 0.25);
+    /// ## Standard Size 97
+    pub const S_97: NodeSize<f32> = NodeSize::from_rem(97.0 * 0.25);
+    /// ## Standard Size 98
+    pub const S_98: NodeSize<f32> = NodeSize::from_rem(98.0 * 0.25);
+    /// ## Standard Size 99
+    pub const S_99: NodeSize<f32> = NodeSize::from_rem(99.0 * 0.25);
+    /// ## Standard Size 100
+    pub const S_100: NodeSize<f32> = NodeSize::from_rem(100.0 * 0.25);
 }
 
 pub type Size = NodeSize<f32>;
