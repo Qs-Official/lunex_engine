@@ -66,47 +66,47 @@ pub trait NodeTrait<T> {
     fn tree_node(&self) -> String;
 
     /// ## Get name
-    /// Returns cached name
+    /// Returns name of the node. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside nodemap correctly.
     fn get_name(&self) -> &String;
 
-    /// ##
-    /// Returns cached depth
-    fn get_depth(&self) -> f32;
-
-    /// ##
-    /// Returns cached name
+    /// ## Get path
+    /// Returns depth within the hierarchy. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside nodemap correctly.
     fn get_path(&self) -> &String;
 
-    /// ##
-    /// Adds data directly to this node and return existing one
+    /// ## Get depth
+    /// Returns full path without the name. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside nodemap correctly.
+    fn get_depth(&self) -> f32;
+
+    /// ## Add data
+    /// Adds new data to this node and returns previous data.
     fn add_data(&mut self, data: T) -> Option<T>;
 
-    /// ##
-    /// Inserts data to self or any subnode and return existing one
+    /// ## Insert data
+    /// Inserts new data to this node or any other subnode and returns previous data.
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeMapError>;
 
-    /// ##
-    /// Removes data from self and returns it
+    /// ## Take data
+    /// Removes data from this node and returns it.
     fn take_data(&mut self) -> Option<T>;
 
-    /// ##
-    /// Removes data from self or any subnode and returns it
+    /// ## Remove data
+    /// Removes data from this node or any other subnode and returns it.
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError>;
 
-    /// ##
-    /// Borrows data from self
+    /// ## Obtain data
+    /// Borrows data from this node.
     fn obtain_data(&self) -> Option<&T>;
 
-    /// ##
-    /// Borrows data from self as mut
+    /// ## Obtain data mut
+    /// Borrows data from this node as mut.
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
 
-    /// ##
-    /// Borrows data from self or any subnode
+    /// ## Borrow data
+    /// Borrows data from this node or any other subnode
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError>;
 
-    /// ##
-    /// Borrows data from self or any subnode as mut
+    /// ## Borrow data mut
+    /// Borrows data from this node or any other subnode as mut
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
 
@@ -219,12 +219,12 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         &self.node.get_name()
     }
 
-    fn get_depth(&self) -> f32 {
-        self.node.get_depth()
-    }
-
     fn get_path(&self) -> &String {
         &self.node.get_path()
+    }
+
+    fn get_depth(&self) -> f32 {
+        self.node.get_depth()
     }
 
 
@@ -481,12 +481,12 @@ impl <T> NodeTrait<T> for Node<T> {
         &self.name
     }
 
-    fn get_depth(&self) -> f32 {
-        self.depth
-    }
-
     fn get_path(&self) -> &String {
         &self.path
+    }
+
+    fn get_depth(&self) -> f32 {
+        self.depth
     }
 
 
