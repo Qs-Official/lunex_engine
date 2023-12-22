@@ -12,44 +12,44 @@ use error::NodeMapError;
 
 
 
-pub trait DirHierarchy<D> {
+pub trait NodeTrait<T> {
     /// Adds subnode directly to this node, returns new subdirectories' name
-    fn add_node(&mut self, name: impl Borrow<str>, node: D) -> Result<String, NodeMapError>;
+    fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>) -> Result<String, NodeMapError>;
 
     /// Inserts subnode to self or any subnode, returns inserted subdirectories' name
-    fn insert_node(&mut self, path: impl Borrow<str>, node: D,) -> Result<String, NodeMapError>;
+    fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>;
 
     /// Creates subnode in root or any subnode, returns new subdirectories' name
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>;
 
     /// Removes node from self and returns it
-    fn take_node(&mut self, name: impl Borrow<str>) -> Result<D, NodeMapError>;
+    fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeMapError>;
 
     /// Removes node from self or any subnode and returns it
-    fn remove_node(&mut self, path: impl Borrow<str>) -> Result<D, NodeMapError>;
+    fn remove_node(&mut self, path: impl Borrow<str>) -> Result<Node<T>, NodeMapError>;
 
-    /// Borrow node from self
-    fn obtain_node(&self, name: impl Borrow<str>) -> Result<&D, NodeMapError>;
+    /// Borrows node from self
+    fn obtain_node(&self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
 
-    /// Borrow node from self
-    fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut D, NodeMapError>;
+    /// Borrows node from self as mut
+    fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
   
-    /// Borrow node from self or any subnode
-    fn borrow_node(&self, path: impl Borrow<str>) -> Result<&D, NodeMapError>;
+    /// Borrows node from self or any subnode
+    fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
 
-    /// Borrow node from self or any subnode
-    fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut D, NodeMapError>;
+    /// Borrows node from self or any subnode as mut
+    fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
 
     /// Merges DirMap or Dir content into itself
-    fn merge(&mut self, node: impl Into<D>) -> Result<(), NodeMapError>;
+    fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeMapError>;
 
-    /// Recursively iterate over all containing directories and their subdirectories and return them in one vector
-    fn crawl(&self) -> Vec<&D>;
+    /// Recursively iterates over all containing directories and their subdirectories and returns them in one vector
+    fn crawl(&self) -> Vec<&Node<T>>;
 
-    /// Generate overview of the inner tree in a stringified form
+    /// Generates overview of the inner tree in a stringified form
     fn tree(&self) -> String;
 
-    /// Generate overview of the directories inside the inner tree in a stringified form
+    /// Generates overview of the directories inside the inner tree in a stringified form
     fn tree_dir(&self) -> String;
 
     /// Returns cached name
@@ -60,8 +60,7 @@ pub trait DirHierarchy<D> {
 
     /// Returns cached name
     fn get_path(&self) -> &String;
-}
-pub trait DirFile<T> {
+
     /// Adds data directly to this node and return existing one
     fn add_data(&mut self, data: T) -> Option<T>;
 
@@ -74,46 +73,73 @@ pub trait DirFile<T> {
     /// Removes data from self or any subnode and returns it
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError>;
 
-    /// Borrow data from self
+    /// Borrows data from self
     fn obtain_data(&self) -> Option<&T>;
     
-    /// Borrow data from self
+    /// Borrows data from self as mut
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
 
-    /// Borrow data from self or any subnode
-    fn borrow_file(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError>;
+    /// Borrows data from self or any subnode
+    fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError>;
     
-    /// Borrow data from self or any subnode
-    fn borrow_file_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
+    /// Borrows data from self or any subnode as mut
+    fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
-
 
 
 
 
 // #===============================#
-// #=== DIRMAP IMPLEMENTATIONS ===#
+// #=== NODEMAP IMPLEMENTATIONS ===#
 
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct NodeMap<T> {
+pub struct NodeMap<D, T> {
+    /// ## Top data
+    /// This top-level data is meant to be shared for every node. Example usage is storing `theme` and other surface data.
+    pub data: Option<D>,
+
     /// ## Node
-    /// All subnodes this node contains. Treat is as `Read-only` unless you know what you are doing.
-    /// Use the struct methods to manipulate the values inside.
+    /// The starting root node.
     pub node: Node<T>,
 }
-impl <T> NodeMap<T> {
-    /// # New
+impl <D, T> NodeMap<D, T> {
+    /// ## New
     /// Creates new NodeMap
     pub fn new(name: impl Borrow<str>) -> Self {
         let mut node = Node::new();
         node.name = name.borrow().into();
         node.path = "".into();
-        NodeMap { node }
+        NodeMap { data: None, node }
+    }
+    
+    /// Adds topdata to NodeMap and return existing one
+    pub fn add_topdata(&mut self, data: D) -> Option<D> {
+        core::mem::replace(&mut self.data, Some(data))
+    }
+
+    /// Removes topdata from NodeMap and returns it
+    pub fn take_topdata(&mut self) -> Option<D> {
+        core::mem::replace(&mut self.data, None)
+    }
+
+    /// Borrows topdata
+    pub fn obtain_data(&self) -> Option<&D> {
+        match &self.data {
+            Some(value) => Some(value),
+            None => None,
+        }
+    }
+
+    /// Borrows topdata as mut
+    pub fn obtain_data_mut(&mut self) -> Option<&mut D> {
+        match &mut self.data {
+            Some(value) => Some(value),
+            None => None,
+        }
     }
 }
-
-impl <T> DirHierarchy<Node<T>> for NodeMap<T> {
+impl <D, T> NodeTrait<T> for NodeMap<D, T> {
     fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>{
         self.node.add_node(name, node)
     }
@@ -177,8 +203,8 @@ impl <T> DirHierarchy<Node<T>> for NodeMap<T> {
     fn get_path(&self) -> &String {
         &self.node.get_path()
     }
-}
-impl <T> DirFile<T> for NodeMap<T> {
+
+
     fn add_data(&mut self, data: T) -> Option<T> {
         self.node.add_data(data)
     }
@@ -203,23 +229,24 @@ impl <T> DirFile<T> for NodeMap<T> {
         self.node.obtain_data_mut()
     }
 
-    fn borrow_file(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError> {
-        self.node.borrow_file(path)
+    fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError> {
+        self.node.borrow_data(path)
     }
     
-    fn borrow_file_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError> {
-        self.node.borrow_file_mut(path)
+    fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError> {
+        self.node.borrow_data_mut(path)
     }
 }
-impl <T> Into<Node<T>> for NodeMap<T>{
+impl <D, T> Into<Node<T>> for NodeMap<D, T>{
     fn into(self) -> Node<T> {
         self.node
     }
 }
 
 
-// #===========================#
-// #=== DIR IMPLEMENTATIONS ===#
+
+// #============================#
+// #=== NODE IMPLEMENTATIONS ===#
 
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
@@ -235,7 +262,7 @@ pub struct Node<T> {
     depth: f32,
 
     /// ## Data
-    /// Optional data this node can have.
+    /// Optional data this node can have. Example usage is storing `node layout` and other specific data.
     pub data: Option<T>,
     /// ## Nodes
     /// All subnodes this node contains. Treat is as `Read-only` unless you know what you are doing.
@@ -243,10 +270,12 @@ pub struct Node<T> {
     pub nodes: HashMap<String, Node<T>>,
 }
 impl <T> Node<T> {
+    /// ## New
+    /// Creates new Node
     pub fn new() -> Self {
         Node {
-            name: "UNASSIGNED DIRECTORY".to_owned(),
-            path: "EMPTY PATH".to_owned(),
+            name: "".into(),
+            path: "".into(),
             depth: 0.0,
 
             data: None,
@@ -276,7 +305,7 @@ impl <T> Node<T> {
         string
     }
 }
-impl <T> DirHierarchy<Node<T>> for Node<T> {
+impl <T> NodeTrait<T> for Node<T> {
     fn add_node(&mut self, name: impl Borrow<str>, mut node: Node<T>) -> Result<String, NodeMapError>{
         if !name.borrow().is_empty() {
             if name.borrow() == "." { return Err(NodeMapError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
@@ -437,8 +466,8 @@ impl <T> DirHierarchy<Node<T>> for Node<T> {
     fn get_path(&self) -> &String {
         &self.path
     }
-}
-impl <T> DirFile<T> for Node<T> {
+
+
     fn add_data(&mut self, data: T) -> Option<T>{
         core::mem::replace(&mut self.data, Some(data))
     }
@@ -482,21 +511,21 @@ impl <T> DirFile<T> for Node<T> {
         }
     }
 
-    fn borrow_file(&self, path: impl Borrow<str>) -> Result<Option<&T> , NodeMapError> {
+    fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T> , NodeMapError> {
         match path.borrow().split_once('/') {
             None => Ok(self.obtain_data()),
             Some((branch, remaining_path)) => match self.obtain_node(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_file(remaining_path),
+                Ok(borrowed_directory) => borrowed_directory.borrow_data(remaining_path),
                 Err(e) => Err(e),
             },
         }
     }
     
-    fn borrow_file_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T> , NodeMapError> {
+    fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T> , NodeMapError> {
         match path.borrow().split_once('/') {
             None => Ok(self.obtain_data_mut()),
             Some((branch, remaining_path)) => match self.obtain_node_mut(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_file_mut(remaining_path),
+                Ok(borrowed_directory) => borrowed_directory.borrow_data_mut(remaining_path),
                 Err(e) => Err(e),
             },
         }
