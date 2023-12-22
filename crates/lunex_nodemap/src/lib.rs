@@ -473,27 +473,21 @@ impl <T> NodeTrait<T> for Node<T> {
 
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeMapError> {
         let node = node.into();
-
-        if let Some(_) = node.data {
-            return Err(NodeMapError::DataConflict);
-        }
-
+        if let Some(_) = node.data { return Err(NodeMapError::DataConflict); }
         for (name, _) in &node.nodes {
-            if self.nodes.contains_key(name) {return Err(NodeMapError::DuplicateName(name.to_owned()));}
+            if self.nodes.contains_key(name) { return Err(NodeMapError::DuplicateName(name.to_owned())); }
         }
-
         for (name, dir) in node.nodes {
             self.insert_node(name, dir)?;
         }
-
         Ok(())
     }
 
     fn crawl(&self) -> Vec<&Node<T>> {
         let mut vector = Vec::new();
-        for pair in &self.nodes{
-            vector.push(pair.1);
-            let mut content = pair.1.crawl();
+        for (_, node) in &self.nodes{
+            vector.push(node);
+            let mut content = node.crawl();
             vector.append(&mut content);
         }
         vector
