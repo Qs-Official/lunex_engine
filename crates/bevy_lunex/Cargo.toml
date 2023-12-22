@@ -1,0 +1,18 @@
+[package]
+  name = "bevy_lunex"
+  authors.workspace    = true
+  version.workspace    = true
+  edition.workspace    = true
+  license.workspace    = true
+  repository.workspace = true
+  keywords.workspace   = true
+  categories.workspace = true
+
+[dependencies]
+  bevy              = { workspace = true }
+  lunex_core        = { workspace = true }
+  lunex_layout      = { workspace = true }
+  lunex_nodemap     = { workspace = true }
+  lunex_preset      = { workspace = true }
+  lunex_theme       = { workspace = true }
+  lunex_typographic = { workspace = true }

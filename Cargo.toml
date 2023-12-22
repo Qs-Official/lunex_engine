@@ -15,13 +15,19 @@
   categories  = ["gui", "mathematics", "game-development"]
 
 [workspace.dependencies]
-  colored           = { version = "^2.1" }
-  indexmap          = { version = "^2.1" }
+  ahash              = { version = "^0.8" }
+  colored            = { version = "^2.1" }
+  indexmap           = { version = "^2.1" }
 
-  bevy              = { version = "0.12.1", features = ["dynamic_linking"] }
-  lunex_core        = { path = "crates/lunex_core" }
-  lunex_layout      = { path = "crates/lunex_layout" }
-  lunex_nodemap     = { path = "crates/lunex_nodemap" }
-  lunex_preset      = { path = "crates/lunex_preset" }
-  lunex_theme       = { path = "crates/lunex_theme" }
-  lunex_typographic = { path = "crates/lunex_typographic" }
+  bevy               = { version = "0.12.1", features = ["dynamic_linking"] }
+  bevy_mod_picking   = { version = "0.17.0"}
+  bevy_vector_shapes = { version = "0.6.0" }
+
+  bevy_lunex         = { path = "crates/bevy_lunex" }
+
+  lunex_core         = { path = "crates/lunex_core" }
+  lunex_layout       = { path = "crates/lunex_layout" }
+  lunex_nodemap      = { path = "crates/lunex_nodemap" }
+  lunex_preset       = { path = "crates/lunex_preset" }
+  lunex_theme        = { path = "crates/lunex_theme" }
+  lunex_typographic  = { path = "crates/lunex_typographic" }

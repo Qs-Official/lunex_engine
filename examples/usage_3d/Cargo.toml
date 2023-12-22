@@ -9,7 +9,5 @@
   categories.workspace = true
 
 [dependencies]
-  indexmap     = { workspace = true }
   bevy         = { workspace = true }
-  lunex_core   = { workspace = true }
-  lunex_layout = { workspace = true }
+  bevy_lunex   = { workspace = true }

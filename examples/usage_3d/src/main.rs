@@ -3,9 +3,7 @@ use bevy::{
     prelude::*,
 };
 
-use indexmap::IndexMap;
-
-use lunex_layout::lui;
+use bevy_lunex::{prelude::*, Container};
 
 fn main() {
     App::new()
@@ -74,18 +72,20 @@ fn setup(
     commands.entity(player).push_children(&[cam]);
 
 
-    let mut map: IndexMap<String, i32> = IndexMap::new();
-    map.insert("Oooga1".into(), 1);
-    map.insert("Oooga2".into(), 2);
-    map.insert("Oooga3".into(), 3);
+    let mut ui = Interface::new("HUD");
+    ui.create_node("Node 1").unwrap();
+    ui.create_node("Node 1/.Node 2").unwrap();
+    ui.create_node("Node 3").unwrap();
 
-    map.remove("Oooga2").unwrap();
+    let _ = ui.add_data(5.0);
+    //let dd = ui.obtain_data().unwrap();
 
-    map.insert("Oooga4".into(), 4);
+    let _ = ui.insert_data("Node 3", 10.0).unwrap();
+    let dd = ui.borrow_data("Node 3").unwrap().unwrap();
 
-    for x in map.iter() {
-        println!("{:?}", x);
-    }
+    println!("{:?}", dd);
+
+    println!("{}", ui.tree_node("show-hidden"));
 
 }
 
@@ -203,6 +203,8 @@ impl Rect {
     }
 }
 
+
+/*
 pub struct Interface {
     width: f32,
     height: f32,
@@ -222,5 +224,5 @@ impl InterfaceBox {
         //let pos = self.layout.pos.evaluate(40.0, parent.size);
 
     }
-}
+}*/
 

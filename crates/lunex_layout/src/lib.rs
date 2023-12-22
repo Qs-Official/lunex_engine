@@ -2,6 +2,9 @@ use lunex_core::NodeSize;
 
 pub mod prelude {
     pub use super::lui;
+
+    pub use super::Align;
+    pub use super::DivSize;
 }
 
 /// # Lunex UI
@@ -51,16 +54,7 @@ impl Align {
 }
 
 
-pub struct Container {
-    layout: Layout,
-    text: Option<TextCapsule>, // It modifies ContentSize though?
 
-    depth: f32,
-
-    roll: f32,
-    yaw: f32,
-    pitch: f32
-}
 
 
 pub enum Layout {
@@ -240,17 +234,20 @@ pub mod declarative {
 pub mod parametric {
     use bevy::math::Vec4;
     //use crate::Align;
-    use crate::DivSize;
+    use crate::{DivSize, Align};
     use lunex_core::{Prc, NodeSize};
 
+    // I should be able to recreate Solid functionality with Div
     pub struct Div { // Most basic type, basically every div is List 
         pub width: DivSize<f32>,
         pub min_width: Option<NodeSize<f32>>,
         pub max_width: Option<NodeSize<f32>>,
+        pub align_x: Align,
 
         pub height: DivSize<f32>,
         pub min_height: Option<NodeSize<f32>>,
         pub max_height: Option<NodeSize<f32>>,
+        pub align_y: Align,
 
         pub padding: NodeSize<Vec4>,
         pub margin: NodeSize<Vec4>,

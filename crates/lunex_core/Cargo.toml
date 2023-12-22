@@ -9,4 +9,5 @@
   categories.workspace = true
 
 [dependencies]
-  bevy = { workspace = true }
+  bevy          = { workspace = true }
+  lunex_nodemap = { workspace = true }

@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
 
+pub mod prelude {
+    pub use super::Theme;
+}
+
 // Theme Plugin (has system looping through all containers)
 
 

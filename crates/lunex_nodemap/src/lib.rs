@@ -1,6 +1,6 @@
 use indexmap::IndexMap as HashMap;
 use colored::Colorize;
-use std::borrow::Borrow;
+use std::{borrow::Borrow, fmt::Display};
 use bevy::ecs::component::Component;
 
 mod error;
@@ -8,14 +8,14 @@ pub use error::NodeMapError;
 
 pub mod prelude {
     pub use super::NodeMapError;
-    pub use super::{NodeMap, Node, NodeTrait};
+    pub use super::{NodeMap, Node, NodeTrait, NodeTraitPrint};
 }
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
 
 /// ## Node trait
-/// Trait with all node implementations.
+/// Trait with all node management implementations.
 pub trait NodeTrait<T> {
     /// ## Add node
     /// Adds new subnode to this node and returns new subnodes' name.
@@ -61,13 +61,9 @@ pub trait NodeTrait<T> {
     /// Recursively iterates over all subnodes and returns them in a single vector.
     fn crawl(&self) -> Vec<&Node<T>>;
 
-    /// ## Tree
-    /// Generates overview of the inner structure as a string.
-    fn tree(&self, params: impl Borrow<str>) -> String;
-
     /// ## Tree node
     /// Generates overview of the inner structure of subnodes as a string.
-    fn tree_node(&self) -> String;
+    fn tree_node(&self, params: impl Borrow<str>) -> String;
 
     /// ## Get name
     /// Returns name of the node. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside nodemap correctly.
@@ -114,6 +110,13 @@ pub trait NodeTrait<T> {
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
 
+/// ## Node print
+/// Trait with all node print implementations.
+pub trait NodeTraitPrint<T> {
+    /// ## Tree
+    /// Generates overview of the inner structure as a string.
+    fn tree(&self, params: impl Borrow<str>) -> String;
+}
 
 // #===============================#
 // #=== NODEMAP IMPLEMENTATIONS ===#
@@ -242,12 +245,8 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         self.node.crawl()
     }
 
-    fn tree(&self, params: impl Borrow<str>) -> String {
-        self.node.tree(params)
-    }
-
-    fn tree_node(&self) -> String {
-        self.node.tree_node()
+    fn tree_node(&self, params: impl Borrow<str>) -> String {
+        self.node.tree_node(params)
     }
 
     fn get_name(&self) -> &String {
@@ -292,6 +291,11 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
     
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError> {
         self.node.borrow_data_mut(path)
+    }
+}
+impl <D, T: Display> NodeTraitPrint<T> for NodeMap<D, T> {
+    fn tree(&self, params: impl Borrow<str>) -> String {
+        self.node.tree(params)
     }
 }
 impl <D, T> Into<Node<T>> for NodeMap<D, T>{
@@ -343,12 +347,25 @@ impl <T> Node<T> {
 impl <T> Node<T> {
     /// Generate overview of the inner tree and write the mapped output to the given string with data formatted to a certain level depth
     pub(crate) fn cascade_tree(&self, mut string: String, level: u32, param: &str) -> String {
+        for (name, node) in &self.nodes {
+            if !param.contains("show-hidden") && name.starts_with('.') {continue;}
+            let mut text = String::from("\n  ");
+            for _ in 0..level { text += "|    " }
+            text += "|-> ";
+            string = format!("{}{}{}", string, text.black(), name.bold().yellow());
+            string = node.cascade_tree(string, level + 1, param);
+        }
+        string
+    }
+}
+impl <T:Display> Node<T> {
+    /// Generate overview of the inner tree and write the mapped output to the given string with data formatted to a certain level depth
+    pub(crate) fn cascade_tree_display(&self, mut string: String, level: u32, param: &str) -> String {
         if !param.contains("no-data") {
-            if let Some(_) = self.data {
-                let mut text = String::from("\n  ");
-                for _ in 0..level { text += "|    " }
-                text += "|-> ";
-                string = format!("{}{}{}", string, text.black(), "DATA".bold().bright_cyan());
+            if let Some(data) = &self.data {
+                println!("THE FUCK");
+                let text = String::from(" |= ");
+                string = format!("{}{}{}", string, text.black(), data.to_string().bold().bright_cyan());
             }
         }
         for (name, node) in &self.nodes {
@@ -494,21 +511,13 @@ impl <T> NodeTrait<T> for Node<T> {
         vector
     }
 
-    fn tree(&self, params: impl Borrow<str>) -> String {
+    fn tree_node(&self, params: impl Borrow<str>) -> String {
         let text = String::new();
         format!(
-            "> {}{}",
+            "{} {}{}",
+            ">".black(),
             self.name.purple().bold().underline(),
             self.cascade_tree(text, 0, params.borrow())
-        )
-    }
-
-    fn tree_node(&self) -> String {
-        let text = String::new();
-        format!(
-            "> {}{}",
-            self.name.purple().bold().underline(),
-            self.cascade_tree(text, 0, "no-data")
         )
     }
 
@@ -524,7 +533,7 @@ impl <T> NodeTrait<T> for Node<T> {
         self.depth
     }
 
-    fn add_data(&mut self, data: T) -> Option<T>{
+    fn add_data(&mut self, data: T) -> Option<T> {
         core::mem::replace(&mut self.data, Some(data))
     }
 
@@ -545,7 +554,10 @@ impl <T> NodeTrait<T> for Node<T> {
 
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError> {
         match path.borrow().split_once('/') {
-            None => Ok(self.take_data()),
+            None => match self.obtain_node_mut(path.borrow()) {
+                Ok(borrowed_directory) => Ok(borrowed_directory.take_data()),
+                Err(e) => Err(e),
+            },
             Some((branch, remaining_path)) => match self.borrow_node_mut(branch) {
                 Ok(borrowed_directory) => borrowed_directory.remove_data(remaining_path),
                 Err(e) => Err(e),
@@ -569,7 +581,10 @@ impl <T> NodeTrait<T> for Node<T> {
 
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T> , NodeMapError> {
         match path.borrow().split_once('/') {
-            None => Ok(self.obtain_data()),
+            None => match self.obtain_node(path.borrow()) {
+                Ok(borrowed_directory) => Ok(borrowed_directory.obtain_data()),
+                Err(e) => Err(e),
+            },
             Some((branch, remaining_path)) => match self.obtain_node(branch) {
                 Ok(borrowed_directory) => borrowed_directory.borrow_data(remaining_path),
                 Err(e) => Err(e),
@@ -579,11 +594,25 @@ impl <T> NodeTrait<T> for Node<T> {
     
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T> , NodeMapError> {
         match path.borrow().split_once('/') {
-            None => Ok(self.obtain_data_mut()),
+            None => match self.obtain_node_mut(path.borrow()) {
+                Ok(borrowed_directory) => Ok(borrowed_directory.obtain_data_mut()),
+                Err(e) => Err(e),
+            },
             Some((branch, remaining_path)) => match self.obtain_node_mut(branch) {
                 Ok(borrowed_directory) => borrowed_directory.borrow_data_mut(remaining_path),
                 Err(e) => Err(e),
             },
         }
+    }
+}
+impl <T:Display> NodeTraitPrint<T> for Node<T> {
+    fn tree(&self, params: impl Borrow<str>) -> String {
+        let text = String::new();
+        format!(
+            "{} {}{}",
+            ">".black(),
+            self.name.purple().bold().underline(),
+            self.cascade_tree_display(text, 0, params.borrow())
+        )
     }
 }
