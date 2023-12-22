@@ -4,7 +4,12 @@ use std::borrow::Borrow;
 use bevy::ecs::component::Component;
 
 mod error;
-use error::NodeMapError;
+pub use error::NodeMapError;
+
+pub mod prelude {
+    pub use super::NodeMapError;
+    pub use super::{NodeMap, Node, NodeTrait};
+}
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
