@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use colored::Colorize;
 
 pub use lunex_core::prelude::*;
 pub use lunex_layout::prelude::*;
@@ -13,7 +14,7 @@ pub mod prelude {
 }
 
 
-pub type Interface = NodeMap<(), f32>;
+pub type Interface = NodeMap<(), Container>;
 
 
 pub struct InterfaceData {
@@ -38,8 +39,9 @@ impl Container {
     }
 }
 
-/*impl Display for Container {
+impl Display for Container {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {})", self.roll, self.yaw)
+        let tx = format!("Window3D [depth: {}]", self.depth.to_string().bold().bright_cyan());
+        write!(f, "{}", tx.black())
     }
-}*/
+}

@@ -364,7 +364,7 @@ impl <T:Display> Node<T> {
         if !param.contains("no-data") {
             if let Some(data) = &self.data {
                 let text = String::from(" |= ");
-                string = format!("{}{}{}", string, text.black(), data.to_string().bold().bright_cyan());
+                string = format!("{}{}{}", string, text.black(), data.to_string());
             }
         }
         for (name, node) in &self.nodes {

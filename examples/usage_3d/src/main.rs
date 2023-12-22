@@ -77,17 +77,15 @@ fn setup(
     ui.create_node("Node 1/.Node 2").unwrap();
     ui.create_node("Node 3").unwrap();
 
-    ui.remove_node("Node 1/.Node 2").unwrap();
+    //ui.remove_node("Node 1/.Node 2").unwrap();
 
-    //let _ = ui.add_data(5.0);
-    //let _ = ui.obtain_data().unwrap();
 
-    let _ = ui.insert_data("Node 3", 10.0).unwrap();
+    let _ = ui.insert_data("Node 3", Container::new()).unwrap();
     let dd = ui.borrow_data("Node 3").unwrap().unwrap();
 
-    let dd = ui.borrow_node("Node 3").unwrap().get_name();
+    //let dd = ui.borrow_node("Node 3").unwrap().get_name();
 
-    println!("{:?}", dd);
+    //println!("{:?}", dd);
 
     println!("{}", ui.tree("show-hidden"));
 
