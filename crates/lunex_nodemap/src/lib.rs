@@ -363,7 +363,6 @@ impl <T:Display> Node<T> {
     pub(crate) fn cascade_tree_display(&self, mut string: String, level: u32, param: &str) -> String {
         if !param.contains("no-data") {
             if let Some(data) = &self.data {
-                println!("THE FUCK");
                 let text = String::from(" |= ");
                 string = format!("{}{}{}", string, text.black(), data.to_string().bold().bright_cyan());
             }
@@ -374,7 +373,7 @@ impl <T:Display> Node<T> {
             for _ in 0..level { text += "|    " }
             text += "|-> ";
             string = format!("{}{}{}", string, text.black(), name.bold().yellow());
-            string = node.cascade_tree(string, level + 1, param);
+            string = node.cascade_tree_display(string, level + 1, param);
         }
         string
     }

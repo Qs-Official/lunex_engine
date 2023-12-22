@@ -79,11 +79,13 @@ fn setup(
 
     ui.remove_node("Node 1/.Node 2").unwrap();
 
-    let _ = ui.add_data(5.0);
-    //let dd = ui.obtain_data().unwrap();
+    //let _ = ui.add_data(5.0);
+    //let _ = ui.obtain_data().unwrap();
 
     let _ = ui.insert_data("Node 3", 10.0).unwrap();
     let dd = ui.borrow_data("Node 3").unwrap().unwrap();
+
+    let dd = ui.borrow_node("Node 3").unwrap().get_name();
 
     println!("{:?}", dd);
 
