@@ -13,75 +13,99 @@ use error::NodeMapError;
 
 
 pub trait NodeTrait<T> {
-    /// Adds subnode directly to this node, returns new subdirectories' name
+    /// ## Add node
+    /// Adds new subnode to this node and returns new subnodes' name.
     fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>) -> Result<String, NodeMapError>;
 
-    /// Inserts subnode to self or any subnode, returns inserted subdirectories' name
+    /// ## Insert node
+    /// Inserts new subnode to this node or any other subnode and returns new subnodes' name.
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>;
 
-    /// Creates subnode in root or any subnode, returns new subdirectories' name
+    /// ## Create node
+    /// Creates new subnode in this node or any other subnode and returns new subnodes' name.
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>;
 
-    /// Removes node from self and returns it
+    /// ## Take node
+    /// Removes subnode from this node and returns it.
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeMapError>;
 
-    /// Removes node from self or any subnode and returns it
+    /// ## Remove node
+    /// Removes subnode from this node or any other subnode and returns it.
     fn remove_node(&mut self, path: impl Borrow<str>) -> Result<Node<T>, NodeMapError>;
 
-    /// Borrows node from self
+    /// ## Obtain node
+    /// Borrows subnode from this node.
     fn obtain_node(&self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
 
-    /// Borrows node from self as mut
+    /// ## Obtain node mut
+    /// Borrows subnode from this node as mut.
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
-  
-    /// Borrows node from self or any subnode
+
+    /// ## Borrow node
+    /// Borrows subnode from this node or any other subnode.
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
 
-    /// Borrows node from self or any subnode as mut
+    /// ## Borrow node mut
+    /// Borrows subnode from this node or any other subnode as mut.
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
 
-    /// Merges DirMap or Dir content into itself
+    /// ## Merge
+    /// Merges node or nodemap into this node.
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeMapError>;
 
-    /// Recursively iterates over all containing directories and their subdirectories and returns them in one vector
+    /// ## Crawl
+    /// Recursively iterates over all subnodes and returns them in a single vector.
     fn crawl(&self) -> Vec<&Node<T>>;
 
-    /// Generates overview of the inner tree in a stringified form
+    /// ## Tree
+    /// Generates overview of the inner structure as a string.
     fn tree(&self) -> String;
 
-    /// Generates overview of the directories inside the inner tree in a stringified form
-    fn tree_dir(&self) -> String;
+    /// ## Tree node
+    /// Generates overview of the inner structure of subnodes as a string.
+    fn tree_node(&self) -> String;
 
+    /// ## Get name
     /// Returns cached name
     fn get_name(&self) -> &String;
 
+    /// ##
     /// Returns cached depth
     fn get_depth(&self) -> f32;
 
+    /// ##
     /// Returns cached name
     fn get_path(&self) -> &String;
 
+    /// ##
     /// Adds data directly to this node and return existing one
     fn add_data(&mut self, data: T) -> Option<T>;
 
+    /// ##
     /// Inserts data to self or any subnode and return existing one
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeMapError>;
 
+    /// ##
     /// Removes data from self and returns it
     fn take_data(&mut self) -> Option<T>;
 
+    /// ##
     /// Removes data from self or any subnode and returns it
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError>;
 
+    /// ##
     /// Borrows data from self
     fn obtain_data(&self) -> Option<&T>;
-    
+
+    /// ##
     /// Borrows data from self as mut
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
 
+    /// ##
     /// Borrows data from self or any subnode
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError>;
-    
+
+    /// ##
     /// Borrows data from self or any subnode as mut
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
@@ -91,7 +115,6 @@ pub trait NodeTrait<T> {
 
 // #===============================#
 // #=== NODEMAP IMPLEMENTATIONS ===#
-
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeMap<D, T> {
@@ -188,8 +211,8 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         self.node.tree()
     }
 
-    fn tree_dir(&self) -> String {
-        self.node.tree_dir()
+    fn tree_node(&self) -> String {
+        self.node.tree_node()
     }
 
     fn get_name(&self) -> &String {
@@ -247,7 +270,6 @@ impl <D, T> Into<Node<T>> for NodeMap<D, T>{
 
 // #============================#
 // #=== NODE IMPLEMENTATIONS ===#
-
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {
@@ -446,7 +468,7 @@ impl <T> NodeTrait<T> for Node<T> {
         )
     }
 
-    fn tree_dir(&self) -> String {
+    fn tree_node(&self) -> String {
         let text = String::new();
         format!(
             "> {}{}",
