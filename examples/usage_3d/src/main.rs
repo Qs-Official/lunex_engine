@@ -3,6 +3,8 @@ use bevy::{
     prelude::*,
 };
 
+use indexmap::IndexMap;
+
 use lunex_layout::lui;
 
 fn main() {
@@ -70,6 +72,21 @@ fn setup(
     )).id();
 
     commands.entity(player).push_children(&[cam]);
+
+
+    let mut map: IndexMap<String, i32> = IndexMap::new();
+    map.insert("Oooga1".into(), 1);
+    map.insert("Oooga2".into(), 2);
+    map.insert("Oooga3".into(), 3);
+
+    map.remove("Oooga2").unwrap();
+
+    map.insert("Oooga4".into(), 4);
+
+    for x in map.iter() {
+        println!("{:?}", x);
+    }
+
 }
 
 #[derive(Component)]

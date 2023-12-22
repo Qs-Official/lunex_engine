@@ -1,5 +1,5 @@
 [package]
-  name = "lunex_preset"
+  name = "lunex_nodemap"
   authors.workspace    = true
   version.workspace    = true
   edition.workspace    = true
@@ -9,3 +9,6 @@
   categories.workspace = true
 
 [dependencies]
+  indexmap = { workspace = true }
+  colored  = { workspace = true }
+  bevy     = { workspace = true }
