@@ -6,12 +6,11 @@ use bevy::ecs::component::Component;
 mod error;
 use error::NodeMapError;
 
-// #===============================#
-// #=== GENERIC IMPLEMENTATIONS ===#
+// #=========================#
+// #=== TRAIT DECLARATION ===#
 
-
-
-
+/// ## Node trait
+/// Trait with all node implementations.
 pub trait NodeTrait<T> {
     /// ## Add node
     /// Adds new subnode to this node and returns new subnodes' name.
@@ -59,7 +58,7 @@ pub trait NodeTrait<T> {
 
     /// ## Tree
     /// Generates overview of the inner structure as a string.
-    fn tree(&self) -> String;
+    fn tree(&self, params: impl Borrow<str>) -> String;
 
     /// ## Tree node
     /// Generates overview of the inner structure of subnodes as a string.
@@ -111,14 +110,41 @@ pub trait NodeTrait<T> {
 }
 
 
-
-
 // #===============================#
 // #=== NODEMAP IMPLEMENTATIONS ===#
 
+/// ## NodeMap
+/// A hashmap-like data structure for organizing general data into recursive subnodes.
+/// Data is indexed and traversed using `paths`.
+/// ### Tree
+/// ```text
+/// > NODEMAP
+///  |-> Node_1
+///  |    |-> Node_2
+///  |    |-> Node_3
+///  |    |    |-> Node_4
+///  |-> Node_5
+///  |    |-> Node_6
+/// ```
+/// If you want to access `Node_4`, use path `Node_1/Node_3/Node_4` on `NODEMAP`.
+/// Or you can use `Node_3/Node_4` on `Node_1` struct to get the same result.
+/// ### Paths
+/// Whitespaces are allowed in paths, but are not encouraged.
+/// Putting a dot as first symbol like this `.name` will hide the node from the tree. If you want to
+/// display hidden nodes too, pass `show-hidden` as params to [NodeTrait::tree] method.
+/// Just `.` will refer to the same node. `..` is not supported for the sake of simplicity
+/// and performance.
+/// 
+/// You can also not specify the name when creating a node. That will mean the name will be
+/// generated. The format is as follows `.||#:N` with `N` being the `.len()` of the `nodes`.
+/// Meaning nodes with names like `.||#:0`, `.||#:1`, `.||#:2` can exist. Please refrain from
+/// manually using these names or [NodeTrait::add_node] will return errors.
+/// ### Generics
+/// * (D) => A type holding surface data that is stored in [NodeMap] for all nodes to share.
+/// * (T) => A type holding node-specific data that any [Node] can store.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeMap<D, T> {
-    /// ## Top data
+    /// ## Top-level data
     /// This top-level data is meant to be shared for every node. Example usage is storing `theme` and other surface data.
     pub data: Option<D>,
 
@@ -128,7 +154,7 @@ pub struct NodeMap<D, T> {
 }
 impl <D, T> NodeMap<D, T> {
     /// ## New
-    /// Creates new NodeMap
+    /// Creates new nodemap.
     pub fn new(name: impl Borrow<str>) -> Self {
         let mut node = Node::new();
         node.name = name.borrow().into();
@@ -136,26 +162,30 @@ impl <D, T> NodeMap<D, T> {
         NodeMap { data: None, node }
     }
     
-    /// Adds topdata to NodeMap and return existing one
+    /// ## Add top-level data
+    /// Adds new top-level data and returns previous top-level data.
     pub fn add_topdata(&mut self, data: D) -> Option<D> {
         core::mem::replace(&mut self.data, Some(data))
     }
 
-    /// Removes topdata from NodeMap and returns it
+    /// ## Take top-level data
+    /// Removes top-level data and returns it.
     pub fn take_topdata(&mut self) -> Option<D> {
         core::mem::replace(&mut self.data, None)
     }
 
-    /// Borrows topdata
-    pub fn obtain_data(&self) -> Option<&D> {
+    /// ## Obtain top-level data
+    /// Borrows top-level data.
+    pub fn obtain_topdata(&self) -> Option<&D> {
         match &self.data {
             Some(value) => Some(value),
             None => None,
         }
     }
 
-    /// Borrows topdata as mut
-    pub fn obtain_data_mut(&mut self) -> Option<&mut D> {
+    /// ## Obtain top-level data mut
+    /// Borrows top-level data as mut.
+    pub fn obtain_topdata_mut(&mut self) -> Option<&mut D> {
         match &mut self.data {
             Some(value) => Some(value),
             None => None,
@@ -207,8 +237,8 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         self.node.crawl()
     }
 
-    fn tree(&self) -> String {
-        self.node.tree()
+    fn tree(&self, params: impl Borrow<str>) -> String {
+        self.node.tree(params)
     }
 
     fn tree_node(&self) -> String {
@@ -226,7 +256,6 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
     fn get_depth(&self) -> f32 {
         self.node.get_depth()
     }
-
 
     fn add_data(&mut self, data: T) -> Option<T> {
         self.node.add_data(data)
@@ -267,10 +296,11 @@ impl <D, T> Into<Node<T>> for NodeMap<D, T>{
 }
 
 
-
 // #============================#
 // #=== NODE IMPLEMENTATIONS ===#
 
+/// ## Node
+/// A struct representing organized data in [NodeMap].
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {
     /// ## Name
@@ -293,7 +323,7 @@ pub struct Node<T> {
 }
 impl <T> Node<T> {
     /// ## New
-    /// Creates new Node
+    /// Creates new node.
     pub fn new() -> Self {
         Node {
             name: "".into(),
@@ -308,16 +338,16 @@ impl <T> Node<T> {
 impl <T> Node<T> {
     /// Generate overview of the inner tree and write the mapped output to the given string with data formatted to a certain level depth
     pub(crate) fn cascade_tree(&self, mut string: String, level: u32, param: &str) -> String {
-        if !param.contains("no-dir") {
+        if !param.contains("no-data") {
             if let Some(_) = self.data {
                 let mut text = String::from("\n  ");
                 for _ in 0..level { text += "|    " }
                 text += "|-> ";
-                string = format!("{}{}{}", string, text.black(), "FILE".bold().bright_cyan());
+                string = format!("{}{}{}", string, text.black(), "DATA".bold().bright_cyan());
             }
         }
         for (name, node) in &self.nodes {
-            if name.starts_with('.') {continue;}
+            if !param.contains("show-hidden") && name.starts_with('.') {continue;}
             let mut text = String::from("\n  ");
             for _ in 0..level { text += "|    " }
             text += "|-> ";
@@ -373,7 +403,7 @@ impl <T> NodeTrait<T> for Node<T> {
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeMapError> {
         match self.nodes.remove(name.borrow()) {
             Some(node) => Ok(node),
-            None => Err(NodeMapError::NoDir(name.borrow().to_owned())),
+            None => Err(NodeMapError::NoNode(name.borrow().to_owned())),
         }
     }
 
@@ -392,7 +422,7 @@ impl <T> NodeTrait<T> for Node<T> {
             if name.borrow() == "." { return Ok(self) }
             match self.nodes.get(name.borrow()) {
                 Some(node) => Ok(node),
-                None => Err(NodeMapError::NoDir(name.borrow().to_owned())),
+                None => Err(NodeMapError::NoNode(name.borrow().to_owned())),
             }
         } else {
             Err(NodeMapError::InvalidPath(name.borrow().to_owned()))
@@ -404,7 +434,7 @@ impl <T> NodeTrait<T> for Node<T> {
             if name.borrow() == "." { return Ok(self) }
             match self.nodes.get_mut(name.borrow()) {
                 Some(node) => Ok(node),
-                None => Err(NodeMapError::NoDir(name.borrow().to_owned())),
+                None => Err(NodeMapError::NoNode(name.borrow().to_owned())),
             }
         } else {
             Err(NodeMapError::InvalidPath(name.borrow().to_owned()))
@@ -435,7 +465,7 @@ impl <T> NodeTrait<T> for Node<T> {
         let node = node.into();
 
         if let Some(_) = node.data {
-            return Err(NodeMapError::FileConflict);
+            return Err(NodeMapError::DataConflict);
         }
 
         for (name, _) in &node.nodes {
@@ -459,12 +489,12 @@ impl <T> NodeTrait<T> for Node<T> {
         vector
     }
 
-    fn tree(&self) -> String {
+    fn tree(&self, params: impl Borrow<str>) -> String {
         let text = String::new();
         format!(
             "> {}{}",
             self.name.purple().bold().underline(),
-            self.cascade_tree(text, 0, "")
+            self.cascade_tree(text, 0, params.borrow())
         )
     }
 
@@ -473,7 +503,7 @@ impl <T> NodeTrait<T> for Node<T> {
         format!(
             "> {}{}",
             self.name.purple().bold().underline(),
-            self.cascade_tree(text, 0, "no-dir")
+            self.cascade_tree(text, 0, "no-data")
         )
     }
 
@@ -488,7 +518,6 @@ impl <T> NodeTrait<T> for Node<T> {
     fn get_depth(&self) -> f32 {
         self.depth
     }
-
 
     fn add_data(&mut self, data: T) -> Option<T>{
         core::mem::replace(&mut self.data, Some(data))
