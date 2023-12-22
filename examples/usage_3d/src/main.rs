@@ -77,6 +77,8 @@ fn setup(
     ui.create_node("Node 1/.Node 2").unwrap();
     ui.create_node("Node 3").unwrap();
 
+    ui.remove_node("Node 1/.Node 2").unwrap();
+
     let _ = ui.add_data(5.0);
     //let dd = ui.obtain_data().unwrap();
 
@@ -85,7 +87,7 @@ fn setup(
 
     println!("{:?}", dd);
 
-    println!("{}", ui.tree_node("show-hidden"));
+    println!("{}", ui.tree("show-hidden"));
 
 }
 

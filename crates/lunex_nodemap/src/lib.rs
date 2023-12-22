@@ -411,10 +411,7 @@ impl <T> NodeTrait<T> for Node<T> {
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>) -> Result<String, NodeMapError>{
         match path.borrow().rsplit_once('/'){
             None => self.add_node(path, node),
-            Some ((directory_path, name)) => match self.borrow_node_mut(directory_path) {
-                Ok(borrowed_directory) => borrowed_directory.add_node(name, node),
-                Err(e) => Err(e),
-            }
+            Some((rempath, name)) => self.borrow_node_mut(rempath)?.add_node(name, node),
         }
     }
 
@@ -430,12 +427,9 @@ impl <T> NodeTrait<T> for Node<T> {
     }
 
     fn remove_node(&mut self, path: impl Borrow<str>) -> Result<Node<T>, NodeMapError> {
-        match path.borrow().split_once('/') {
+        match path.borrow().rsplit_once('/') {
             None => self.take_node(path),
-            Some((branch, remaining_path)) => match self.borrow_node_mut(branch) {
-                Ok(borrowed_directory) => borrowed_directory.remove_node(remaining_path),
-                Err(e) => Err(e),
-            },
+            Some((rempath, name)) => self.borrow_node_mut(rempath)?.remove_node(name),
         }
     }
 
@@ -444,10 +438,10 @@ impl <T> NodeTrait<T> for Node<T> {
             if name.borrow() == "." { return Ok(self) }
             match self.nodes.get(name.borrow()) {
                 Some(node) => Ok(node),
-                None => Err(NodeMapError::NoNode(name.borrow().to_owned())),
+                None => Err(NodeMapError::NoNode(name.borrow().into())),
             }
         } else {
-            Err(NodeMapError::InvalidPath(name.borrow().to_owned()))
+            Err(NodeMapError::InvalidPath(name.borrow().into()))
         }
     }
 
@@ -456,30 +450,24 @@ impl <T> NodeTrait<T> for Node<T> {
             if name.borrow() == "." { return Ok(self) }
             match self.nodes.get_mut(name.borrow()) {
                 Some(node) => Ok(node),
-                None => Err(NodeMapError::NoNode(name.borrow().to_owned())),
+                None => Err(NodeMapError::NoNode(name.borrow().into())),
             }
         } else {
-            Err(NodeMapError::InvalidPath(name.borrow().to_owned()))
+            Err(NodeMapError::InvalidPath(name.borrow().into()))
         }
     }
   
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
         match path.borrow().split_once('/') {
             None => self.obtain_node(path),
-            Some((branch, remaining_path)) => match self.obtain_node(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_node(remaining_path),
-                Err(e) => Err(e),
-            },
+            Some((name, rempath)) => self.obtain_node(name)?.borrow_node(rempath),
         }
     }
 
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
         match path.borrow().split_once('/') {
             None => self.obtain_node_mut(path),
-            Some((branch, remaining_path)) => match self.obtain_node_mut(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_node_mut(remaining_path),
-                Err(e) => Err(e),
-            },
+            Some((name, rempath)) => self.obtain_node_mut(name)?.borrow_node_mut(rempath),
         }
     }
 
@@ -538,14 +526,7 @@ impl <T> NodeTrait<T> for Node<T> {
     }
 
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeMapError>{
-        if path.borrow().is_empty() {
-            Ok(self.add_data(data))
-        } else {
-            match self.borrow_node_mut(path) {
-                Ok(borrowed_directory) => Ok(borrowed_directory.add_data(data)),
-                Err(e) => Err(e),
-            }
-        }
+        Ok(self.borrow_node_mut(path)?.add_data(data))
     }
 
     fn take_data(&mut self) -> Option<T> {
@@ -553,16 +534,7 @@ impl <T> NodeTrait<T> for Node<T> {
     }
 
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError> {
-        match path.borrow().split_once('/') {
-            None => match self.obtain_node_mut(path.borrow()) {
-                Ok(borrowed_directory) => Ok(borrowed_directory.take_data()),
-                Err(e) => Err(e),
-            },
-            Some((branch, remaining_path)) => match self.borrow_node_mut(branch) {
-                Ok(borrowed_directory) => borrowed_directory.remove_data(remaining_path),
-                Err(e) => Err(e),
-            },
-        }
+        Ok(self.borrow_node_mut(path)?.take_data())
     }
 
     fn obtain_data(&self) -> Option<&T> {
@@ -580,29 +552,11 @@ impl <T> NodeTrait<T> for Node<T> {
     }
 
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T> , NodeMapError> {
-        match path.borrow().split_once('/') {
-            None => match self.obtain_node(path.borrow()) {
-                Ok(borrowed_directory) => Ok(borrowed_directory.obtain_data()),
-                Err(e) => Err(e),
-            },
-            Some((branch, remaining_path)) => match self.obtain_node(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_data(remaining_path),
-                Err(e) => Err(e),
-            },
-        }
+        Ok(self.borrow_node(path)?.obtain_data())
     }
     
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T> , NodeMapError> {
-        match path.borrow().split_once('/') {
-            None => match self.obtain_node_mut(path.borrow()) {
-                Ok(borrowed_directory) => Ok(borrowed_directory.obtain_data_mut()),
-                Err(e) => Err(e),
-            },
-            Some((branch, remaining_path)) => match self.obtain_node_mut(branch) {
-                Ok(borrowed_directory) => borrowed_directory.borrow_data_mut(remaining_path),
-                Err(e) => Err(e),
-            },
-        }
+        Ok(self.borrow_node_mut(path)?.obtain_data_mut())
     }
 }
 impl <T:Display> NodeTraitPrint<T> for Node<T> {
