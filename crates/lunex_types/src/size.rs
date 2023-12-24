@@ -876,7 +876,8 @@ impl NodeSize<f32> {
     /// ## Extra-large 7
     pub const XL7: NodeSize<f32> = NodeSize::from_rem(18.0);
 
-
+    /// ## Standard Size 0
+    pub const S_0: NodeSize<f32> = NodeSize::from_rem(0.0);
     /// ## Standard Size 1
     pub const S_1: NodeSize<f32> = NodeSize::from_rem(1.0 * 0.25);
     /// ## Standard Size 2

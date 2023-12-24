@@ -5,7 +5,7 @@ pub use lunex_core::prelude::*;
 
 pub mod prelude {
     pub use super::{NodeTrait, NodeTraitPrint};
-    pub use super::Interface;
+    pub use super::{UINodeMap, UINode};
 
     pub use super::{ShadowNodeMap, ShadowNode};
 
@@ -30,7 +30,7 @@ pub struct ShadowNodeMap {
     id_map: AHashMap<String, Entity>
 }
 impl ShadowNodeMap {
-    pub fn build_set(cmd: &mut Commands, ui: Interface, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+    pub fn build_set(cmd: &mut Commands, ui: UINodeMap, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
         let shadownode = cmd.spawn((
 
             msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),
@@ -57,7 +57,7 @@ impl ShadowNodeMap {
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct ShadowNode {}
 impl ShadowNode {
-    fn build(cmd: &mut Commands, ui: &Node<Container>, parent_id: Entity, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+    fn build(cmd: &mut Commands, ui: &UINode, parent_id: Entity, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
         let shadownode = cmd.spawn((
 
             msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),

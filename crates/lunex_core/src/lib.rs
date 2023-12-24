@@ -11,7 +11,7 @@ pub use lunex_typographic::prelude::*;
 
 pub mod prelude {
     pub use super::{NodeTrait, NodeTraitPrint};
-    pub use super::Interface;
+    pub use super::{UINodeMap, UINode};
 }
 
 // #=========================#
@@ -19,10 +19,19 @@ pub mod prelude {
 
 use lunex_layout::Layout;
 
+pub trait Compute {
+    fn compute(&mut self);
+}
+
+impl <P> Compute for NodeMap<InterfaceData, Container<P>> {
+    fn compute(&mut self) {
+        
+    }
+}
 
 
-
-pub type Interface = NodeMap<InterfaceData, Container>;
+pub type UINodeMap<P = ()> = NodeMap<InterfaceData, Container<P>>;
+pub type UINode<P = ()> = Node<Container<P>>;
 
 
 pub struct InterfaceData {
@@ -30,7 +39,8 @@ pub struct InterfaceData {
 }
 
 #[derive(Debug, Default)]
-pub struct Container {
+pub struct Container<P> {
+    data: Option<P>,
     rect: Rect3D,
     layout: Layout,
     //text: Option<TextCapsule>, // It modifies ContentSize though?
@@ -42,13 +52,13 @@ pub struct Container {
     //pitch: f32
 }
 
-impl Container {
-    pub fn new() -> Container {
+impl <P:Default> Container<P> {
+    pub fn new() -> Container<P> {
         Container::default()
     }
 }
 
-impl NiceDisplay for Container {
+impl <P> NiceDisplay for Container<P> {
     fn to_nicestr(&self) -> String {
         self.layout.to_nicestr()
     }

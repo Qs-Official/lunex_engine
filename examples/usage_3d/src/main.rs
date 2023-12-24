@@ -65,7 +65,7 @@ fn setup(
     commands.entity(player).push_children(&[cam]);
 
 
-    let mut ui = Interface::new("HUD");
+    let mut ui = UINodeMap::new("HUD");
     ui.create_node("Node1").unwrap();
     //ui.create_node("Node 1/.Node 2").unwrap();
     //ui.create_node("Node 3").unwrap();
