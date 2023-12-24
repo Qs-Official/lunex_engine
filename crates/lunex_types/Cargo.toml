@@ -1,5 +1,5 @@
 [package]
-  name = "bevy_lunex"
+  name = "lunex_types"
   authors.workspace    = true
   version.workspace    = true
   edition.workspace    = true
@@ -9,6 +9,6 @@
   categories.workspace = true
 
 [dependencies]
-  ahash      = { workspace = true }
-  bevy       = { workspace = true }
-  lunex_core = { workspace = true }
+  colored       = { workspace = true }
+  bevy          = { workspace = true }
+  lunex_nodemap = { workspace = true }

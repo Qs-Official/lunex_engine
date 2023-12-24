@@ -1,4 +1,4 @@
-pub use lunex::prelude::*;
+pub use lunex_core::prelude::*;
 
 pub mod prelude {
     pub use super::{NodeTrait, NodeTraitPrint};
@@ -7,7 +7,7 @@ pub mod prelude {
 
 use bevy::prelude::*;
 use ahash::AHashMap;
-use lunex::{Node, Container};
+use lunex_core::{Node, Container};
 
 
 

@@ -1,49 +1,54 @@
-mod size;
-use bevy::math::{Vec2, Vec3};
-pub use size::*;
-pub use lunex_nodemap::NiceDisplay;
+// #=======================#
+// #=== RE-EXPORT TYPES ===#
 
+pub use lunex_layout::prelude::*;
+pub use lunex_nodemap::prelude::*;
+pub use lunex_preset::prelude::*;
+pub use lunex_theme::prelude::*;
+pub use lunex_types::prelude::*;
+pub use lunex_typographic::prelude::*;
 
-//use colored::Colorize;
-//use lunex_layout::Layout;
-
+/// [NodeSet]
+/// 
 pub mod prelude {
-    pub use super::{Abs, Prc, Rem};
-    pub use super::NodeSize;
-    pub use super::Size;
-
-    pub use super::{Rect2D, Rect3D};
-    pub use super::NiceDisplay;
+    pub use super::{NodeTrait, NodeTraitPrint};
+    pub use super::Interface;
 }
 
+// #=========================#
+// #=== TRAIT DECLARATION ===#
+
+use lunex_layout::Layout;
 
 
+pub type Interface = NodeMap<InterfaceData, Container>;
 
 
-
-
-
-
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub struct Rect2D {
-    pub pos   : Vec2,
-    pub size  : Vec2,
+pub struct InterfaceData {
+    pub themes: Theme,
 }
-impl Into<Rect3D> for Rect2D {
-    fn into(self) -> Rect3D {
-        Rect3D {
-            pos: self.pos.extend(0.0),
-            size: self.size,
-            ..Default::default()
-        }
+
+#[derive(Debug, Default)]
+pub struct Container {
+    rect: Rect3D,
+    layout: Layout,
+    //text: Option<TextCapsule>, // It modifies ContentSize though?
+
+    //depth: f32,
+
+    //roll: f32,
+    //yaw: f32,
+    //pitch: f32
+}
+
+impl Container {
+    pub fn new() -> Container {
+        Container::default()
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub struct Rect3D {
-    pub pos   : Vec3,
-    pub size  : Vec2,
-    pub roll: f32,
-    pub yaw : f32,
-    pub tilt: f32,
+impl NiceDisplay for Container {
+    fn to_nicestr(&self) -> String {
+        self.layout.to_nicestr()
+    }
 }

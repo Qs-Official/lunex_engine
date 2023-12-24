@@ -51,10 +51,10 @@
 
   bevy_lunex         = { path = "crates/bevy_lunex" }
 
-  lunex              = { path = "crates/lunex" }
   lunex_core         = { path = "crates/lunex_core" }
   lunex_layout       = { path = "crates/lunex_layout" }
   lunex_nodemap      = { path = "crates/lunex_nodemap" }
   lunex_preset       = { path = "crates/lunex_preset" }
   lunex_theme        = { path = "crates/lunex_theme" }
+  lunex_types        = { path = "crates/lunex_types" }
   lunex_typographic  = { path = "crates/lunex_typographic" }

@@ -1,5 +1,5 @@
-use lunex_core::NodeSize;
-use lunex_core::NiceDisplay;
+use lunex_types::NodeSize;
+use lunex_types::NiceDisplay;
 use colored::Colorize;
 
 pub mod prelude {
@@ -112,9 +112,9 @@ pub enum DivSize<T> {
 pub mod declarative {
     use colored::Colorize;
     use bevy::math::Vec2;
-    use lunex_core::{Rect2D, NodeSizeEvaluate};
-    use lunex_core::{Prc, NodeSize};
-    use lunex_core::NiceDisplay;
+    use lunex_types::{Rect2D, NodeSizeEvaluate};
+    use lunex_types::{Prc, NodeSize};
+    use lunex_types::NiceDisplay;
     use crate::Align;
     use crate::Layout;
 
@@ -279,7 +279,7 @@ pub mod parametric {
     use bevy::math::Vec4;
     //use crate::Align;
     use crate::{DivSize, Align};
-    use lunex_core::NodeSize;
+    use lunex_types::NodeSize;
 
     // I should be able to recreate Solid functionality with Div
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
