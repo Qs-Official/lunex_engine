@@ -1,6 +1,6 @@
 use indexmap::IndexMap as HashMap;
 use colored::Colorize;
-use std::{borrow::Borrow, fmt::Display};
+use std::borrow::Borrow;
 use bevy::ecs::component::Component;
 
 mod error;
@@ -116,6 +116,17 @@ pub trait NodeTraitPrint<T> {
     /// ## Tree
     /// Generates overview of the inner structure as a string.
     fn tree(&self, params: impl Borrow<str>) -> String;
+}
+
+/// ## Nice display
+/// Trait for nice display in terminal.
+/// Used by [NodeTraitPrint::tree] for displaying node data.
+pub trait NiceDisplay {
+    /// ## To nice string
+    /// Used when you want to convert type into nicely formatted string
+    /// for display in the terminal. Only important data for the user should be shown.
+    /// Use `colorise` crate for nice colors.
+    fn to_nicestr(&self) -> String;
 }
 
 // #===============================#
@@ -293,7 +304,7 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         self.node.borrow_data_mut(path)
     }
 }
-impl <D, T: Display> NodeTraitPrint<T> for NodeMap<D, T> {
+impl <D, T: NiceDisplay> NodeTraitPrint<T> for NodeMap<D, T> {
     fn tree(&self, params: impl Borrow<str>) -> String {
         self.node.tree(params)
     }
@@ -358,13 +369,13 @@ impl <T> Node<T> {
         string
     }
 }
-impl <T:Display> Node<T> {
+impl <T:NiceDisplay> Node<T> {
     /// Generate overview of the inner tree and write the mapped output to the given string with data formatted to a certain level depth
     pub(crate) fn cascade_tree_display(&self, mut string: String, level: u32, param: &str) -> String {
         if !param.contains("no-data") {
             if let Some(data) = &self.data {
                 let text = String::from(" |= ");
-                string = format!("{}{}{}", string, text.black(), data.to_string());
+                string = format!("{}{}{}", string, text.black(), data.to_nicestr());
             }
         }
         for (name, node) in &self.nodes {
@@ -552,7 +563,7 @@ impl <T> NodeTrait<T> for Node<T> {
         Ok(self.borrow_node_mut(path)?.obtain_data_mut())
     }
 }
-impl <T:Display> NodeTraitPrint<T> for Node<T> {
+impl <T:NiceDisplay> NodeTraitPrint<T> for Node<T> {
     fn tree(&self, params: impl Borrow<str>) -> String {
         let text = String::new();
         format!(

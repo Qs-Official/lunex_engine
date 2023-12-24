@@ -1,5 +1,6 @@
-use std::fmt::Display;
 use colored::Colorize;
+use lunex_layout::Layout;
+use lunex_core::NiceDisplay;
 
 pub use lunex_core::prelude::*;
 pub use lunex_layout::prelude::*;
@@ -14,23 +15,24 @@ pub mod prelude {
 }
 
 
-pub type Interface = NodeMap<(), Container>;
+pub type Interface = NodeMap<InterfaceData, Container>;
 
 
 pub struct InterfaceData {
-    themes: Theme,
+    pub themes: Theme,
 }
 
 #[derive(Debug, Default)]
 pub struct Container {
-    //layout: Layout,
+    rect: Rect3D,
+    layout: Layout,
     //text: Option<TextCapsule>, // It modifies ContentSize though?
 
-    depth: f32,
+    //depth: f32,
 
-    roll: f32,
-    yaw: f32,
-    pitch: f32
+    //roll: f32,
+    //yaw: f32,
+    //pitch: f32
 }
 
 impl Container {
@@ -39,9 +41,8 @@ impl Container {
     }
 }
 
-impl Display for Container {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let tx = format!("Window3D [depth: {}]", self.depth.to_string().bold().bright_cyan());
-        write!(f, "{}", tx.black())
+impl NiceDisplay for Container {
+    fn to_nicestr(&self) -> String {
+        self.layout.to_nicestr()
     }
 }

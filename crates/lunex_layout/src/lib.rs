@@ -1,4 +1,6 @@
 use lunex_core::NodeSize;
+use lunex_core::NiceDisplay;
+use colored::Colorize;
 
 pub mod prelude {
     pub use super::lui;
@@ -52,11 +54,15 @@ impl Align {
     pub const END: Align = Align(1.0);
     pub const RIGHT: Align = Align(1.0);
 }
+impl NiceDisplay for Align {
+    fn to_nicestr(&self) -> String {
+        format!("{}", self.0.to_string().bold())
+    }
+}
 
 
 
-
-
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Layout {
     Window(declarative::Window),
     Solid(declarative::Solid),
@@ -64,7 +70,19 @@ pub enum Layout {
     //Div
     //Br
 }
-
+impl Default for Layout {
+    fn default() -> Self {
+        declarative::Window::FULL.into()
+    }
+}
+impl NiceDisplay for Layout {
+    fn to_nicestr(&self) -> String {
+        match self {
+            Layout::Solid(layout) => format!("{} {}", "Solid".bold().bright_cyan(), layout.to_nicestr()),
+            Layout::Window(layout) => format!("{} {}", "Window".bold().bright_cyan(), layout.to_nicestr()),
+        }
+    }
+}
 
 
 /// ## Div Size
@@ -91,8 +109,11 @@ pub enum DivSize<T> {
 /// * [Window]
 /// * [Solid]
 pub mod declarative {
+    use colored::Colorize;
     use bevy::math::Vec2;
+    use lunex_core::{Rect2D, NodeSizeEvaluate};
     use lunex_core::{Prc, NodeSize};
+    use lunex_core::NiceDisplay;
     use crate::Align;
     use crate::Layout;
 
@@ -154,10 +175,25 @@ pub mod declarative {
             self.size.set_y(height);
             self
         }
+        
+        pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
+
+            Rect2D {
+                pos: self.pos.evaluate(parent.size, Vec2::splat(font_size)),
+                size: self.size.evaluate(parent.size, Vec2::splat(font_size)),
+            }
+        }
+    
     }
     impl Into<Layout> for Window {
         fn into(self) -> Layout {
             Layout::Window(self)
+        }
+    }
+    impl NiceDisplay for Window {
+        fn to_nicestr(&self) -> String {
+            let t = format!("[pos: ({}) size: ({})]", self.pos.to_nicestr(), self.size.to_nicestr());
+            format!("{}", t.black())
         }
     }
 
@@ -220,6 +256,12 @@ pub mod declarative {
             Layout::Solid(self)
         }
     }
+    impl NiceDisplay for Solid {
+        fn to_nicestr(&self) -> String {
+            let t = format!("[size: ({}) align_x: {} align_y: {}]", self.size.to_nicestr(), self.align_x.to_nicestr(), self.align_y.to_nicestr());
+            format!("{}", t.black())
+        }
+    }
 }
 
 
@@ -235,7 +277,7 @@ pub mod parametric {
     use bevy::math::Vec4;
     //use crate::Align;
     use crate::{DivSize, Align};
-    use lunex_core::{Prc, NodeSize};
+    use lunex_core::NodeSize;
 
     // I should be able to recreate Solid functionality with Div
     pub struct Div { // Most basic type, basically every div is List 

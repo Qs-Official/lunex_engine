@@ -19,7 +19,33 @@
   colored            = { version = "^2.1" }
   indexmap           = { version = "^2.1" }
 
-  bevy               = { version = "0.12.1", features = ["dynamic_linking"] }
+  bevy = { version = "0.12.1", default_features = false, features = [
+    "animation",
+    "bevy_asset",
+    "bevy_audio",
+    "bevy_gilrs",
+    "bevy_scene",
+    "bevy_winit",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_gltf",
+    "bevy_render",
+    "bevy_sprite",
+    "bevy_text",
+    "multi-threaded",
+    "png",
+    "hdr",
+    "vorbis",
+    "x11",
+    "bevy_gizmos",
+    "android_shared_stdcxx",
+    "tonemapping_luts",
+    "default_font",
+    "webgl2",
+
+    "dynamic_linking",
+  ] }
+
   bevy_mod_picking   = { version = "0.17.0"}
   bevy_vector_shapes = { version = "0.6.0" }
 

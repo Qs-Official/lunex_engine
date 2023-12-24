@@ -1,8 +1,11 @@
 use std::ops::Add;
 use std::ops::AddAssign;
-use std::ops::Mul;  // For * f32
-use std::ops::MulAssign;
+//use std::ops::Mul;  // For * f32
+//use std::ops::MulAssign;
 use bevy::prelude::{Vec2, Vec3, Vec4};
+use colored::Colorize;
+
+use crate::NiceDisplay;
 
 
 // #====================#
@@ -594,6 +597,180 @@ impl NodeSize<Vec4> {
     }
 }
 
+impl NiceDisplay for NodeSize<f32> {
+    fn to_nicestr(&self) -> String {
+        let mut t = String::new();
+        if let Some(v) = self.abs {
+            if v != 0.0 {
+                t = format!("{}", v.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.prc {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rem {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if t.is_empty() { t = format!("{}", "0".bright_blue()); };
+        format!("{}", t.black())
+    }
+}
+impl NiceDisplay for NodeSize<Vec2> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        if let Some(v) = self.abs {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.prc {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rem {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {}", tx.black(), ty.black())
+    }
+}
+impl NiceDisplay for NodeSize<Vec3> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        let mut tz = String::new();
+        if let Some(v) = self.abs {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+            if v.z != 0.0 {
+                tz = format!("{}", v.z.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.prc {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rem {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        if tz.is_empty() { tz = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {} z:{}", tx.black(), ty.black(), tz.black())
+    }
+}
+impl NiceDisplay for NodeSize<Vec4> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        let mut tz = String::new();
+        let mut tw = String::new();
+        if let Some(v) = self.abs {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+            if v.z != 0.0 {
+                tz = format!("{}", v.z.to_string().bright_blue());
+            }
+            if v.w != 0.0 {
+                tw = format!("{}", v.w.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.prc {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rem {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "m".bright_red());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        if tz.is_empty() { tz = format!("{}", "0".bright_blue()); };
+        if tw.is_empty() { tw = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {} z:{} w:{}", tx.black(), ty.black(), tz.black(), tw.black())
+    }
+}
 
 // #================================#
 // #=== CONSTANT IMPLEMENTATIONS ===#

@@ -1,9 +1,10 @@
+use ahash::AHashMap;
 use bevy::{
     input::mouse::{MouseMotion, MouseWheel},
     prelude::*,
 };
 
-use bevy_lunex::{prelude::*, Container};
+use bevy_lunex::{prelude::*, Container, Node};
 
 fn main() {
     App::new()
@@ -28,14 +29,15 @@ fn setup(
         ..default()
     });*/
 
-    let goo = Rect {
+    /*let goo = Rect {
         pos : Vec3::new(0.0, 0.0, 0.0),
         size: Vec2::new(5.0, 5.0),
     
         ..default()
     };
 
-    commands.spawn(goo.into_bundle(&mut meshes, &mut materials));
+    commands.spawn(goo.into_bundle(&mut meshes, &mut materials));*/
+
 
     // light
     commands.spawn(PointLightBundle {
@@ -88,6 +90,7 @@ fn setup(
     //println!("{:?}", dd);
 
     println!("{}", ui.tree("show-hidden"));
+    ShadowNode::build_set(&mut commands, ui, &mut meshes, &mut materials);
 
 }
 
@@ -228,3 +231,51 @@ impl InterfaceBox {
     }
 }*/
 
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
+pub struct Dimension(pub Vec2);
+
+#[derive(Component, Debug, Default, Clone, PartialEq)]
+pub struct ShadowNode {
+    id_map: AHashMap<String, Entity>
+}
+impl ShadowNode {
+    pub fn build_set(cmd: &mut Commands, ui: Interface, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+        let realnode = cmd.spawn((
+            //Transform::default(),
+            Dimension::default(),
+            //ShadowNode::default(),
+            PbrBundle {
+                material: mat.add(Color::rgb(0.5, 0.5, 0.5).into()),
+                mesh: msh.add(shape::Quad {
+                    size: Vec2::splat(4.0),
+                    flip: false,
+                }.into()),
+                ..default()
+            }
+        )).id();
+        for (_, node) in &ui.node.nodes {
+            ShadowNode::build(cmd, node, realnode, msh, mat);
+        }
+        //ShadowNode::default(); // Needs to be inserted as component to the realnode
+    }
+    fn build(cmd: &mut Commands, ui: &Node<Container>, parent_id: Entity, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+        let realnode = cmd.spawn((
+            //Transform::default(),
+            Dimension::default(),
+
+            PbrBundle {
+                material: mat.add(Color::rgb(0.5, 0.5, 0.5).into()),
+                mesh: msh.add(shape::Quad {
+                    size: Vec2::splat(4.0),
+                    flip: false,
+                }.into()),
+                ..default()
+            }
+
+        )).id();
+        cmd.entity(parent_id).push_children(&[realnode]);
+        for (_, node) in &ui.nodes {
+            ShadowNode::build(cmd, node, realnode, msh, mat);
+        }
+    }
+}
