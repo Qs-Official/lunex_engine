@@ -66,13 +66,12 @@ fn setup(
 
 
     let mut ui = Interface::new("HUD");
-    ui.create_node("Node 1").unwrap();
-    ui.create_node("Node 1/.Node 2").unwrap();
-    ui.create_node("Node 3").unwrap();
+    ui.create_node("Node1").unwrap();
+    //ui.create_node("Node 1/.Node 2").unwrap();
+    //ui.create_node("Node 3").unwrap();
 
 
-    let _ = ui.insert_data("Node 3", Container::new()).unwrap();
-    let _dd = ui.borrow_data("Node 3").unwrap().unwrap();
+    ui.insert_data("Node1", Container::new()).unwrap();
 
     println!("{}", ui.tree("show-hidden"));
     ShadowNodeMap::build_set(&mut commands, ui, &mut meshes, &mut materials);

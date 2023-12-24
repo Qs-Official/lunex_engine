@@ -37,7 +37,7 @@ pub struct TextCapsule {
 
 
 
-/// # Align
+/// ## Align
 /// Type used for aligning items in parametric containers.
 /// 
 /// _Range_ : `-1.0 for START to 1.0 for END`
@@ -61,7 +61,7 @@ impl NiceDisplay for Align {
 }
 
 
-
+/// ## Layout
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Layout {
     Window(declarative::Window),
@@ -90,10 +90,11 @@ impl NiceDisplay for Layout {
 /// * [DivSize::Min]
 /// * [DivSize::Max]
 /// * [DivSize::Exact]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum DivSize<T> {
     /// ## Min
     /// Div will be as little as it can be while still encapsulating it's content and following set rules.
-    Min,
+    #[default] Min,
     /// ## Max
     /// Div will be as big as it can be while following set rules. If `max_width` is not set then fill `100%` of the parent layout.
     Max,
@@ -130,7 +131,7 @@ pub mod declarative {
     impl Window {
         /// ## Full Window
         /// Covers 100% of the parent layout.
-        pub const FULL: Window = Window { pos : NodeSize::from_prc(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
+        pub const FULL: Window = Window { pos : NodeSize::from_abs_prc_rem(Vec2::splat(100.0), Vec2::splat(100.0), Vec2::splat(100.0)), size: NodeSize::from_prc(Vec2::splat(100.0)) };
         /// ## New
         /// Creates new Window layout.
         pub const fn new() -> Self {
@@ -280,6 +281,7 @@ pub mod parametric {
     use lunex_core::NodeSize;
 
     // I should be able to recreate Solid functionality with Div
+    #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Div { // Most basic type, basically every div is List 
         pub width: DivSize<f32>,
         pub min_width: Option<NodeSize<f32>>,
