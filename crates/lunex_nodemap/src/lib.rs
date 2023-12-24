@@ -18,15 +18,15 @@ pub mod prelude {
 /// Trait with all node management implementations.
 pub trait NodeTrait<T> {
     /// ## Add node
-    /// Adds new subnode to this node and returns new subnodes' name.
+    /// Adds new subnode to this node and returns the new subnodes' name.
     fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>) -> Result<String, NodeMapError>;
 
     /// ## Insert node
-    /// Inserts new subnode to this node or any other subnode and returns new subnodes' name.
+    /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>;
 
     /// ## Create node
-    /// Creates new subnode in this node or any other subnode and returns new subnodes' name.
+    /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>;
 
     /// ## Take node
@@ -78,19 +78,19 @@ pub trait NodeTrait<T> {
     fn get_depth(&self) -> f32;
 
     /// ## Add data
-    /// Adds new data to this node and returns previous data.
+    /// Adds new data to this node and returns the previous data.
     fn add_data(&mut self, data: T) -> Option<T>;
 
     /// ## Insert data
-    /// Inserts new data to this node or any other subnode and returns previous data.
+    /// Inserts new data to this node or any other subnode and returns the previous data.
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeMapError>;
 
     /// ## Take data
-    /// Removes data from this node and returns it.
+    /// Removes data from this node and returns them.
     fn take_data(&mut self) -> Option<T>;
 
     /// ## Remove data
-    /// Removes data from this node or any other subnode and returns it.
+    /// Removes data from this node or any other subnode and returns them.
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeMapError>;
 
     /// ## Obtain data
@@ -102,11 +102,11 @@ pub trait NodeTrait<T> {
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
 
     /// ## Borrow data
-    /// Borrows data from this node or any other subnode
+    /// Borrows data from this node or any other subnode.
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeMapError>;
 
     /// ## Borrow data mut
-    /// Borrows data from this node or any other subnode as mut
+    /// Borrows data from this node or any other subnode as mut.
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
 
@@ -119,7 +119,7 @@ pub trait NodeTraitPrint<T> {
 }
 
 /// ## Nice display
-/// Trait for nice display in terminal.
+/// Trait for nice display in the terminal.
 /// Used by [NodeTraitPrint::tree] for displaying node data.
 pub trait NiceDisplay {
     /// ## To nice string
@@ -145,18 +145,18 @@ pub trait NiceDisplay {
 ///  |-> Node_5
 ///  |    |-> Node_6
 /// ```
-/// If you want to access `Node_4`, use path `Node_1/Node_3/Node_4` on `NODEMAP`.
-/// Or you can use `Node_3/Node_4` on `Node_1` struct to get the same result.
+/// If you want to access `Node_4`, use path `"Node_1/Node_3/Node_4"` on `NODEMAP`.
+/// Or you can use `"Node_3/Node_4"` on `Node_1` struct to get the same result.
 /// ### Paths
 /// Whitespaces are allowed in paths, but are not encouraged.
-/// Putting a dot as first symbol like this `.name` will hide the node from the tree. If you want to
-/// display hidden nodes too, pass `show-hidden` as params to [NodeTrait::tree] method.
-/// Just `.` will refer to the same node. `..` is not supported for the sake of simplicity
+/// Putting a dot as first symbol like this `".name"` will hide the node from the tree. If you want to
+/// display hidden nodes too, pass `"show-hidden"` as params to [NodeTraitPrint::tree] method.
+/// Just `"."` will refer to the same node. `".."` is not supported for the sake of simplicity
 /// and performance.
 /// 
 /// You can also not specify the name when creating a node. That will mean the name will be
-/// generated. The format is as follows `.||#:N` with `N` being the `.len()` of the `nodes`.
-/// Meaning nodes with names like `.||#:0`, `.||#:1`, `.||#:2` can exist. Please refrain from
+/// generated. The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes`.
+/// Meaning nodes with names like `".||#:0"`, `".||#:1"`, `".||#:2"` can exist. Please refrain from
 /// manually using these names or [NodeTrait::add_node] will return errors.
 /// ### Generics
 /// * (D) => A type holding surface data that is stored in [NodeMap] for all nodes to share.

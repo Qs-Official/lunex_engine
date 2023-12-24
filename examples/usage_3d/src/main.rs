@@ -29,15 +29,6 @@ fn setup(
         ..default()
     });*/
 
-    /*let goo = Rect {
-        pos : Vec3::new(0.0, 0.0, 0.0),
-        size: Vec2::new(5.0, 5.0),
-    
-        ..default()
-    };
-
-    commands.spawn(goo.into_bundle(&mut meshes, &mut materials));*/
-
 
     // light
     commands.spawn(PointLightBundle {
@@ -53,7 +44,7 @@ fn setup(
     // cube
     let player = commands.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
+            mesh: meshes.add(Mesh::from(shape::Cube { size: 0.1 })),
             material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
@@ -79,28 +70,19 @@ fn setup(
     ui.create_node("Node 1/.Node 2").unwrap();
     ui.create_node("Node 3").unwrap();
 
-    //ui.remove_node("Node 1/.Node 2").unwrap();
-
 
     let _ = ui.insert_data("Node 3", Container::new()).unwrap();
-    let dd = ui.borrow_data("Node 3").unwrap().unwrap();
-
-    //let dd = ui.borrow_node("Node 3").unwrap().get_name();
-
-    //println!("{:?}", dd);
+    let _dd = ui.borrow_data("Node 3").unwrap().unwrap();
 
     println!("{}", ui.tree("show-hidden"));
-    ShadowNode::build_set(&mut commands, ui, &mut meshes, &mut materials);
+    ShadowNodeMap::build_set(&mut commands, ui, &mut meshes, &mut materials);
 
 }
 
+
 #[derive(Component)]
 pub struct Player;
-fn move_player(
-    keyboard_input: Res<Input<KeyCode>>,
-    mut query: Query<(&Player, &mut Transform), Without<PlayerCam>>,
-    camera: Query<&Transform, With<PlayerCam>>
-) {
+fn move_player(keyboard_input: Res<Input<KeyCode>>, mut query: Query<(&Player, &mut Transform), Without<PlayerCam>>, camera: Query<&Transform, With<PlayerCam>>) {
     let camera = camera.get_single().unwrap();
     let vector = camera.rotation.to_euler(EulerRot::YXZ);
 
@@ -132,7 +114,6 @@ fn move_player(
         }
     }
 
-
     //transform.rotation = Quat::from_euler(EulerRot::YXZ, vector.0, 0.0, 0.0);
 }
 
@@ -142,11 +123,8 @@ pub struct PlayerCam {
     distance: f32,
     sensitivity: Vec2,
 }
-fn rotate_playercam(
-    mut mouse_motion_events: EventReader<MouseMotion>,
-    mut query: Query<(&PlayerCam, &mut Transform)>,
-) {
-    let delta: Vec2 = mouse_motion_events.iter().map(|e| e.delta).sum();
+fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mut query: Query<(&PlayerCam, &mut Transform)>) {
+    let delta: Vec2 = mouse_motion_events.read().map(|e| e.delta).sum();
     for (camera, mut transform) in &mut query {
 
         // ROTATION 
@@ -171,111 +149,70 @@ fn rotate_playercam(
         transform.translation.y += -tz;
     }
 }
-fn zoom_playercam(
-    mut mouse_wheel_events: EventReader<MouseWheel>,
-    mut query: Query<&mut PlayerCam>,
-) {
-    let delta: f32 = mouse_wheel_events.iter().map(|e| e.y).sum();
+fn zoom_playercam(mut mouse_wheel_events: EventReader<MouseWheel>, mut query: Query<&mut PlayerCam>) {
+    let delta: f32 = mouse_wheel_events.read().map(|e| e.y).sum();
     for mut camera in &mut query {
         camera.distance += -delta;
     }
 }
 
 
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub struct Rect {
-    pos : Vec3,
-    size: Vec2,
-
-    pitch: f32, //Rotate around Y
-    yaw: f32,   //Rotate around X
-    roll: f32,  //Rotate around center
-}
-impl Rect {
-    pub fn into_bundle(self, meshes: &mut ResMut<Assets<Mesh>>, materials: &mut ResMut<Assets<StandardMaterial>>) -> PbrBundle {
-        let mut pp = self.pos;
-        pp.x += self.size.x*0.5;
-        pp.y += self.size.y*0.5*-1.0;
-        PbrBundle {
-            material: materials.add(Color::rgb(0.5, 0.5, 0.5).into()),
-            transform: Transform::default().with_translation(pp),
-            mesh: meshes.add(shape::Quad {
-                size: self.size,
-                flip: false,
-            }.into()),
-            ..default()
-        }
-    }
-}
-
-
-/*
-pub struct Interface {
-    width: f32,
-    height: f32,
-    nested: InterfaceBox,
-}
-
-struct InterfaceBox {
-    rect: Rect,
-    modifier: (),   //Z, Tilt, Yaw, Roll, etc...
-    layout: lui::Window,
-
-    nested: Vec<InterfaceBox>
-}
-impl InterfaceBox {
-    fn compute(&mut self, parent: &Rect) {
-
-        //let pos = self.layout.pos.evaluate(40.0, parent.size);
-
-    }
-}*/
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct Dimension(pub Vec2);
 
+
+
 #[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct ShadowNode {
+pub struct ShadowNodeMap {
     id_map: AHashMap<String, Entity>
 }
-impl ShadowNode {
+impl ShadowNodeMap {
     pub fn build_set(cmd: &mut Commands, ui: Interface, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
-        let realnode = cmd.spawn((
-            //Transform::default(),
+        let shadownode = cmd.spawn((
+
+            msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),
+            mat.add(Color::rgb(0.5, 1.0, 0.5).into()),
+
+            ShadowNodeMap::default(),
+            ShadowNode::default(),
             Dimension::default(),
-            //ShadowNode::default(),
-            PbrBundle {
-                material: mat.add(Color::rgb(0.5, 0.5, 0.5).into()),
-                mesh: msh.add(shape::Quad {
-                    size: Vec2::splat(4.0),
-                    flip: false,
-                }.into()),
-                ..default()
-            }
+            Transform::default(),
+            GlobalTransform::default(),
+            Visibility::default(),
+            InheritedVisibility::default(),
+            ViewVisibility::default(),
+
         )).id();
         for (_, node) in &ui.node.nodes {
-            ShadowNode::build(cmd, node, realnode, msh, mat);
+            ShadowNode::build(cmd, node, shadownode, msh, mat);
         }
         //ShadowNode::default(); // Needs to be inserted as component to the realnode
     }
-    fn build(cmd: &mut Commands, ui: &Node<Container>, parent_id: Entity, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
-        let realnode = cmd.spawn((
-            //Transform::default(),
-            Dimension::default(),
+}
 
-            PbrBundle {
-                material: mat.add(Color::rgb(0.5, 0.5, 0.5).into()),
-                mesh: msh.add(shape::Quad {
-                    size: Vec2::splat(4.0),
-                    flip: false,
-                }.into()),
-                ..default()
-            }
+
+#[derive(Component, Debug, Default, Clone, PartialEq)]
+pub struct ShadowNode {}
+impl ShadowNode {
+    fn build(cmd: &mut Commands, ui: &Node<Container>, parent_id: Entity, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+        let shadownode = cmd.spawn((
+
+            msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),
+            mat.add(Color::rgb(0.5, 0.5, 0.5).into()),
+
+            ShadowNode::default(),
+            Dimension::default(),
+            Transform::default(),
+            GlobalTransform::default(),
+            Visibility::default(),
+            InheritedVisibility::default(),
+            ViewVisibility::default(),
 
         )).id();
-        cmd.entity(parent_id).push_children(&[realnode]);
+        cmd.entity(parent_id).push_children(&[shadownode]);
         for (_, node) in &ui.nodes {
-            ShadowNode::build(cmd, node, realnode, msh, mat);
+            ShadowNode::build(cmd, node, shadownode, msh, mat);
         }
     }
 }
