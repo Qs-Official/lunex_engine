@@ -1,5 +1,5 @@
 mod size;
-use bevy::math::{Vec2, Vec3};
+use glam::f32::{Vec2, Vec3};
 pub use size::*;
 pub use lunex_nodemap::NiceDisplay;
 
@@ -19,7 +19,9 @@ pub mod prelude {
 
 
 
-
+pub struct Widget {
+    path: String,
+}
 
 
 

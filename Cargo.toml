@@ -18,6 +18,8 @@
   ahash              = { version = "^0.8" }
   colored            = { version = "^2.1" }
   indexmap           = { version = "^2.1" }
+  glam               = { version = "^0.25" }
+  thiserror          = { version = "^1.0" }
 
   bevy = { version = "0.12.1", default_features = false, features = [
     "animation",

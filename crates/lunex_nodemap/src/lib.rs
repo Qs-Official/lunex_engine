@@ -1,6 +1,8 @@
 use indexmap::IndexMap as HashMap;
 use colored::Colorize;
 use std::borrow::Borrow;
+
+#[cfg(feature = "bevy")]
 use bevy::ecs::component::Component;
 
 mod error;
@@ -161,7 +163,8 @@ pub trait NiceDisplay {
 /// ### Generics
 /// * (D) => A type holding surface data that is stored in [NodeMap] for all nodes to share.
 /// * (T) => A type holding node-specific data that any [Node] can store.
-#[derive(Component, Debug, Default, Clone, PartialEq)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct NodeMap<D, T> {
     /// ## Top-level data
     /// This top-level data is meant to be shared for every node. Example usage is storing `theme` and other surface data.
@@ -321,7 +324,8 @@ impl <D, T> Into<Node<T>> for NodeMap<D, T>{
 
 /// ## Node
 /// A struct representing organized data in [NodeMap].
-#[derive(Component, Debug, Default, Clone, PartialEq)]
+#[cfg_attr(feature = "bevy", derive(Component))]
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {
     /// ## Name
     /// Name of the node. `Cached` & `Read-only`.

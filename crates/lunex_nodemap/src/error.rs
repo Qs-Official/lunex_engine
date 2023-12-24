@@ -1,4 +1,4 @@
-use bevy::utils::thiserror::Error;
+use thiserror::Error;
 
 /// ## Node map error
 /// Error type indicating something went wrong.

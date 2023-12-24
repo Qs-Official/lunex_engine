@@ -9,6 +9,10 @@
   categories.workspace = true
 
 [dependencies]
-  indexmap = { workspace = true }
-  colored  = { workspace = true }
-  bevy     = { workspace = true }
+  indexmap  = { workspace = true }
+  colored   = { workspace = true }
+  thiserror = { workspace = true }
+  bevy      = { workspace = true, optional = true }
+
+[features]
+  bevy  = ["dep:bevy"]

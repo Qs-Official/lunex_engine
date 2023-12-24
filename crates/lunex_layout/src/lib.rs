@@ -37,6 +37,7 @@ pub struct TextCapsule {
 
 
 
+
 /// ## Align
 /// Type used for aligning items in parametric containers.
 /// 
@@ -110,11 +111,8 @@ pub enum DivSize<T> {
 /// * [Window]
 /// * [Solid]
 pub mod declarative {
-    use colored::Colorize;
-    use bevy::math::Vec2;
-    use lunex_types::{Rect2D, NodeSizeEvaluate};
-    use lunex_types::{Prc, NodeSize};
-    use lunex_types::NiceDisplay;
+    use glam::f32::Vec2;
+    use lunex_types::{Rect2D, Prc, NodeSize, NodeSizeEvaluate, NiceDisplay};
     use crate::Align;
     use crate::Layout;
 
@@ -176,17 +174,14 @@ pub mod declarative {
             self.size.set_y(height);
             self
         }
-        
+        /// ## Compute
+        /// Computes the layout based on given parameters.
         pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
-
             Rect2D {
                 pos: self.pos.evaluate(parent.size, Vec2::splat(font_size)),
                 size: self.size.evaluate(parent.size, Vec2::splat(font_size)),
             }
-        }
-        
-        //pub fn build(self, ui: )
-    
+        }    
     }
     impl Into<Layout> for Window {
         fn into(self) -> Layout {
@@ -195,6 +190,7 @@ pub mod declarative {
     }
     impl NiceDisplay for Window {
         fn to_nicestr(&self) -> String {
+            use colored::Colorize;
             let t = format!("[pos: ({}) size: ({})]", self.pos.to_nicestr(), self.size.to_nicestr());
             format!("{}", t.black())
         }
@@ -261,6 +257,7 @@ pub mod declarative {
     }
     impl NiceDisplay for Solid {
         fn to_nicestr(&self) -> String {
+            use colored::Colorize;
             let t = format!("[size: ({}) align_x: {} align_y: {}]", self.size.to_nicestr(), self.align_x.to_nicestr(), self.align_y.to_nicestr());
             format!("{}", t.black())
         }
@@ -277,7 +274,7 @@ pub mod declarative {
 /// * [List]
 /// * [Grid]
 pub mod parametric {
-    use bevy::math::Vec4;
+    use glam::f32::Vec4;
     //use crate::Align;
     use crate::{DivSize, Align};
     use lunex_types::NodeSize;
