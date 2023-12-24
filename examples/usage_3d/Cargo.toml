@@ -9,6 +9,5 @@
   categories.workspace = true
 
 [dependencies]
-  ahash        = { workspace = true }
   bevy         = { workspace = true }
   bevy_lunex   = { workspace = true }

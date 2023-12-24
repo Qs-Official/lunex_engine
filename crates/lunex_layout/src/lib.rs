@@ -131,7 +131,7 @@ pub mod declarative {
     impl Window {
         /// ## Full Window
         /// Covers 100% of the parent layout.
-        pub const FULL: Window = Window { pos : NodeSize::from_abs_prc_rem(Vec2::splat(100.0), Vec2::splat(100.0), Vec2::splat(100.0)), size: NodeSize::from_prc(Vec2::splat(100.0)) };
+        pub const FULL: Window = Window { pos : NodeSize::from_rem(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
         /// ## New
         /// Creates new Window layout.
         pub const fn new() -> Self {
@@ -184,6 +184,7 @@ pub mod declarative {
                 size: self.size.evaluate(parent.size, Vec2::splat(font_size)),
             }
         }
+        //pub fn build(self, ui: )
     
     }
     impl Into<Layout> for Window {

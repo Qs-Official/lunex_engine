@@ -51,6 +51,7 @@
 
   bevy_lunex         = { path = "crates/bevy_lunex" }
 
+  lunex              = { path = "crates/lunex" }
   lunex_core         = { path = "crates/lunex_core" }
   lunex_layout       = { path = "crates/lunex_layout" }
   lunex_nodemap      = { path = "crates/lunex_nodemap" }

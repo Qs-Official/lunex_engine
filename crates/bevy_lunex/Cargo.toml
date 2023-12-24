@@ -9,12 +9,6 @@
   categories.workspace = true
 
 [dependencies]
-  colored           = { workspace = true }
-
-  bevy              = { workspace = true }
-  lunex_core        = { workspace = true }
-  lunex_layout      = { workspace = true }
-  lunex_nodemap     = { workspace = true }
-  lunex_preset      = { workspace = true }
-  lunex_theme       = { workspace = true }
-  lunex_typographic = { workspace = true }
+  ahash = { workspace = true }
+  bevy  = { workspace = true }
+  lunex = { workspace = true }
