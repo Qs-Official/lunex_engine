@@ -3,7 +3,8 @@ use bevy::{
     prelude::*,
 };
 
-use bevy_lunex::{prelude::*, Container, Node};
+use bevy_lunex::prelude::*;
+
 
 fn main() {
     App::new()
@@ -70,7 +71,7 @@ fn setup(
     //ui.create_node("Node 3").unwrap();
 
 
-    ui.insert_data("Node1", Container::new()).unwrap();
+    //ui.insert_data("Node1", Container::new()).unwrap();
 
     println!("{}", ui.tree("show-hidden"));
     ShadowNodeMap::build_set(&mut commands, ui, &mut meshes, &mut materials);

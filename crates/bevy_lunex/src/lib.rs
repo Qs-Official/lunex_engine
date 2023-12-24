@@ -1,9 +1,18 @@
+// #======================#
+// #=== PRELUDE EXPORT ===#
+
 pub use lunex_core::prelude::*;
 
 pub mod prelude {
     pub use super::{NodeTrait, NodeTraitPrint};
     pub use super::Interface;
+
+    pub use super::{ShadowNodeMap, ShadowNode};
+
 }
+
+// #=======================#
+// #=== RE-EXPORT TYPES ===#
 
 use bevy::prelude::*;
 use ahash::AHashMap;

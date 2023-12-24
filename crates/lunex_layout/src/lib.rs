@@ -184,6 +184,7 @@ pub mod declarative {
                 size: self.size.evaluate(parent.size, Vec2::splat(font_size)),
             }
         }
+        
         //pub fn build(self, ui: )
     
     }
