@@ -16,11 +16,12 @@ pub mod prelude {
 
 
 
-
-/*pub struct Widget {
-    path: String,
+/// ## Node link
+/// A component that points to a specific node.
+pub struct NodeLink {
+    pub path: String,
 }
-*/
+
 
 
 
