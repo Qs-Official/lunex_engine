@@ -65,7 +65,7 @@ fn setup(
     commands.entity(player).push_children(&[cam]);
 
 
-    let mut ui = UINodeMap::new("HUD");
+    let mut ui: UINodeMap<()> = UINodeMap::new("HUD");
     ui.create_node("Node1").unwrap();
     //ui.create_node("Node 1/.Node 2").unwrap();
     //ui.create_node("Node 3").unwrap();
@@ -74,7 +74,7 @@ fn setup(
     //ui.insert_data("Node1", Container::new()).unwrap();
 
     println!("{}", ui.tree("show-hidden"));
-    ShadowNodeMap::build_set(&mut commands, ui, &mut meshes, &mut materials);
+    //ShadowNodeMap::build_set(&mut commands, ui, &mut meshes, &mut materials);
 
 }
 

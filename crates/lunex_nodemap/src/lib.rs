@@ -47,6 +47,14 @@ pub trait NodeGeneralTrait<T> {
     /// Borrows subnode from this node as mut.
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
 
+    /// ## Obtain or create node
+    /// Borrows subnode from this node. If the node doesn't exist, it creates one.
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
+
+    /// ## Obtain or create node mut
+    /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
+
     /// ## Borrow node
     /// Borrows subnode from this node or any other subnode.
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
@@ -54,6 +62,14 @@ pub trait NodeGeneralTrait<T> {
     /// ## Borrow node mut
     /// Borrows subnode from this node or any other subnode as mut.
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;
+
+    /// ## Borrow or create node
+    /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError>;
+
+    /// ## Borrow or create node mut
+    /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError>;    
 
     /// ## Merge
     /// Merges node or nodemap into this node.
@@ -248,6 +264,14 @@ impl <D, T> NodeGeneralTrait<T> for NodeMap<D, T> {
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
         self.node.obtain_node_mut(name)
     }
+
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
+        self.node.obtain_or_create_node(name)
+    }
+
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
+        self.node.obtain_or_create_node_mut(name)
+    }
   
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
         self.node.borrow_node(path)
@@ -255,6 +279,14 @@ impl <D, T> NodeGeneralTrait<T> for NodeMap<D, T> {
 
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
         self.node.borrow_node_mut(path)
+    }
+
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
+        self.node.borrow_or_create_node(path)
+    }
+
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
+        self.node.borrow_or_create_node_mut(path)
     }
 
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeMapError> {
@@ -477,6 +509,16 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
             Err(NodeMapError::InvalidPath(name.borrow().into()))
         }
     }
+
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
+        let _ = self.add_node(name.borrow(), Node::new());
+        self.obtain_node(name)
+    }
+
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
+        let _ = self.add_node(name.borrow(), Node::new());
+        self.obtain_node_mut(name)
+    }
   
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
         match path.borrow().split_once('/') {
@@ -489,6 +531,20 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
         match path.borrow().split_once('/') {
             None => self.obtain_node_mut(path),
             Some((name, rempath)) => self.obtain_node_mut(name)?.borrow_node_mut(rempath),
+        }
+    }
+
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
+        match path.borrow().split_once('/') {
+            None => self.obtain_or_create_node(path),
+            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node(rempath),
+        }
+    }
+
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
+        match path.borrow().split_once('/') {
+            None => self.obtain_or_create_node_mut(path),
+            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node_mut(rempath),
         }
     }
 
