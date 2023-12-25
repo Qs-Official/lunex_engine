@@ -27,6 +27,10 @@ pub trait NodeGeneralTrait<T> {
     /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>;
 
+    /// ## Make node
+    /// Makes new subnode in this node and returns the new subnodes' name.
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeMapError>;
+
     /// ## Create node
     /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>;
@@ -243,6 +247,10 @@ impl <D, T> NodeGeneralTrait<T> for NodeMap<D, T> {
 
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>{
         self.node.insert_node(path, node)
+    }
+
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeMapError>{
+        self.node.make_node(name)
     }
 
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>{
@@ -468,6 +476,36 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
         }
     }
 
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeMapError>{
+        if !name.borrow().is_empty() {
+            if name.borrow() == "." { return Err(NodeMapError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
+            if self.nodes.contains_key(name.borrow()) == false {
+                let mut node = Node::new();
+                node.name = name.borrow().to_owned();
+                node.path = if self.path.is_empty() { name.borrow().to_owned() } else { self.path.to_owned() + "/" + name.borrow() };
+                node.depth = self.depth + 1.0;
+                self.nodes.insert(name.borrow().to_owned(), node);
+                Ok(name.borrow().to_owned())
+            } else {
+                Err(NodeMapError::NameInUse(name.borrow().to_owned()))
+            }
+        } else {
+            let mut generated_name = format!(".||#:{}", self.nodes.len());
+            let mut i = 0;
+            while self.nodes.contains_key(&generated_name) == true {
+                generated_name = format!(".||#:{}", self.nodes.len()+i);
+                i += 1;
+                if i > 100 { return Err(NodeMapError::InvalidPath("Failed to generate name, max threshold reached!".to_owned())); }
+            }
+            let mut node = Node::new();
+            node.name = generated_name.to_owned();
+            node.path = if self.path.is_empty() { generated_name.to_owned() } else { self.path.to_owned() + "/" + &generated_name };
+            node.depth = self.depth + 1.0;
+            self.nodes.insert(generated_name.to_owned(), node);
+            Ok(generated_name)
+        }
+    }
+
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeMapError>{
         self.insert_node(path, Node::new())
     }
@@ -511,12 +549,12 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
     }
 
     fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeMapError> {
-        let _ = self.add_node(name.borrow(), Node::new());
+        let _ = self.make_node(name.borrow());
         self.obtain_node(name)
     }
 
     fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeMapError> {
-        let _ = self.add_node(name.borrow(), Node::new());
+        let _ = self.make_node(name.borrow());
         self.obtain_node_mut(name)
     }
   

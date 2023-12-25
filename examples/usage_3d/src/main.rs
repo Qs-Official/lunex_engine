@@ -66,7 +66,9 @@ fn setup(
 
 
     let mut ui: UINodeMap<()> = UINodeMap::new("HUD");
-    ui.create_node("Node1").unwrap();
+    ui.borrow_or_create_node("Node1/Node2/Node3/Node4").unwrap();
+    ui.borrow_or_create_node("Node1/Node2/Node3/Node4").unwrap();
+    ui.borrow_or_create_node("Node2/Node2/Node3/Node4").unwrap();
     //ui.create_node("Node 1/.Node 2").unwrap();
     //ui.create_node("Node 3").unwrap();
 
