@@ -1,3 +1,6 @@
+mod traits;
+pub use traits::*;
+
 // #=======================#
 // #=== RE-EXPORT TYPES ===#
 
@@ -10,24 +13,13 @@ pub use lunex_typographic::prelude::*;
 
 
 pub mod prelude {
-    pub use super::{NodeTrait, NodeTraitPrint};
+    pub use super::{NodeComputeTrait, NodeGeneralTrait, NodeDisplayTrait};
+    pub use super::{BuildAsNode, SyncToNode};
     pub use super::{UINodeMap, UINode};
 }
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
-
-use lunex_layout::Layout;
-
-pub trait Compute {
-    fn compute(&mut self);
-}
-
-impl <P> Compute for NodeMap<InterfaceData, Container<P>> {
-    fn compute(&mut self) {
-        
-    }
-}
 
 
 pub type UINodeMap<P = ()> = NodeMap<InterfaceData, Container<P>>;

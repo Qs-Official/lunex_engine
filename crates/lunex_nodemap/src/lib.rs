@@ -10,15 +10,15 @@ pub use error::NodeMapError;
 
 pub mod prelude {
     pub use super::NodeMapError;
-    pub use super::{NodeMap, Node, NodeTrait, NodeTraitPrint};
+    pub use super::{NodeMap, Node, NodeGeneralTrait, NodeDataTrait, NodeDisplayTrait};
 }
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
 
-/// ## Node trait
+/// ## Node general trait
 /// Trait with all node management implementations.
-pub trait NodeTrait<T> {
+pub trait NodeGeneralTrait<T> {
     /// ## Add node
     /// Adds new subnode to this node and returns the new subnodes' name.
     fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>) -> Result<String, NodeMapError>;
@@ -78,7 +78,13 @@ pub trait NodeTrait<T> {
     /// ## Get depth
     /// Returns full path without the name. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside nodemap correctly.
     fn get_depth(&self) -> f32;
+}
 
+/// ## Node data trait
+/// Trait with all node data management implementations.
+/// Provides mainly raw access methods. Lunex abstacts over
+/// this trait with another trait.
+pub trait NodeDataTrait<T> {
     /// ## Add data
     /// Adds new data to this node and returns the previous data.
     fn add_data(&mut self, data: T) -> Option<T>;
@@ -112,17 +118,17 @@ pub trait NodeTrait<T> {
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeMapError>;
 }
 
-/// ## Node print
-/// Trait with all node print implementations.
-pub trait NodeTraitPrint<T> {
+/// ## Node display trait
+/// Trait with all node display implementations.
+pub trait NodeDisplayTrait<T> {
     /// ## Tree
     /// Generates overview of the inner structure as a string.
     fn tree(&self, params: impl Borrow<str>) -> String;
 }
 
 /// ## Nice display
-/// Trait for nice display in the terminal.
-/// Used by [NodeTraitPrint::tree] for displaying node data.
+/// Trait for types to implement so they can be nicely printed in terminal.
+/// Used by [NodeDisplayTrait::tree] for displaying custom node data.
 pub trait NiceDisplay {
     /// ## To nice string
     /// Used when you want to convert type into nicely formatted string
@@ -152,14 +158,14 @@ pub trait NiceDisplay {
 /// ### Paths
 /// Whitespaces are allowed in paths, but are not encouraged.
 /// Putting a dot as first symbol like this `".name"` will hide the node from the tree. If you want to
-/// display hidden nodes too, pass `"show-hidden"` as params to [NodeTraitPrint::tree] method.
+/// display hidden nodes too, pass `"show-hidden"` as params to [NodeDisplayTrait::tree] method.
 /// Just `"."` will refer to the same node. `".."` is not supported for the sake of simplicity
 /// and performance.
 /// 
 /// You can also not specify the name when creating a node. That will mean the name will be
 /// generated. The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes`.
 /// Meaning nodes with names like `".||#:0"`, `".||#:1"`, `".||#:2"` can exist. Please refrain from
-/// manually using these names or [NodeTrait::add_node] will return errors.
+/// manually using these names or [NodeGeneralTrait::add_node] will return errors.
 /// ### Generics
 /// * (D) => A type holding surface data that is stored in [NodeMap] for all nodes to share.
 /// * (T) => A type holding node-specific data that any [Node] can store.
@@ -214,7 +220,7 @@ impl <D, T> NodeMap<D, T> {
         }
     }
 }
-impl <D, T> NodeTrait<T> for NodeMap<D, T> {
+impl <D, T> NodeGeneralTrait<T> for NodeMap<D, T> {
     fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeMapError>{
         self.node.add_node(name, node)
     }
@@ -274,7 +280,8 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
     fn get_depth(&self) -> f32 {
         self.node.get_depth()
     }
-
+}
+impl <D, T> NodeDataTrait<T> for NodeMap<D, T> {
     fn add_data(&mut self, data: T) -> Option<T> {
         self.node.add_data(data)
     }
@@ -307,7 +314,7 @@ impl <D, T> NodeTrait<T> for NodeMap<D, T> {
         self.node.borrow_data_mut(path)
     }
 }
-impl <D, T: NiceDisplay> NodeTraitPrint<T> for NodeMap<D, T> {
+impl <D, T: NiceDisplay> NodeDisplayTrait<T> for NodeMap<D, T> {
     fn tree(&self, params: impl Borrow<str>) -> String {
         self.node.tree(params)
     }
@@ -393,7 +400,7 @@ impl <T:NiceDisplay> Node<T> {
         string
     }
 }
-impl <T> NodeTrait<T> for Node<T> {
+impl <T> NodeGeneralTrait<T> for Node<T> {
     fn add_node(&mut self, name: impl Borrow<str>, mut node: Node<T>) -> Result<String, NodeMapError>{
         if !name.borrow().is_empty() {
             if name.borrow() == "." { return Err(NodeMapError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
@@ -528,7 +535,8 @@ impl <T> NodeTrait<T> for Node<T> {
     fn get_depth(&self) -> f32 {
         self.depth
     }
-
+}
+impl <T> NodeDataTrait<T> for Node<T> {
     fn add_data(&mut self, data: T) -> Option<T> {
         core::mem::replace(&mut self.data, Some(data))
     }
@@ -567,7 +575,7 @@ impl <T> NodeTrait<T> for Node<T> {
         Ok(self.borrow_node_mut(path)?.obtain_data_mut())
     }
 }
-impl <T:NiceDisplay> NodeTraitPrint<T> for Node<T> {
+impl <T:NiceDisplay> NodeDisplayTrait<T> for Node<T> {
     fn tree(&self, params: impl Borrow<str>) -> String {
         let text = String::new();
         format!(

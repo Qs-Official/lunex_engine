@@ -4,9 +4,8 @@
 pub use lunex_core::prelude::*;
 
 pub mod prelude {
-    pub use super::{NodeTrait, NodeTraitPrint};
-    pub use super::{UINodeMap, UINode};
-
+    pub use lunex_core::prelude::*;
+    
     pub use super::{ShadowNodeMap, ShadowNode};
 
 }

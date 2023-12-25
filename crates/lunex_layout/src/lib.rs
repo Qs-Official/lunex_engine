@@ -2,10 +2,15 @@ use lunex_types::NodeSize;
 use lunex_types::NiceDisplay;
 use colored::Colorize;
 
+
 pub mod prelude {
+    pub use super::declarative;
+    pub use super::parametric;
+
     pub use super::lui;
 
     pub use super::Align;
+    pub use super::Layout;
     pub use super::DivSize;
 }
 
@@ -111,12 +116,17 @@ pub enum DivSize<T> {
 /// * [Window]
 /// * [Solid]
 pub mod declarative {
+
+    #[cfg(feature = "bevy")]
+    use bevy::ecs::component::Component;
+
     use glam::f32::Vec2;
     use lunex_types::{Rect2D, Prc, NodeSize, NodeSizeEvaluate, NiceDisplay};
     use crate::Align;
     use crate::Layout;
 
     /// ## Window Layout
+    #[cfg_attr(feature = "bevy", derive(Component))]
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Window {
         /// ## Position
@@ -197,6 +207,7 @@ pub mod declarative {
     }
 
     /// ## Solid Layout
+    #[cfg_attr(feature = "bevy", derive(Component))]
     #[derive(Debug, Default, Clone, Copy, PartialEq)]
     pub struct Solid {
         /// ## Size
