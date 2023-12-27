@@ -1,5 +1,5 @@
 use std::borrow::Borrow;
-use crate::{Node, NodeTreeError};
+use super::{Node, NodeTreeError};
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#

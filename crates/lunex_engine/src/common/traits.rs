@@ -1,4 +1,3 @@
-
 /// ## Nice display
 /// Trait for types to implement so they can be nicely printed in terminal.
 /// Used by [NodeDisplayTrait::tree] for displaying custom node data.

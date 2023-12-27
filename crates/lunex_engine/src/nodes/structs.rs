@@ -1,19 +1,46 @@
-// #==============#
-// #=== IMPORT ===#
-
-use indexmap::IndexMap as HashMap;
-use colored::Colorize;
-use lunex_types::NiceDisplay;
 use std::borrow::Borrow;
-use crate::{NodeGeneralTrait, NodeDataTrait, NodeDisplayTrait};
-use crate::NodeTreeError;
 
-#[cfg(feature = "bevy")]
 use bevy::ecs::component::Component;
+use colored::Colorize;
+use indexmap::IndexMap as HashMap;
+use thiserror::Error;
+
+use crate::NiceDisplay;
+
+use super::{NodeGeneralTrait, NodeDataTrait, NodeDisplayTrait};
 
 
-// #===============================#
-// #=== NodeTree IMPLEMENTATIONS ===#
+// #==================#
+// #=== ERROR TYPE ===#
+
+/// ## NodeTree error
+/// Error type indicating something went wrong.
+#[derive(Debug, Error, Clone, PartialEq)]
+pub enum NodeTreeError {
+    /// Error that happens when merging nodes. The node being merged must not contain data. Process the data before merging.
+    #[error("Data from merging node was not processed/dropped before merging")]
+    DataConflict,
+
+    /// Error that happens when merging nodes. Two subnodes share the same name thus cannot be merged.
+    #[error("Duplicate name conflict for '{0:}' when trying to merge nodes")]
+    DuplicateName (String),
+
+    /// Error that happens when attempting to create a node with a name that is already in use.
+    #[error("Name '{0:}' is already in use")]
+    NameInUse (String),
+
+    /// Error that happens when the path you provided is not allowed.
+    #[error("Path '{0:}' is not allowed")]
+    InvalidPath (String),
+
+    /// Error that happens when you try to locate a node that doesn't exist.
+    #[error("Unable to locate '{0:}' node")]
+    NoNode (String),
+}
+
+
+// #================#
+// #=== NODETREE ===#
 
 /// ## NodeTree
 /// A hashmap-like data structure for organizing general data into recursive subnodes.
@@ -44,8 +71,7 @@ use bevy::ecs::component::Component;
 /// ### Generics
 /// * (D) => A type holding surface data that is stored in [NodeTree] for all nodes to share.
 /// * (T) => A type holding node-specific data that any [Node] can store.
-#[cfg_attr(feature = "bevy", derive(Component))]
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeTree<D, T> {
     /// ## Top-level data
     /// This top-level data is meant to be shared for every node. Example usage is storing `theme` and other surface data.
@@ -221,13 +247,12 @@ impl <D, T> Into<Node<T>> for NodeTree<D, T>{
 }
 
 
-// #============================#
-// #=== NODE IMPLEMENTATIONS ===#
+// #============#
+// #=== NODE ===#
 
 /// ## Node
 /// A struct representing organized data in [NodeTree].
-#[cfg_attr(feature = "bevy", derive(Component))]
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {
     /// ## Name
     /// Name of the node. `Cached` & `Read-only`.

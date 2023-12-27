@@ -1,37 +1,16 @@
-mod size;
-mod traits;
-
-pub use size::*;
-pub use traits::*;
-
-// #======================#
-// #=== PRELUDE EXPORT ===#
-
-pub mod prelude {
-    pub use super::{Abs, Prc, Rem};
-    pub use super::NodeSize;
-    pub use super::Size;
-
-    pub use super::{Rect2D, Rect3D};
-    pub use super::NiceDisplay;
-}
-
-
-// #================================#
-// #=== COMMON TYPES DECLARATION ===#
-
-#[cfg(feature = "bevy")]
 use bevy::ecs::component::Component;
 use glam::f32::{Vec2, Vec3};
 
 
 /// ## Node link
 /// A component that points to a specific node.
-#[cfg_attr(feature = "bevy", derive(Component))]
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeLink {
     pub path: String,
 }
+
+
+
 
 
 

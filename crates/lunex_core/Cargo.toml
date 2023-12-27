@@ -10,9 +10,4 @@
 
 [dependencies]
   bevy              = { workspace = true }
-  lunex_layout      = { workspace = true }
-  lunex_nodetree    = { workspace = true }
-  lunex_preset      = { workspace = true }
-  lunex_theme       = { workspace = true }
-  lunex_types       = { workspace = true }
-  lunex_typographic = { workspace = true }
+  lunex_engine      = { workspace = true }
