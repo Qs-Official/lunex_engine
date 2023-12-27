@@ -3,7 +3,7 @@ use thiserror::Error;
 /// ## Node map error
 /// Error type indicating something went wrong.
 #[derive(Debug, Error, Clone, PartialEq)]
-pub enum NodeMapError {
+pub enum NodeTreeError {
     /// Error that happens when merging nodes. The node being merged must not contain data. Process the data before merging.
     #[error("Data from merging node was not processed/dropped before merging")]
     DataConflict,

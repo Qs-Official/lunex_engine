@@ -5,7 +5,7 @@ pub use traits::*;
 // #=== RE-EXPORT TYPES ===#
 
 pub use lunex_layout::prelude::*;
-pub use lunex_nodemap::prelude::*;
+pub use lunex_nodetree::prelude::*;
 pub use lunex_preset::prelude::*;
 pub use lunex_theme::prelude::*;
 pub use lunex_types::prelude::*;
@@ -13,16 +13,22 @@ pub use lunex_typographic::prelude::*;
 
 
 pub mod prelude {
+    // Traits
     pub use super::{NodeComputeTrait, NodeGeneralTrait, NodeDisplayTrait};
     pub use super::{BuildAsNode, SyncToNode};
-    pub use super::{UINodeMap, UINode};
+
+    // Master
+    pub use super::{UINodeTree, UINode};
+
+    // Components
+    pub use super::lui;
 }
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
 
 
-pub type UINodeMap<P = ()> = NodeMap<InterfaceData, Container<P>>;
+pub type UINodeTree<P = ()> = NodeTree<InterfaceData, Container<P>>;
 pub type UINode<P = ()> = Node<Container<P>>;
 
 
@@ -32,9 +38,9 @@ pub struct InterfaceData {
 
 #[derive(Debug, Default)]
 pub struct Container<P> {
-    data: Option<P>,
-    rect: Rect3D,
-    layout: Layout,
+    pub data: Option<P>,
+    pub rect: Rect3D,
+    pub layout: Layout,
     //text: Option<TextCapsule>, // It modifies ContentSize though?
 
     //depth: f32,

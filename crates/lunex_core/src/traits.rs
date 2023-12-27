@@ -2,9 +2,9 @@
 use lunex_layout::prelude::*;
 use std::borrow::Borrow;
 
-use lunex_nodemap::prelude::*;
+use lunex_nodetree::prelude::*;
 
-use crate::{UINode, UINodeMap, Container};
+use crate::{UINode, UINodeTree, Container};
 
 
 
@@ -16,7 +16,7 @@ pub trait NodeComputeTrait {
 
 /// ## Node user data trait
 /// Trait that abstracts over [NodeDataTrait] to provide tailored
-/// implementations for [UINodeMap] user data management.
+/// implementations for [UINodeTree] user data management.
 pub trait NodeUserDataTrait {
 
 }
@@ -24,22 +24,22 @@ pub trait NodeUserDataTrait {
 /// ## Build as node
 /// Trait that [Layout] types implement so they can be build as new node.
 pub trait BuildAsNode {
-    fn build<P>(self, ui: &mut UINodeMap<P>, path: impl Borrow<str>) -> Result<String, NodeMapError> where Self: Sized;
+    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized;
 }
 
 /// ## Sync to node
-/// Trait that [Component] types which represent values in [UINodeMap] need to
-/// implement to load and store data in [UINodeMap].
+/// Trait that [Component] types which represent values in [UINodeTree] need to
+/// implement to load and store data in [UINodeTree].
 pub trait SyncToNode {
-    fn load<P>(self, ui: &mut UINodeMap<P>, path: impl Borrow<str>);
-    fn save<P>(self, ui: &mut UINodeMap<P>, path: impl Borrow<str>);
+    fn load<P>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>);
+    fn save<P>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>);
 }
 
 
 
 
 
-impl <P> NodeComputeTrait for UINodeMap<P> {
+impl <P> NodeComputeTrait for UINodeTree<P> {
     fn compute(&mut self) {
         
     }
@@ -47,9 +47,11 @@ impl <P> NodeComputeTrait for UINodeMap<P> {
 
 
 impl BuildAsNode for declarative::Window {
-    fn build<P>(self, ui: &mut UINodeMap<P>, path: impl Borrow<str>) -> Result<String, NodeMapError> where Self: Sized {
-        ui.create_node(path)?;
-        //ui.insert_data(path, data)?;
+    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized {
+        ui.create_node(path.borrow())?;
+        let mut container: Container<P> = Container::new();
+        container.layout = self.into();
+        ui.insert_data(path, container)?;
         Ok(String::new())
     }
 }

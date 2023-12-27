@@ -6,7 +6,7 @@ pub use lunex_core::prelude::*;
 pub mod prelude {
     pub use lunex_core::prelude::*;
     
-    pub use super::{ShadowNodeMap, ShadowNode};
+    pub use super::{ShadowNodeTree, ShadowNode};
 
 }
 
@@ -25,17 +25,17 @@ pub struct Dimension(pub Vec2);
 
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct ShadowNodeMap {
+pub struct ShadowNodeTree {
     id_map: AHashMap<String, Entity>
 }
-impl ShadowNodeMap {
-    pub fn build_set(cmd: &mut Commands, ui: UINodeMap, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
+impl ShadowNodeTree {
+    pub fn build_set(cmd: &mut Commands, ui: UINodeTree, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
         let shadownode = cmd.spawn((
 
             msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),
             mat.add(Color::rgb(0.5, 1.0, 0.5).into()),
 
-            ShadowNodeMap::default(),
+            ShadowNodeTree::default(),
             ShadowNode::default(),
             Dimension::default(),
             Transform::default(),

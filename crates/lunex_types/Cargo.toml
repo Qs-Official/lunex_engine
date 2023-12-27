@@ -11,4 +11,7 @@
 [dependencies]
   colored       = { workspace = true }
   glam          = { workspace = true }
-  lunex_nodemap = { workspace = true }
+  bevy      = { workspace = true, optional = true }
+
+[features]
+  bevy  = ["dep:bevy"]
