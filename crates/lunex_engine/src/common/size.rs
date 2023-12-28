@@ -1,5 +1,7 @@
 use std::ops::Add;
 use std::ops::AddAssign;
+use std::ops::Mul;
+use std::ops::MulAssign;
 
 use crate::import::*;
 use super::NiceDisplay;
@@ -114,19 +116,19 @@ impl <T> NodeSize<T> {
         self
     }
     /// ## With Absolute
-    /// Replaces the value with the new absolute value.
+    /// Replaces the value with the new `absolute` value.
     pub fn with_abs(mut self, abs: Abs<T>) -> Self {
         self.abs = Some(abs.0);
         self
     }
     /// ## With Percentage
-    /// Replaces the value with the new percentage value.
+    /// Replaces the value with the new `percentage` value.
     pub fn with_prc(mut self, prc: Prc<T>) -> Self {
         self.prc = Some(prc.0);
         self
     }
     /// ## With Rem
-    /// Replaces the value with the new rem value.
+    /// Replaces the value with the new `rem` value.
     pub fn with_rem(mut self, rem: Rem<T>) -> Self {
         self.rem = Some(rem.0);
         self
@@ -139,17 +141,17 @@ impl <T> NodeSize<T> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { *v1 = v2 } else { self.rem = Some(v2) } }
     }
     /// ## Set Absolute
-    /// Sets the value to the new absolute value.
+    /// Sets the value to the new `absolute` value.
     pub fn set_abs(&mut self, abs: Abs<T>) {
         self.abs = Some(abs.0);
     }
     /// ## Set Percentage
-    /// Sets the value to the new percentage value.
+    /// Sets the value to the new `percentage` value.
     pub fn set_prc(&mut self, prc: Prc<T>) {
         self.prc = Some(prc.0);
     }
     /// ## Set Rem
-    /// Sets the value to the new rem value.
+    /// Sets the value to the new `rem` value.
     pub fn set_rem(&mut self, rem: Rem<T>) {
         self.rem = Some(rem.0);
     }
@@ -173,6 +175,8 @@ impl <T> Into<NodeSize<T>> for Rem<T> {
         NodeSize::new().with_rem(self)
     }
 }
+
+// ADDITION ======
 
 // # Impl `Abs(T) + Abs(T)`
 impl<T: Add<Output = T>> Add for Abs<T> {
@@ -244,30 +248,25 @@ impl<T: Add<Output = T>> Add<Prc<T>> for Rem<T> {
 impl<T: Add<Output = T> + Add> Add for NodeSize<T> {
     type Output = Self;
     fn add(self, other: Self) -> Self::Output {
-
         let mut output = NodeSize::new();
-
         if let Some(v1) = self.abs {
             match other.abs {
-                Some(v2) => output.set_abs(Abs(v1 + v2)),
-                None => output.set_abs(Abs(v1)),
+                Some(v2) => output.abs = Some(v1 + v2),
+                None => output.abs = Some(v1),
             }
         }
-
         if let Some(v1) = self.prc {
             match other.prc {
-                Some(v2) => output.set_prc(Prc(v1 + v2)),
-                None => output.set_prc(Prc(v1)),
+                Some(v2) => output.prc = Some(v1 + v2),
+                None => output.prc = Some(v1),
             }
         }
-
         if let Some(v1) = self.rem {
             match other.rem {
-                Some(v2) => output.set_rem(Rem(v1 + v2)),
-                None => output.set_rem(Rem(v1)),
+                Some(v2) => output.rem = Some(v1 + v2),
+                None => output.rem = Some(v1),
             }
         }
-        
         output
     }
 }
@@ -321,8 +320,8 @@ impl<T: Add<Output = T> + Copy> AddAssign for NodeSize<T> {
 impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Abs<T>) {
         match self.abs {
-            Some(v) => self.set_abs(Abs(v + rhs.0)),
-            None => self.set_abs(rhs),
+            Some(v) => self.abs = Some(v + rhs.0),
+            None => self.abs = Some(rhs.0),
         }
     }
 }
@@ -330,8 +329,8 @@ impl<T: Add<Output = T> + Copy> AddAssign<Abs<T>> for NodeSize<T> {
 impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Prc<T>) {
         match self.prc {
-            Some(v) => self.set_prc(Prc(v + rhs.0)),
-            None => self.set_prc(rhs),
+            Some(v) => self.prc = Some(v + rhs.0),
+            None => self.prc = Some(rhs.0),
         }
     }
 }
@@ -339,11 +338,164 @@ impl<T: Add<Output = T> + Copy> AddAssign<Prc<T>> for NodeSize<T> {
 impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Rem<T>) {
         match self.rem {
-            Some(v) => self.set_rem(Rem(v + rhs.0)),
-            None => self.set_rem(rhs),
+            Some(v) => self.rem = Some(v + rhs.0),
+            None => self.rem = Some(rhs.0),
         }
     }
 }
+
+// MULTIPLICATION ======
+
+// # Impl `Abs(T) * Abs(T)`
+impl<T: Mul<Output = T>> Mul for Abs<T> {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self::Output {
+        Abs(self.0 * other.0)
+    }
+}
+// # Impl `Prc(T) * Prc(T)`
+impl<T: Mul<Output = T>> Mul for Prc<T> {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self::Output {
+        Prc(self.0 * other.0)
+    }
+}
+// # Impl `Rem(T) * Rem(T)`
+impl<T: Mul<Output = T>> Mul for Rem<T> {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self::Output {
+        Rem(self.0 * other.0)
+    }
+}
+
+// # Impl `NodeSize(T) * NodeSize(T)`
+impl<T: Mul<Output = T> + Mul> Mul for NodeSize<T> {
+    type Output = Self;
+    fn mul(self, other: Self) -> Self::Output {
+        let mut output = NodeSize::new();
+        if let Some(v1) = self.abs {
+            if let Some(v2) = other.abs {
+                output.abs = Some(v1 * v2);
+            }
+        }
+        if let Some(v1) = self.prc {
+            if let Some(v2) = other.prc {
+                output.prc = Some(v1 * v2);
+            }
+        }
+        if let Some(v1) = self.rem {
+            if let Some(v2) = other.rem {
+                output.rem = Some(v1 * v2);
+            }
+        }
+        output
+    }
+}
+// # Impl `NodeSize(T) * Abs(T)`
+impl<T: Mul<Output = T> + Mul> Mul<Abs<T>> for NodeSize<T> {
+    type Output = Self;
+    fn mul(mut self, other: Abs<T>) -> Self::Output {
+        if let Some(v) = self.abs {
+            self.abs = Some(v * other.0);
+        }
+        self
+    }
+}
+// # Impl `NodeSize(T) * Prc(T)`
+impl<T: Mul<Output = T> + Mul> Mul<Prc<T>> for NodeSize<T> {
+    type Output = Self;
+    fn mul(mut self, other: Prc<T>) -> Self::Output {
+        if let Some(v) = self.prc {
+            self.prc = Some(v * other.0);
+        }
+        self
+    }
+}
+// # Impl `NodeSize(T) * Rem(T)`
+impl<T: Mul<Output = T> + Mul> Mul<Rem<T>> for NodeSize<T> {
+    type Output = Self;
+    fn mul(mut self, other: Rem<T>) -> Self::Output {
+        if let Some(v) = self.rem {
+            self.rem = Some(v * other.0);
+        }
+        self
+    }
+}
+
+// # Impl `NodeSize(T) *= NodeSize(T)`
+impl<T: Mul<Output = T> + Copy> MulAssign for NodeSize<T> {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs
+    }
+}
+// # Impl `NodeSize(T) *= Abs(T)`
+impl<T: Mul<Output = T> + Copy> MulAssign<Abs<T>> for NodeSize<T> {
+    fn mul_assign(&mut self, rhs: Abs<T>) {
+        if let Some(v) = self.abs {
+            self.abs = Some(v * rhs.0);
+        }
+    }
+}
+// # Impl `NodeSize(T) *= Prc(T)`
+impl<T: Mul<Output = T> + Copy> MulAssign<Prc<T>> for NodeSize<T> {
+    fn mul_assign(&mut self, rhs: Prc<T>) {
+        if let Some(v) = self.prc {
+            self.prc = Some(v * rhs.0);
+        }
+    }
+}
+// # Impl `NodeSize(T) *= Rem(T)`
+impl<T: Mul<Output = T> + Copy> MulAssign<Rem<T>> for NodeSize<T> {
+    fn mul_assign(&mut self, rhs: Rem<T>) {
+        if let Some(v) = self.rem {
+            self.rem = Some(v * rhs.0);
+        }
+    }
+}
+
+
+// MULTIPLICATION with F32 ======
+
+// # Impl `NodeSize(T) * f32 = NodeSize(T)`
+impl<T: Mul<f32, Output = T>> Mul<f32> for NodeSize<T> {
+    type Output = NodeSize<T>;
+    fn mul(self, rhs: f32) -> Self::Output {
+        let mut output = NodeSize::new();
+        if let Some(v) = self.abs {
+            output.abs = Some(v * rhs);
+        }
+        if let Some(v) = self.prc {
+            output.prc = Some(v * rhs);
+        }
+        if let Some(v) = self.rem {
+            output.rem = Some(v * rhs);
+        }
+        output
+    }
+}
+// # Impl `Abs(T) * f32 = Abs(T)`
+impl<T: Mul<f32, Output = T>> Mul<f32> for Abs<T> {
+    type Output = Abs<T>;
+    fn mul(self, rhs: f32) -> Self::Output {
+        Abs(self.0 * rhs)
+    }
+}
+// # Impl `Prc(T) * f32 = Prc(T)`
+impl<T: Mul<f32, Output = T>> Mul<f32> for Prc<T> {
+    type Output = Prc<T>;
+    fn mul(self, rhs: f32) -> Self::Output {
+        Prc(self.0 * rhs)
+    }
+}
+// # Impl `Rem(T) * f32 = Rem(T)`
+impl<T: Mul<f32, Output = T>> Mul<f32> for Rem<T> {
+    type Output = Rem<T>;
+    fn mul(self, rhs: f32) -> Self::Output {
+        Rem(self.0 * rhs)
+    }
+}
+
+
 
 
 // #================================#
@@ -953,7 +1105,7 @@ impl <T> NodeSize<T> {
     }
 }
 
-// # Impl CONSTS
+// # MOST LIKELY NOT NEEDED AND DEPRACTED!
 impl NodeSize<f32> {
     /// ## Abs - Extra-small
     pub const A_XS: NodeSize<f32> = NodeSize::A_4;
@@ -2765,6 +2917,104 @@ impl NodeSize<Vec4> {
     pub const R_99_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(99.0 * 0.25));
     /// ## Rem - Standard Size 100
     pub const R_100_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(100.0 * 0.25));
+}
+
+// # Impl CONSTS
+impl Abs<f32> {
+    /// ## Zero
+    pub const ZERO: Abs<f32> = Abs(0.0);
+    /// ## Extra-small
+    pub const XS: Abs<f32> = Abs(1.0 * 16.0);
+    /// ## Small
+    pub const SM: Abs<f32> = Abs(2.0 * 16.0);
+    /// ## Medium
+    pub const MD: Abs<f32> = Abs(3.0 * 16.0);
+    /// ## Large
+    pub const LG: Abs<f32> = Abs(4.0 * 16.0);
+    /// ## Extra-large
+    pub const XL: Abs<f32> = Abs(6.0 * 16.0);
+    /// ## Extra-large 2
+    pub const XL2: Abs<f32> = Abs(8.0 * 16.0);
+    /// ## Extra-large 3
+    pub const XL3: Abs<f32> = Abs(10.0 * 16.0);
+    /// ## Extra-large 4
+    pub const XL4: Abs<f32> = Abs(12.0 * 16.0);
+    /// ## Extra-large 5
+    pub const XL5: Abs<f32> = Abs(14.0 * 16.0);
+    /// ## Extra-large 6
+    pub const XL6: Abs<f32> = Abs(16.0 * 16.0);
+    /// ## Extra-large 7
+    pub const XL7: Abs<f32> = Abs(18.0 * 16.0);
+}
+impl Prc<f32> {
+    /// ## Zero
+    pub const ZERO: Prc<f32> = Prc(0.0);
+    /// ## Full
+    pub const FULL: Prc<f32> = Prc(100.0);
+    /// ## Half
+    pub const HALF: Prc<f32> = Prc(100.0 / 2.0);
+    /// ## Third
+    pub const THIRD: Prc<f32> = Prc(100.0 / 3.0);
+    /// ## Quarter
+    pub const QUARTER: Prc<f32> = Prc(100.0 / 4.0);
+    /// ## Fifth
+    pub const FIFTH: Prc<f32> = Prc(100.0 / 5.0);
+    /// ## Sixth
+    pub const SIXTH: Prc<f32> = Prc(100.0 / 6.0);
+    /// ## Seventh
+    pub const SEVENTH: Prc<f32> = Prc(100.0 / 7.0);
+    /// ## Eighth
+    pub const EIGHTH: Prc<f32> = Prc(100.0 / 8.0);
+    /// ## Ninth
+    pub const NINTH: Prc<f32> = Prc(100.0 / 9.0);
+    /// ## Tenth
+    pub const TENTH: Prc<f32> = Prc(100.0 / 10.0);
+    /// ## Eleventh
+    pub const ELEVENTH: Prc<f32> = Prc(100.0 / 11.0);
+    /// ## Twelfth
+    pub const TWELFTH: Prc<f32> = Prc(100.0 / 12.0);
+    /// ## Thirteenth
+    pub const THIRTEENTH: Prc<f32> = Prc(100.0 / 13.0);
+    /// ## Fourteenth
+    pub const FOURTEENTH: Prc<f32> = Prc(100.0 / 14.0);
+    /// ## Fifteenth
+    pub const FIFTEENTH: Prc<f32> = Prc(100.0 / 15.0);
+    /// ## Sixteenth
+    pub const SIXTEENTH: Prc<f32> = Prc(100.0 / 16.0);
+    /// ## Seventeenth
+    pub const SEVENTEENTH: Prc<f32> = Prc(100.0 / 17.0);
+    /// ## Eighteenth
+    pub const EIGHTEENTH: Prc<f32> = Prc(100.0 / 18.0);
+    /// ## Nineteenth
+    pub const NINETEENTH: Prc<f32> = Prc(100.0 / 19.0);
+    /// ## Twentieth
+    pub const TWENTIETH: Prc<f32> = Prc(100.0 / 20.0);
+}
+impl Rem<f32> {
+    /// ## Zero
+    pub const ZERO: Rem<f32> = Rem(0.0);
+    /// ## Extra-small
+    pub const XS: Rem<f32> = Rem(1.0);
+    /// ## Small
+    pub const SM: Rem<f32> = Rem(2.0);
+    /// ## Medium
+    pub const MD: Rem<f32> = Rem(3.0);
+    /// ## Large
+    pub const LG: Rem<f32> = Rem(4.0);
+    /// ## Extra-large
+    pub const XL: Rem<f32> = Rem(6.0);
+    /// ## Extra-large 2
+    pub const XL2: Rem<f32> = Rem(8.0);
+    /// ## Extra-large 3
+    pub const XL3: Rem<f32> = Rem(10.0);
+    /// ## Extra-large 4
+    pub const XL4: Rem<f32> = Rem(12.0);
+    /// ## Extra-large 5
+    pub const XL5: Rem<f32> = Rem(14.0);
+    /// ## Extra-large 6
+    pub const XL6: Rem<f32> = Rem(16.0);
+    /// ## Extra-large 7
+    pub const XL7: Rem<f32> = Rem(18.0);
 }
 
 pub type Size = NodeSize<f32>;
