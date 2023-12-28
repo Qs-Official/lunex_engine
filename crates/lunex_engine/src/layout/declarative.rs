@@ -18,7 +18,7 @@ pub struct Window {
 impl Window {
     /// ## Full Window
     /// Covers 100% of the parent layout.
-    pub const FULL: Window = Window { pos : NodeSize::from_rem(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
+    pub const FULL: Window = Window { pos : NodeSize::from_abs(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
     /// ## New
     /// Creates new Window layout.
     pub const fn new() -> Self {

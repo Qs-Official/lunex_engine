@@ -15,20 +15,11 @@ fn main() {
         .run();
 }
 
-/// set up a simple 3D scene
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    // plane
-    /*commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(15.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-        ..default()
-    });*/
-
-
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
@@ -63,17 +54,16 @@ fn setup(
 
     commands.entity(player).push_children(&[cam]);
 
-
+    build_ui().unwrap();
 }
 
-pub fn build_ui() -> Result<(), LunexError> {
+fn build_ui() -> Result<(), LunexError> {
 
     let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
+    layout::Window::FULL.build(&mut ui, "Node1/2")?;
 
-    println!("{}", ui.tree("show-hidden"));
-    //ShadowNodeTree::build_set(&mut commands, ui, &mut meshes, &mut materials);
-
+    println!("\n{}\n", ui.tree("show-hidden"));
     Ok(())
 }
