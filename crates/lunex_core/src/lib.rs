@@ -32,6 +32,7 @@ pub mod prelude {
 // #=== TRAIT DECLARATION ===#
 
 use lunex_engine::{Rect3D, NiceDisplay};
+use colored::Colorize;
 
 
 pub type UINodeTree<P = ()> = NodeTree<InterfaceData, Container<P>>;
@@ -64,6 +65,6 @@ impl <P:Default> Container<P> {
 
 impl <P> NiceDisplay for Container<P> {
     fn to_nicestr(&self) -> String {
-        self.layout.to_nicestr()
+        format!("{} {} {}", self.layout.to_nicestr(), "|||".black(), self.rect.to_nicestr())
     }
 }

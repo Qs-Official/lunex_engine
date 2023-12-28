@@ -69,7 +69,7 @@ fn build_ui() -> Result<(), LunexError> {
         .with_size(Abs::splat2(15.) + Rem::splat2(5.))
         .build(&mut ui, "Node1/Node3")?;
 
-    ui.compute(Rect2D::new().with_size((100., 100.)).into());
+    ui.compute(Rect2D::new().with_size((100.0, 100.0)).into());
 
     println!("\n{}\n", ui.tree("show-hidden"));
 

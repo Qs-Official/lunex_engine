@@ -9,6 +9,7 @@
   categories.workspace = true
 
 [dependencies]
+  colored           = { workspace = true }
   bevy              = { workspace = true }
   lunex_engine      = { workspace = true }
   lunex_theme       = { workspace = true }

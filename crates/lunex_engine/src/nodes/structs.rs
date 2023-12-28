@@ -303,7 +303,7 @@ impl <T:NiceDisplay> Node<T> {
     pub(crate) fn cascade_tree_display(&self, mut string: String, level: u32, param: &str) -> String {
         if !param.contains("no-data") {
             if let Some(data) = &self.data {
-                let text = String::from(" |= ");
+                let text = String::from(" == ");
                 string = format!("{}{}{}", string, text.black(), data.to_nicestr());
             }
         }

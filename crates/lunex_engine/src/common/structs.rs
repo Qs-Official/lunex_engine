@@ -1,4 +1,5 @@
 use bevy::ecs::component::Component;
+use crate::NiceDisplay;
 use crate::import::*;
 
 use crate::NodeTreeError;
@@ -116,5 +117,11 @@ impl Into<Rect2D> for Rect3D {
             pos: self.pos.truncate(),
             size: self.size,
         }
+    }
+}
+impl NiceDisplay for Rect3D {
+    fn to_nicestr(&self) -> String {
+        let text = format!("[pos: {} size: {}]", self.pos.to_string(), self.size.to_string());
+        format!("{} {}", "Rect3D".bright_magenta(), text.black())
     }
 }
