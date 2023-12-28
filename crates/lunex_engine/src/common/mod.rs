@@ -13,4 +13,6 @@ pub mod prelude {
     pub use super::NodeSize;
 
     pub use super::NodeLink;
+
+    pub use super::LunexError;
 }

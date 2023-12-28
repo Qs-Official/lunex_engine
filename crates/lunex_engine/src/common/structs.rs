@@ -1,5 +1,28 @@
 use bevy::ecs::component::Component;
 use glam::f32::{Vec2, Vec3};
+use thiserror::Error;
+
+use crate::NodeTreeError;
+
+
+// #==================#
+// #=== ERROR TYPE ===#
+
+/// ## NodeTree error
+/// Error type indicating something went wrong.
+#[derive(Debug, Error, Clone, PartialEq)]
+pub enum LunexError {
+    /// Error that occurs when something went wrong with NodeTree.
+    #[error("Something went wrong with NodeTree")]
+    NodeTreeError(NodeTreeError),
+}
+impl From<NodeTreeError> for LunexError {
+    fn from(value: NodeTreeError) -> Self {
+        LunexError::NodeTreeError(value)
+    }
+}
+
+
 
 
 /// ## Node link

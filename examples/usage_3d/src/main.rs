@@ -64,18 +64,16 @@ fn setup(
     commands.entity(player).push_children(&[cam]);
 
 
+}
+
+pub fn build_ui() -> Result<(), LunexError> {
+
     let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
 
-    layout::Window::FULL.build(&mut ui, "Node1").unwrap();
-
-
-    //ui.insert_data("Node1", Container::new()).unwrap();
+    layout::Window::FULL.build(&mut ui, "Node1")?;
 
     println!("{}", ui.tree("show-hidden"));
     //ShadowNodeTree::build_set(&mut commands, ui, &mut meshes, &mut materials);
 
-}
-
-/*pub fn build_ui() -> Result<(), LunexError> {
     Ok(())
-}*/
+}

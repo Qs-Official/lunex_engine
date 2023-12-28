@@ -19,6 +19,7 @@ pub mod prelude {
 
     // Master
     pub use super::{UINodeTree, UINode};
+    pub use super::LunexError;
 
     pub use lunex_engine::layout;
 
