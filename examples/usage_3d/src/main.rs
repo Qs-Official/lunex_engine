@@ -63,11 +63,13 @@ fn build_ui() -> Result<(), LunexError> {
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
 
-    layout::Window::FULL.with_x(Prc::HALF * 0.2).build(&mut ui, "Node2")?;
+    layout::Window::FULL.with_x( Abs::SM + Rem::XL * 2.0 ).build(&mut ui, "Node2")?;
 
     layout::Window::EMPTY
         .with_size(Abs::splat2(15.) + Rem::splat2(5.))
         .build(&mut ui, "Node1/Node3")?;
+
+    ui.compute(Rect2D::new().with_size((100., 100.)).into());
 
     println!("\n{}\n", ui.tree("show-hidden"));
 

@@ -2,16 +2,10 @@ use std::borrow::Borrow;
 
 use lunex_engine::nodes::prelude::*;
 use lunex_engine::layout;
+use lunex_engine::Rect3D;
 
-use crate::{UINodeTree, Container};
+use crate::{UINode, UINodeTree, Container};
 
-
-
-/// ## Node compute trait
-/// Trait with all node layout computation implementations.
-pub trait NodeComputeTrait {
-    fn compute(&mut self);
-}
 
 /// ## Node user data trait
 /// Trait that abstracts over [NodeDataTrait] to provide tailored
@@ -20,11 +14,6 @@ pub trait NodeUserDataTrait {
 
 }
 
-/// ## Build as node
-/// Trait that [Layout] types implement so they can be build as new node.
-pub trait BuildAsNode {
-    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized;
-}
 
 /// ## Sync to node
 /// Trait that [Component] types which represent values in [UINodeTree] need to
@@ -38,12 +27,40 @@ pub trait SyncToNode {
 
 
 
+/// ## Node compute trait
+/// Trait with all node layout computation implementations.
+pub trait NodeComputeTrait {
+    fn compute(&mut self, parent: Rect3D);
+}
+
 impl <P> NodeComputeTrait for UINodeTree<P> {
-    fn compute(&mut self) {
-        
+    fn compute(&mut self, parent: Rect3D) {
+        self.node.compute(parent);
     }
 }
 
+impl <P> NodeComputeTrait for UINode<P> {
+    fn compute(&mut self, parent: Rect3D) {
+        
+        if let Some(container) = &mut self.data {
+            container.rect = container.layout.compute(parent, 16.0);
+
+            for (_, node) in &mut self.nodes {
+                node.compute(container.rect);
+            }
+        }
+    }
+}
+
+
+
+
+
+/// ## Build as node
+/// Trait that [Layout] types implement so they can be build as new node.
+pub trait BuildAsNode {
+    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized;
+}
 
 impl BuildAsNode for layout::Window {
     fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized {

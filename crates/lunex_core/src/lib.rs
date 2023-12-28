@@ -22,6 +22,7 @@ pub mod prelude {
     pub use super::LunexError;
 
     pub use lunex_engine::{Abs, Prc, Rem, NodeSize};
+    pub use lunex_engine::{Rect2D, Rect3D};
 
     pub use lunex_engine::layout;
 

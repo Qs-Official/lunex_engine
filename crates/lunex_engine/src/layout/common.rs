@@ -1,5 +1,5 @@
 use crate::import::*;
-use crate::{NiceDisplay, NodeSize};
+use crate::{NiceDisplay, NodeSize, Rect3D};
 
 use super::{Window, Solid};
 
@@ -36,6 +36,14 @@ pub enum Layout {
     //Window3D
     //Div
     //Br
+}
+impl Layout {
+    pub fn compute(&self, parent: Rect3D, font_size: f32) -> Rect3D {
+        match &self {
+            Layout::Window(l) => l.compute(parent.into(), font_size).into(),
+            Layout::Solid(_) => todo!(),
+        }
+    }
 }
 impl Default for Layout {
     fn default() -> Self {
