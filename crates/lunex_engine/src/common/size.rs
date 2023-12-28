@@ -12,7 +12,7 @@ use super::NiceDisplay;
 
 #[cfg(test)]
 mod test {
-    use super::{Abs, Prc, Rem, Size, NodeSize, Vec2};
+    use super::{Abs, Prc, Rem, NodeSize};
     #[test]
     fn all () {
         assert_eq!(NodeSize::new().with_abs(Abs(5)) + Abs(5) + Abs(5), NodeSize::new().with_abs(Abs(15)));
@@ -30,7 +30,6 @@ mod test {
 
         new_amount += amount;
         assert_eq!(new_amount, NodeSize::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
-        let _ = Size::A_16;
     }
 }
 
@@ -853,27 +852,27 @@ impl <T> NodeSize<T> {
 // # Impl CONSTS
 impl NodeSize<f32> {
     /// ## Abs - Extra-small
-    pub const A_XS: NodeSize<f32> = NodeSize::from_abs(1.0 * 16.0);
+    pub const A_XS: NodeSize<f32> = NodeSize::A_4;
     /// ## Abs - Small
-    pub const A_SM: NodeSize<f32> = NodeSize::from_abs(2.0 * 16.0);
+    pub const A_SM: NodeSize<f32> = NodeSize::A_8;
     /// ## Abs - Medium
-    pub const A_MD: NodeSize<f32> = NodeSize::from_abs(3.0 * 16.0);
+    pub const A_MD: NodeSize<f32> = NodeSize::A_12;
     /// ## Abs - Large
-    pub const A_LG: NodeSize<f32> = NodeSize::from_abs(4.0 * 16.0);
+    pub const A_LG: NodeSize<f32> = NodeSize::A_16;
     /// ## Abs - Extra-large
-    pub const A_XL: NodeSize<f32> = NodeSize::from_abs(6.0 * 16.0);
+    pub const A_XL: NodeSize<f32> = NodeSize::A_24;
     /// ## Abs - Extra-large 2
-    pub const A_XL2: NodeSize<f32> = NodeSize::from_abs(8.0 * 16.0);
+    pub const A_XL2: NodeSize<f32> = NodeSize::A_32;
     /// ## Abs - Extra-large 3
-    pub const A_XL3: NodeSize<f32> = NodeSize::from_abs(10.0 * 16.0);
+    pub const A_XL3: NodeSize<f32> = NodeSize::A_40;
     /// ## Abs - Extra-large 4
-    pub const A_XL4: NodeSize<f32> = NodeSize::from_abs(12.0 * 16.0);
+    pub const A_XL4: NodeSize<f32> = NodeSize::A_48;
     /// ## Abs - Extra-large 5
-    pub const A_XL5: NodeSize<f32> = NodeSize::from_abs(14.0 * 16.0);
+    pub const A_XL5: NodeSize<f32> = NodeSize::A_56;
     /// ## Abs - Extra-large 6
-    pub const A_XL6: NodeSize<f32> = NodeSize::from_abs(16.0 * 16.0);
+    pub const A_XL6: NodeSize<f32> = NodeSize::A_64;
     /// ## Abs - Extra-large 7
-    pub const A_XL7: NodeSize<f32> = NodeSize::from_abs(18.0 * 16.0);
+    pub const A_XL7: NodeSize<f32> = NodeSize::A_72;
 
     /// ## Abs - Standard Size 0
     pub const A_0: NodeSize<f32> = NodeSize::from_abs(0.0);
@@ -1079,27 +1078,27 @@ impl NodeSize<f32> {
     pub const A_100: NodeSize<f32> = NodeSize::from_abs(100.0 * 4.0);
 
     /// ## Rem - Extra-small
-    pub const R_XS: NodeSize<f32> = NodeSize::from_rem(1.0);
+    pub const R_XS: NodeSize<f32> = NodeSize::R_4;
     /// ## Rem - Small
-    pub const R_SM: NodeSize<f32> = NodeSize::from_rem(2.0);
+    pub const R_SM: NodeSize<f32> = NodeSize::R_8;
     /// ## Rem - Medium
-    pub const R_MD: NodeSize<f32> = NodeSize::from_rem(3.0);
+    pub const R_MD: NodeSize<f32> = NodeSize::R_12;
     /// ## Rem - Large
-    pub const R_LG: NodeSize<f32> = NodeSize::from_rem(4.0);
+    pub const R_LG: NodeSize<f32> = NodeSize::R_16;
     /// ## Rem - Extra-large
-    pub const R_XL: NodeSize<f32> = NodeSize::from_rem(6.0);
+    pub const R_XL: NodeSize<f32> = NodeSize::R_24;
     /// ## Rem - Extra-large 2
-    pub const R_XL2: NodeSize<f32> = NodeSize::from_rem(8.0);
+    pub const R_XL2: NodeSize<f32> = NodeSize::R_32;
     /// ## Rem - Extra-large 3
-    pub const R_XL3: NodeSize<f32> = NodeSize::from_rem(10.0);
+    pub const R_XL3: NodeSize<f32> = NodeSize::R_40;
     /// ## Rem - Extra-large 4
-    pub const R_XL4: NodeSize<f32> = NodeSize::from_rem(12.0);
+    pub const R_XL4: NodeSize<f32> = NodeSize::R_48;
     /// ## Rem - Extra-large 5
-    pub const R_XL5: NodeSize<f32> = NodeSize::from_rem(14.0);
+    pub const R_XL5: NodeSize<f32> = NodeSize::R_56;
     /// ## Rem - Extra-large 6
-    pub const R_XL6: NodeSize<f32> = NodeSize::from_rem(16.0);
+    pub const R_XL6: NodeSize<f32> = NodeSize::R_64;
     /// ## Rem - Extra-large 7
-    pub const R_XL7: NodeSize<f32> = NodeSize::from_rem(18.0);
+    pub const R_XL7: NodeSize<f32> = NodeSize::R_72;
 
     /// ## Rem - Standard Size 0
     pub const R_0: NodeSize<f32> = NodeSize::from_rem(0.0);
@@ -1306,27 +1305,27 @@ impl NodeSize<f32> {
 }
 impl NodeSize<Vec2> {
     /// ## Abs - Extra-small
-    pub const A_XS_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(1.0 * 16.0));
+    pub const A_XS_VEC2: NodeSize<Vec2> = NodeSize::A_4_VEC2;
     /// ## Abs - Small
-    pub const A_SM_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(2.0 * 16.0));
+    pub const A_SM_VEC2: NodeSize<Vec2> = NodeSize::A_8_VEC2;
     /// ## Abs - Medium
-    pub const A_MD_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(3.0 * 16.0));
+    pub const A_MD_VEC2: NodeSize<Vec2> = NodeSize::A_12_VEC2;
     /// ## Abs - Large
-    pub const A_LG_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(4.0 * 16.0));
+    pub const A_LG_VEC2: NodeSize<Vec2> = NodeSize::A_16_VEC2;
     /// ## Abs - Extra-large
-    pub const A_XL_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(6.0 * 16.0));
+    pub const A_XL_VEC2: NodeSize<Vec2> = NodeSize::A_24_VEC2;
     /// ## Abs - Extra-large 2
-    pub const A_XL2_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(8.0 * 16.0));
+    pub const A_XL2_VEC2: NodeSize<Vec2> = NodeSize::A_32_VEC2;
     /// ## Abs - Extra-large 3
-    pub const A_XL3_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(10.0 * 16.0));
+    pub const A_XL3_VEC2: NodeSize<Vec2> = NodeSize::A_40_VEC2;
     /// ## Abs - Extra-large 4
-    pub const A_XL4_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(12.0 * 16.0));
+    pub const A_XL4_VEC2: NodeSize<Vec2> = NodeSize::A_48_VEC2;
     /// ## Abs - Extra-large 5
-    pub const A_XL5_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(14.0 * 16.0));
+    pub const A_XL5_VEC2: NodeSize<Vec2> = NodeSize::A_56_VEC2;
     /// ## Abs - Extra-large 6
-    pub const A_XL6_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(16.0 * 16.0));
+    pub const A_XL6_VEC2: NodeSize<Vec2> = NodeSize::A_64_VEC2;
     /// ## Abs - Extra-large 7
-    pub const A_XL7_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(18.0 * 16.0));
+    pub const A_XL7_VEC2: NodeSize<Vec2> = NodeSize::A_72_VEC2;
 
     /// ## Abs - Standard Size 0
     pub const A_0_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::ZERO);
@@ -1532,27 +1531,27 @@ impl NodeSize<Vec2> {
     pub const A_100_VEC2: NodeSize<Vec2> = NodeSize::from_abs(Vec2::splat(100.0 * 4.0));
 
     /// ## Rem - Extra-small
-    pub const R_XS_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(1.0));
+    pub const R_XS_VEC2: NodeSize<Vec2> = NodeSize::R_4_VEC2;
     /// ## Rem - Small
-    pub const R_SM_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(2.0));
+    pub const R_SM_VEC2: NodeSize<Vec2> = NodeSize::R_8_VEC2;
     /// ## Rem - Medium
-    pub const R_MD_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(3.0));
+    pub const R_MD_VEC2: NodeSize<Vec2> = NodeSize::R_12_VEC2;
     /// ## Rem - Large
-    pub const R_LG_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(4.0));
+    pub const R_LG_VEC2: NodeSize<Vec2> = NodeSize::R_16_VEC2;
     /// ## Rem - Extra-large
-    pub const R_XL_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(6.0));
+    pub const R_XL_VEC2: NodeSize<Vec2> = NodeSize::R_24_VEC2;
     /// ## Rem - Extra-large 2
-    pub const R_XL2_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(8.0));
+    pub const R_XL2_VEC2: NodeSize<Vec2> = NodeSize::R_32_VEC2;
     /// ## Rem - Extra-large 3
-    pub const R_XL3_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(10.0));
+    pub const R_XL3_VEC2: NodeSize<Vec2> = NodeSize::R_40_VEC2;
     /// ## Rem - Extra-large 4
-    pub const R_XL4_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(12.0));
+    pub const R_XL4_VEC2: NodeSize<Vec2> = NodeSize::R_48_VEC2;
     /// ## Rem - Extra-large 5
-    pub const R_XL5_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(14.0));
+    pub const R_XL5_VEC2: NodeSize<Vec2> = NodeSize::R_56_VEC2;
     /// ## Rem - Extra-large 6
-    pub const R_XL6_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(16.0));
+    pub const R_XL6_VEC2: NodeSize<Vec2> = NodeSize::R_64_VEC2;
     /// ## Rem - Extra-large 7
-    pub const R_XL7_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::splat(18.0));
+    pub const R_XL7_VEC2: NodeSize<Vec2> = NodeSize::R_72_VEC2;
 
     /// ## Rem - Standard Size 0
     pub const R_0_VEC2: NodeSize<Vec2> = NodeSize::from_rem(Vec2::ZERO);
@@ -1759,27 +1758,27 @@ impl NodeSize<Vec2> {
 }
 impl NodeSize<Vec3> {
     /// ## Abs - Extra-small
-    pub const A_XS_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(1.0 * 16.0));
+    pub const A_XS_VEC3: NodeSize<Vec3> = NodeSize::A_4_VEC3;
     /// ## Abs - Small
-    pub const A_SM_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(2.0 * 16.0));
+    pub const A_SM_VEC3: NodeSize<Vec3> = NodeSize::A_8_VEC3;
     /// ## Abs - Medium
-    pub const A_MD_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(3.0 * 16.0));
+    pub const A_MD_VEC3: NodeSize<Vec3> = NodeSize::A_12_VEC3;
     /// ## Abs - Large
-    pub const A_LG_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(4.0 * 16.0));
+    pub const A_LG_VEC3: NodeSize<Vec3> = NodeSize::A_16_VEC3;
     /// ## Abs - Extra-large
-    pub const A_XL_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(6.0 * 16.0));
+    pub const A_XL_VEC3: NodeSize<Vec3> = NodeSize::A_24_VEC3;
     /// ## Abs - Extra-large 2
-    pub const A_XL2_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(8.0 * 16.0));
+    pub const A_XL2_VEC3: NodeSize<Vec3> = NodeSize::A_32_VEC3;
     /// ## Abs - Extra-large 3
-    pub const A_XL3_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(10.0 * 16.0));
+    pub const A_XL3_VEC3: NodeSize<Vec3> = NodeSize::A_40_VEC3;
     /// ## Abs - Extra-large 4
-    pub const A_XL4_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(12.0 * 16.0));
+    pub const A_XL4_VEC3: NodeSize<Vec3> = NodeSize::A_48_VEC3;
     /// ## Abs - Extra-large 5
-    pub const A_XL5_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(14.0 * 16.0));
+    pub const A_XL5_VEC3: NodeSize<Vec3> = NodeSize::A_56_VEC3;
     /// ## Abs - Extra-large 6
-    pub const A_XL6_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(16.0 * 16.0));
+    pub const A_XL6_VEC3: NodeSize<Vec3> = NodeSize::A_64_VEC3;
     /// ## Abs - Extra-large 7
-    pub const A_XL7_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(18.0 * 16.0));
+    pub const A_XL7_VEC3: NodeSize<Vec3> = NodeSize::A_72_VEC3;
 
     /// ## Abs - Standard Size 0
     pub const A_0_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::ZERO);
@@ -1985,27 +1984,27 @@ impl NodeSize<Vec3> {
     pub const A_100_VEC3: NodeSize<Vec3> = NodeSize::from_abs(Vec3::splat(100.0 * 4.0));
 
     /// ## Rem - Extra-small
-    pub const R_XS_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(1.0));
+    pub const R_XS_VEC3: NodeSize<Vec3> = NodeSize::R_4_VEC3;
     /// ## Rem - Small
-    pub const R_SM_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(2.0));
+    pub const R_SM_VEC3: NodeSize<Vec3> = NodeSize::R_8_VEC3;
     /// ## Rem - Medium
-    pub const R_MD_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(3.0));
+    pub const R_MD_VEC3: NodeSize<Vec3> = NodeSize::R_12_VEC3;
     /// ## Rem - Large
-    pub const R_LG_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(4.0));
+    pub const R_LG_VEC3: NodeSize<Vec3> = NodeSize::R_16_VEC3;
     /// ## Rem - Extra-large
-    pub const R_XL_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(6.0));
+    pub const R_XL_VEC3: NodeSize<Vec3> = NodeSize::R_24_VEC3;
     /// ## Rem - Extra-large 2
-    pub const R_XL2_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(8.0));
+    pub const R_XL2_VEC3: NodeSize<Vec3> = NodeSize::R_32_VEC3;
     /// ## Rem - Extra-large 3
-    pub const R_XL3_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(10.0));
+    pub const R_XL3_VEC3: NodeSize<Vec3> = NodeSize::R_40_VEC3;
     /// ## Rem - Extra-large 4
-    pub const R_XL4_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(12.0));
+    pub const R_XL4_VEC3: NodeSize<Vec3> = NodeSize::R_48_VEC3;
     /// ## Rem - Extra-large 5
-    pub const R_XL5_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(14.0));
+    pub const R_XL5_VEC3: NodeSize<Vec3> = NodeSize::R_56_VEC3;
     /// ## Rem - Extra-large 6
-    pub const R_XL6_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(16.0));
+    pub const R_XL6_VEC3: NodeSize<Vec3> = NodeSize::R_64_VEC3;
     /// ## Rem - Extra-large 7
-    pub const R_XL7_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::splat(18.0));
+    pub const R_XL7_VEC3: NodeSize<Vec3> = NodeSize::R_72_VEC3;
 
     /// ## Rem - Standard Size 0
     pub const R_0_VEC3: NodeSize<Vec3> = NodeSize::from_rem(Vec3::ZERO);
@@ -2212,27 +2211,27 @@ impl NodeSize<Vec3> {
 }
 impl NodeSize<Vec4> {
     /// ## Abs - Extra-small
-    pub const A_XS_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(1.0 * 16.0));
+    pub const A_XS_VEC4: NodeSize<Vec4> = NodeSize::A_4_VEC4;
     /// ## Abs - Small
-    pub const A_SM_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(2.0 * 16.0));
+    pub const A_SM_VEC4: NodeSize<Vec4> = NodeSize::A_8_VEC4;
     /// ## Abs - Medium
-    pub const A_MD_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(3.0 * 16.0));
+    pub const A_MD_VEC4: NodeSize<Vec4> = NodeSize::A_12_VEC4;
     /// ## Abs - Large
-    pub const A_LG_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(4.0 * 16.0));
+    pub const A_LG_VEC4: NodeSize<Vec4> = NodeSize::A_16_VEC4;
     /// ## Abs - Extra-large
-    pub const A_XL_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(6.0 * 16.0));
+    pub const A_XL_VEC4: NodeSize<Vec4> = NodeSize::A_24_VEC4;
     /// ## Abs - Extra-large 2
-    pub const A_XL2_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(8.0 * 16.0));
+    pub const A_XL2_VEC4: NodeSize<Vec4> = NodeSize::A_32_VEC4;
     /// ## Abs - Extra-large 3
-    pub const A_XL3_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(10.0 * 16.0));
+    pub const A_XL3_VEC4: NodeSize<Vec4> = NodeSize::A_40_VEC4;
     /// ## Abs - Extra-large 4
-    pub const A_XL4_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(12.0 * 16.0));
+    pub const A_XL4_VEC4: NodeSize<Vec4> = NodeSize::A_48_VEC4;
     /// ## Abs - Extra-large 5
-    pub const A_XL5_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(14.0 * 16.0));
+    pub const A_XL5_VEC4: NodeSize<Vec4> = NodeSize::A_56_VEC4;
     /// ## Abs - Extra-large 6
-    pub const A_XL6_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(16.0 * 16.0));
+    pub const A_XL6_VEC4: NodeSize<Vec4> = NodeSize::A_64_VEC4;
     /// ## Abs - Extra-large 7
-    pub const A_XL7_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(18.0 * 16.0));
+    pub const A_XL7_VEC4: NodeSize<Vec4> = NodeSize::A_72_VEC4;
 
     /// ## Abs - Standard Size 0
     pub const A_0_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::ZERO);
@@ -2438,27 +2437,27 @@ impl NodeSize<Vec4> {
     pub const A_100_VEC4: NodeSize<Vec4> = NodeSize::from_abs(Vec4::splat(100.0 * 4.0));
 
     /// ## Rem - Extra-small
-    pub const R_XS_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(1.0));
+    pub const R_XS_VEC4: NodeSize<Vec4> = NodeSize::R_4_VEC4;
     /// ## Rem - Small
-    pub const R_SM_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(2.0));
+    pub const R_SM_VEC4: NodeSize<Vec4> = NodeSize::R_8_VEC4;
     /// ## Rem - Medium
-    pub const R_MD_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(3.0));
+    pub const R_MD_VEC4: NodeSize<Vec4> = NodeSize::R_12_VEC4;
     /// ## Rem - Large
-    pub const R_LG_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(4.0));
+    pub const R_LG_VEC4: NodeSize<Vec4> = NodeSize::R_16_VEC4;
     /// ## Rem - Extra-large
-    pub const R_XL_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(6.0));
+    pub const R_XL_VEC4: NodeSize<Vec4> = NodeSize::R_24_VEC4;
     /// ## Rem - Extra-large 2
-    pub const R_XL2_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(8.0));
+    pub const R_XL2_VEC4: NodeSize<Vec4> = NodeSize::R_32_VEC4;
     /// ## Rem - Extra-large 3
-    pub const R_XL3_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(10.0));
+    pub const R_XL3_VEC4: NodeSize<Vec4> = NodeSize::R_40_VEC4;
     /// ## Rem - Extra-large 4
-    pub const R_XL4_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(12.0));
+    pub const R_XL4_VEC4: NodeSize<Vec4> = NodeSize::R_48_VEC4;
     /// ## Rem - Extra-large 5
-    pub const R_XL5_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(14.0));
+    pub const R_XL5_VEC4: NodeSize<Vec4> = NodeSize::R_56_VEC4;
     /// ## Rem - Extra-large 6
-    pub const R_XL6_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(16.0));
+    pub const R_XL6_VEC4: NodeSize<Vec4> = NodeSize::R_64_VEC4;
     /// ## Rem - Extra-large 7
-    pub const R_XL7_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::splat(18.0));
+    pub const R_XL7_VEC4: NodeSize<Vec4> = NodeSize::R_72_VEC4;
 
     /// ## Rem - Standard Size 0
     pub const R_0_VEC4: NodeSize<Vec4> = NodeSize::from_rem(Vec4::ZERO);
