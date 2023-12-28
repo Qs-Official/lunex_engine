@@ -2924,6 +2924,8 @@ impl NodeSize<Vec4> {
 impl Abs<f32> {
     /// ## Zero
     pub const ZERO: Abs<f32> = Abs(0.0);
+    /// ## One
+    pub const ONE: Abs<f32> = Abs(1.0);
     /// ## Extra-small
     pub const XS: Abs<f32> = Abs(1.0 * 16.0);
     /// ## Small
@@ -2950,6 +2952,8 @@ impl Abs<f32> {
 impl Prc<f32> {
     /// ## Zero
     pub const ZERO: Prc<f32> = Prc(0.0);
+    /// ## One
+    pub const ONE: Prc<f32> = Prc(1.0);
     /// ## Full
     pub const FULL: Prc<f32> = Prc(100.0);
     /// ## Half
@@ -2994,6 +2998,8 @@ impl Prc<f32> {
 impl Rem<f32> {
     /// ## Zero
     pub const ZERO: Rem<f32> = Rem(0.0);
+    /// ## One
+    pub const ONE: Rem<f32> = Rem(1.0);
     /// ## Extra-small
     pub const XS: Rem<f32> = Rem(1.0);
     /// ## Small
@@ -3016,6 +3022,315 @@ impl Rem<f32> {
     pub const XL6: Rem<f32> = Rem(16.0);
     /// ## Extra-large 7
     pub const XL7: Rem<f32> = Rem(18.0);
+}
+
+impl Abs<Vec2> {
+    /// ## Zero
+    pub const ZERO_VEC2: Abs<Vec2> = Abs(Vec2::splat(0.0));
+    /// ## One
+    pub const ONE_VEC2: Abs<Vec2> = Abs(Vec2::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC2: Abs<Vec2> = Abs(Vec2::splat(1.0 * 16.0));
+    /// ## Small
+    pub const SM_VEC2: Abs<Vec2> = Abs(Vec2::splat(2.0 * 16.0));
+    /// ## Medium
+    pub const MD_VEC2: Abs<Vec2> = Abs(Vec2::splat(3.0 * 16.0));
+    /// ## Large
+    pub const LG_VEC2: Abs<Vec2> = Abs(Vec2::splat(4.0 * 16.0));
+    /// ## Extra-large
+    pub const XL_VEC2: Abs<Vec2> = Abs(Vec2::splat(6.0 * 16.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC2: Abs<Vec2> = Abs(Vec2::splat(8.0 * 16.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC2: Abs<Vec2> = Abs(Vec2::splat(10.0 * 16.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC2: Abs<Vec2> = Abs(Vec2::splat(12.0 * 16.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC2: Abs<Vec2> = Abs(Vec2::splat(14.0 * 16.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC2: Abs<Vec2> = Abs(Vec2::splat(16.0 * 16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC2: Abs<Vec2> = Abs(Vec2::splat(18.0 * 16.0));
+}
+impl Prc<Vec2> {
+    /// ## Zero
+    pub const ZERO_VEC2: Prc<Vec2> = Prc(Vec2::splat(0.0));
+    /// ## One
+    pub const ONE_VEC2: Prc<Vec2> = Prc(Vec2::splat(1.0));
+    /// ## Full
+    pub const FULL_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0));
+    /// ## Half
+    pub const HALF_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 2.0));
+    /// ## Third
+    pub const THIRD_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 3.0));
+    /// ## Quarter
+    pub const QUARTER_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 4.0));
+    /// ## Fifth
+    pub const FIFTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 5.0));
+    /// ## Sixth
+    pub const SIXTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 6.0));
+    /// ## Seventh
+    pub const SEVENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 7.0));
+    /// ## Eighth
+    pub const EIGHTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 8.0));
+    /// ## Ninth
+    pub const NINTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 9.0));
+    /// ## Tenth
+    pub const TENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 10.0));
+    /// ## Eleventh
+    pub const ELEVENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 11.0));
+    /// ## Twelfth
+    pub const TWELFTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 12.0));
+    /// ## Thirteenth
+    pub const THIRTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 13.0));
+    /// ## Fourteenth
+    pub const FOURTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 14.0));
+    /// ## Fifteenth
+    pub const FIFTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 15.0));
+    /// ## Sixteenth
+    pub const SIXTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 16.0));
+    /// ## Seventeenth
+    pub const SEVENTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 17.0));
+    /// ## Eighteenth
+    pub const EIGHTEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 18.0));
+    /// ## Nineteenth
+    pub const NINETEENTH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 19.0));
+    /// ## Twentieth
+    pub const TWENTIETH_VEC2: Prc<Vec2> = Prc(Vec2::splat(100.0 / 20.0));
+}
+impl Rem<Vec2> {
+    /// ## Zero
+    pub const ZERO_VEC2: Rem<Vec2> = Rem(Vec2::splat(0.0));
+    /// ## One
+    pub const ONE_VEC2: Rem<Vec2> = Rem(Vec2::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC2: Rem<Vec2> = Rem(Vec2::splat(1.0));
+    /// ## Small
+    pub const SM_VEC2: Rem<Vec2> = Rem(Vec2::splat(2.0));
+    /// ## Medium
+    pub const MD_VEC2: Rem<Vec2> = Rem(Vec2::splat(3.0));
+    /// ## Large
+    pub const LG_VEC2: Rem<Vec2> = Rem(Vec2::splat(4.0));
+    /// ## Extra-large
+    pub const XL_VEC2: Rem<Vec2> = Rem(Vec2::splat(6.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC2: Rem<Vec2> = Rem(Vec2::splat(8.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC2: Rem<Vec2> = Rem(Vec2::splat(10.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC2: Rem<Vec2> = Rem(Vec2::splat(12.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC2: Rem<Vec2> = Rem(Vec2::splat(14.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC2: Rem<Vec2> = Rem(Vec2::splat(16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC2: Rem<Vec2> = Rem(Vec2::splat(18.0));
+}
+
+impl Abs<Vec3> {
+    /// ## Zero
+    pub const ZERO_VEC3: Abs<Vec3> = Abs(Vec3::splat(0.0));
+    /// ## One
+    pub const ONE_VEC3: Abs<Vec3> = Abs(Vec3::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC3: Abs<Vec3> = Abs(Vec3::splat(1.0 * 16.0));
+    /// ## Small
+    pub const SM_VEC3: Abs<Vec3> = Abs(Vec3::splat(2.0 * 16.0));
+    /// ## Medium
+    pub const MD_VEC3: Abs<Vec3> = Abs(Vec3::splat(3.0 * 16.0));
+    /// ## Large
+    pub const LG_VEC3: Abs<Vec3> = Abs(Vec3::splat(4.0 * 16.0));
+    /// ## Extra-large
+    pub const XL_VEC3: Abs<Vec3> = Abs(Vec3::splat(6.0 * 16.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC3: Abs<Vec3> = Abs(Vec3::splat(8.0 * 16.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC3: Abs<Vec3> = Abs(Vec3::splat(10.0 * 16.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC3: Abs<Vec3> = Abs(Vec3::splat(12.0 * 16.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC3: Abs<Vec3> = Abs(Vec3::splat(14.0 * 16.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC3: Abs<Vec3> = Abs(Vec3::splat(16.0 * 16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC3: Abs<Vec3> = Abs(Vec3::splat(18.0 * 16.0));
+}
+impl Prc<Vec3> {
+    /// ## Zero
+    pub const ZERO_VEC3: Prc<Vec3> = Prc(Vec3::splat(0.0));
+    /// ## One
+    pub const ONE_VEC3: Prc<Vec3> = Prc(Vec3::splat(1.0));
+    /// ## Full
+    pub const FULL_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0));
+    /// ## Half
+    pub const HALF_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 2.0));
+    /// ## Third
+    pub const THIRD_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 3.0));
+    /// ## Quarter
+    pub const QUARTER_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 4.0));
+    /// ## Fifth
+    pub const FIFTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 5.0));
+    /// ## Sixth
+    pub const SIXTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 6.0));
+    /// ## Seventh
+    pub const SEVENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 7.0));
+    /// ## Eighth
+    pub const EIGHTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 8.0));
+    /// ## Ninth
+    pub const NINTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 9.0));
+    /// ## Tenth
+    pub const TENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 10.0));
+    /// ## Eleventh
+    pub const ELEVENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 11.0));
+    /// ## Twelfth
+    pub const TWELFTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 12.0));
+    /// ## Thirteenth
+    pub const THIRTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 13.0));
+    /// ## Fourteenth
+    pub const FOURTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 14.0));
+    /// ## Fifteenth
+    pub const FIFTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 15.0));
+    /// ## Sixteenth
+    pub const SIXTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 16.0));
+    /// ## Seventeenth
+    pub const SEVENTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 17.0));
+    /// ## Eighteenth
+    pub const EIGHTEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 18.0));
+    /// ## Nineteenth
+    pub const NINETEENTH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 19.0));
+    /// ## Twentieth
+    pub const TWENTIETH_VEC3: Prc<Vec3> = Prc(Vec3::splat(100.0 / 20.0));
+}
+impl Rem<Vec3> {
+    /// ## Zero
+    pub const ZERO_VEC3: Rem<Vec3> = Rem(Vec3::splat(0.0));
+    /// ## One
+    pub const ONE_VEC3: Rem<Vec3> = Rem(Vec3::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC3: Rem<Vec3> = Rem(Vec3::splat(1.0));
+    /// ## Small
+    pub const SM_VEC3: Rem<Vec3> = Rem(Vec3::splat(2.0));
+    /// ## Medium
+    pub const MD_VEC3: Rem<Vec3> = Rem(Vec3::splat(3.0));
+    /// ## Large
+    pub const LG_VEC3: Rem<Vec3> = Rem(Vec3::splat(4.0));
+    /// ## Extra-large
+    pub const XL_VEC3: Rem<Vec3> = Rem(Vec3::splat(6.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC3: Rem<Vec3> = Rem(Vec3::splat(8.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC3: Rem<Vec3> = Rem(Vec3::splat(10.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC3: Rem<Vec3> = Rem(Vec3::splat(12.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC3: Rem<Vec3> = Rem(Vec3::splat(14.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC3: Rem<Vec3> = Rem(Vec3::splat(16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC3: Rem<Vec3> = Rem(Vec3::splat(18.0));
+}
+
+impl Abs<Vec4> {
+    /// ## Zero
+    pub const ZERO_VEC4: Abs<Vec4> = Abs(Vec4::splat(0.0));
+    /// ## One
+    pub const ONE_VEC4: Abs<Vec4> = Abs(Vec4::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC4: Abs<Vec4> = Abs(Vec4::splat(1.0 * 16.0));
+    /// ## Small
+    pub const SM_VEC4: Abs<Vec4> = Abs(Vec4::splat(2.0 * 16.0));
+    /// ## Medium
+    pub const MD_VEC4: Abs<Vec4> = Abs(Vec4::splat(3.0 * 16.0));
+    /// ## Large
+    pub const LG_VEC4: Abs<Vec4> = Abs(Vec4::splat(4.0 * 16.0));
+    /// ## Extra-large
+    pub const XL_VEC4: Abs<Vec4> = Abs(Vec4::splat(6.0 * 16.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC4: Abs<Vec4> = Abs(Vec4::splat(8.0 * 16.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC4: Abs<Vec4> = Abs(Vec4::splat(10.0 * 16.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC4: Abs<Vec4> = Abs(Vec4::splat(12.0 * 16.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC4: Abs<Vec4> = Abs(Vec4::splat(14.0 * 16.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC4: Abs<Vec4> = Abs(Vec4::splat(16.0 * 16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC4: Abs<Vec4> = Abs(Vec4::splat(18.0 * 16.0));
+}
+impl Prc<Vec4> {
+    /// ## Zero
+    pub const ZERO_VEC4: Prc<Vec4> = Prc(Vec4::splat(0.0));
+    /// ## One
+    pub const ONE_VEC4: Prc<Vec4> = Prc(Vec4::splat(1.0));
+    /// ## Full
+    pub const FULL_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0));
+    /// ## Half
+    pub const HALF_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 2.0));
+    /// ## Third
+    pub const THIRD_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 3.0));
+    /// ## Quarter
+    pub const QUARTER_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 4.0));
+    /// ## Fifth
+    pub const FIFTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 5.0));
+    /// ## Sixth
+    pub const SIXTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 6.0));
+    /// ## Seventh
+    pub const SEVENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 7.0));
+    /// ## Eighth
+    pub const EIGHTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 8.0));
+    /// ## Ninth
+    pub const NINTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 9.0));
+    /// ## Tenth
+    pub const TENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 10.0));
+    /// ## Eleventh
+    pub const ELEVENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 11.0));
+    /// ## Twelfth
+    pub const TWELFTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 12.0));
+    /// ## Thirteenth
+    pub const THIRTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 13.0));
+    /// ## Fourteenth
+    pub const FOURTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 14.0));
+    /// ## Fifteenth
+    pub const FIFTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 15.0));
+    /// ## Sixteenth
+    pub const SIXTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 16.0));
+    /// ## Seventeenth
+    pub const SEVENTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 17.0));
+    /// ## Eighteenth
+    pub const EIGHTEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 18.0));
+    /// ## Nineteenth
+    pub const NINETEENTH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 19.0));
+    /// ## Twentieth
+    pub const TWENTIETH_VEC4: Prc<Vec4> = Prc(Vec4::splat(100.0 / 20.0));
+}
+impl Rem<Vec4> {
+    /// ## Zero
+    pub const ZERO_VEC4: Rem<Vec4> = Rem(Vec4::splat(0.0));
+    /// ## One
+    pub const ONE_VEC4: Rem<Vec4> = Rem(Vec4::splat(1.0));
+    /// ## Extra-small
+    pub const XS_VEC4: Rem<Vec4> = Rem(Vec4::splat(1.0));
+    /// ## Small
+    pub const SM_VEC4: Rem<Vec4> = Rem(Vec4::splat(2.0));
+    /// ## Medium
+    pub const MD_VEC4: Rem<Vec4> = Rem(Vec4::splat(3.0));
+    /// ## Large
+    pub const LG_VEC4: Rem<Vec4> = Rem(Vec4::splat(4.0));
+    /// ## Extra-large
+    pub const XL_VEC4: Rem<Vec4> = Rem(Vec4::splat(6.0));
+    /// ## Extra-large 2
+    pub const XL2_VEC4: Rem<Vec4> = Rem(Vec4::splat(8.0));
+    /// ## Extra-large 3
+    pub const XL3_VEC4: Rem<Vec4> = Rem(Vec4::splat(10.0));
+    /// ## Extra-large 4
+    pub const XL4_VEC4: Rem<Vec4> = Rem(Vec4::splat(12.0));
+    /// ## Extra-large 5
+    pub const XL5_VEC4: Rem<Vec4> = Rem(Vec4::splat(14.0));
+    /// ## Extra-large 6
+    pub const XL6_VEC4: Rem<Vec4> = Rem(Vec4::splat(16.0));
+    /// ## Extra-large 7
+    pub const XL7_VEC4: Rem<Vec4> = Rem(Vec4::splat(18.0));
 }
 
 pub type Size = NodeSize<f32>;

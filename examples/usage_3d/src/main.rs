@@ -62,8 +62,8 @@ fn build_ui() -> Result<(), LunexError> {
     let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
-    
-    layout::Window::FULL.with_x(Prc(50.)).build(&mut ui, "Node2")?;
+
+    layout::Window::FULL.with_x(Prc::HALF * 0.2).build(&mut ui, "Node2")?;
 
     layout::Window::EMPTY
         .with_size(Abs::splat2(15.) + Rem::splat2(5.))
