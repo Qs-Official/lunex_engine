@@ -1,6 +1,5 @@
 use bevy::ecs::component::Component;
-use glam::f32::{Vec2, Vec3};
-use thiserror::Error;
+use crate::import::*;
 
 use crate::NodeTreeError;
 

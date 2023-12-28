@@ -1,5 +1,4 @@
-use glam::Vec2;
-
+use crate::import::*;
 use crate::{NiceDisplay, Align, Rect2D, NodeSize, NodeSizeEvaluate, Prc};
 
 use super::Layout;
@@ -36,13 +35,13 @@ impl Window {
     /// ## With x
     /// Replaces the x position with the new value.
     pub fn with_x(mut self, width: impl Into<NodeSize<f32>>) -> Self {
-        self.pos.set_x(width.into());
+        self.pos.set_x(width);
         self
     }
     /// ## With y
     /// Replaces the y position with the new value.
     pub fn with_y(mut self, height: impl Into<NodeSize<f32>>) -> Self {
-        self.pos.set_y(height.into());
+        self.pos.set_y(height);
         self
     }
     /// ## With size
@@ -54,13 +53,13 @@ impl Window {
     /// ## With width
     /// Replaces the width with the new value.
     pub fn with_width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
-        self.size.set_x(width.into());
+        self.size.set_x(width);
         self
     }
     /// ## With height
     /// Replaces the height with the new value.
     pub fn with_height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
-        self.size.set_y(height.into());
+        self.size.set_y(height);
         self
     }
     /// ## Compute
@@ -79,7 +78,6 @@ impl Into<Layout> for Window {
 }
 impl NiceDisplay for Window {
     fn to_nicestr(&self) -> String {
-        use colored::Colorize;
         let t = format!("[pos: ({}) size: ({})]", self.pos.to_nicestr(), self.size.to_nicestr());
         format!("{}", t.black())
     }
@@ -111,19 +109,19 @@ impl Solid {
     }
     /// ## With size
     /// Replaces the size with the new value.
-    pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
-        self.size = size;
+    pub fn with_size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
+        self.size = size.into();
         self
     }
     /// ## With width
     /// Replaces the width with the new value.
-    pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
+    pub fn with_width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_x(width);
         self
     }
     /// ## With height
     /// Replaces the height with the new value.
-    pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
+    pub fn with_height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_y(height);
         self
     }
@@ -147,7 +145,6 @@ impl Into<Layout> for Solid {
 }
 impl NiceDisplay for Solid {
     fn to_nicestr(&self) -> String {
-        use colored::Colorize;
         let t = format!("[size: ({}) align_x: {} align_y: {}]", self.size.to_nicestr(), self.align_x.to_nicestr(), self.align_y.to_nicestr());
         format!("{}", t.black())
     }

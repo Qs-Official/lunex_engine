@@ -1,5 +1,4 @@
-use colored::Colorize;
-
+use crate::import::*;
 use crate::{NiceDisplay, NodeSize};
 
 use super::{Window, Solid};
