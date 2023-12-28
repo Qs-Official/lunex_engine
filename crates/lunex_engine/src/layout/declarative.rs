@@ -16,14 +16,17 @@ pub struct Window {
 }
 impl Window {
     /// ## Full Window
-    /// Covers 100% of the parent layout.
-    pub const FULL: Window = Window { pos : NodeSize::from_abs(Vec2::ZERO), size: NodeSize::from_prc(Vec2::splat(100.0)) };
+    /// Covers `100%` of the parent layout.
+    pub const FULL: Window = Window { pos : NodeSize::new(), size: NodeSize::from_prc(Vec2::splat(100.0)) };
+    /// ## Empty Window
+    /// A new empty Window. Has `None` size. 
+    pub const EMPTY: Window = Window { pos : NodeSize::new(), size: NodeSize::new() };
     /// ## New
-    /// Creates new Window layout.
+    /// Creates new empty Window layout.
     pub const fn new() -> Self {
         Window {
-            pos : NodeSize::from_prc(Vec2::ZERO),
-            size: NodeSize::from_prc(Vec2::ZERO),
+            pos : NodeSize::new(),
+            size: NodeSize::new(),
         }
     }
     /// ## With pos

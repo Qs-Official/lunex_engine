@@ -349,6 +349,90 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for NodeSize<T> {
 // #================================#
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
+impl Abs<Vec2> {
+    /// ### Same as
+    /// ```no_run
+    /// Abs(Vec2::splat(v))
+    /// ```
+    pub const fn splat2(v: f32) -> Self {
+        Abs(Vec2::splat(v))
+    }
+}
+impl Abs<Vec3> {
+    /// ### Same as
+    /// ```no_run
+    /// Abs(Vec3::splat(v))
+    /// ```
+    pub const fn splat3(v: f32) -> Self {
+        Abs(Vec3::splat(v))
+    }
+}
+impl Abs<Vec4> {
+    /// ### Same as
+    /// ```no_run
+    /// Abs(Vec4::splat(v))
+    /// ```
+    pub const fn splat4(v: f32) -> Self {
+        Abs(Vec4::splat(v))
+    }
+}
+
+impl Prc<Vec2> {
+    /// ### Same as
+    /// ```no_run
+    /// Prc(Vec2::splat(v))
+    /// ```
+    pub const fn splat2(v: f32) -> Self {
+        Prc(Vec2::splat(v))
+    }
+}
+impl Prc<Vec3> {
+    /// ### Same as
+    /// ```no_run
+    /// Prc(Vec3::splat(v))
+    /// ```
+    pub const fn splat3(v: f32) -> Self {
+        Prc(Vec3::splat(v))
+    }
+}
+impl Prc<Vec4> {
+    /// ### Same as
+    /// ```no_run
+    /// Prc(Vec4::splat(v))
+    /// ```
+    pub const fn splat4(v: f32) -> Self {
+        Prc(Vec4::splat(v))
+    }
+}
+
+impl Rem<Vec2> {
+    /// ### Same as
+    /// ```no_run
+    /// Rem(Vec2::splat(v))
+    /// ```
+    pub const fn splat2(v: f32) -> Self {
+        Rem(Vec2::splat(v))
+    }
+}
+impl Rem<Vec3> {
+    /// ### Same as
+    /// ```no_run
+    /// Rem(Vec3::splat(v))
+    /// ```
+    pub const fn splat3(v: f32) -> Self {
+        Rem(Vec3::splat(v))
+    }
+}
+impl Rem<Vec4> {
+    /// ### Same as
+    /// ```no_run
+    /// Rem(Vec4::splat(v))
+    /// ```
+    pub const fn splat4(v: f32) -> Self {
+        Rem(Vec4::splat(v))
+    }
+}
+
 // # Impl from_standard TailwindCSS scale
 impl NodeSize<f32> {
     /// ## From Standard
