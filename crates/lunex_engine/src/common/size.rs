@@ -12,7 +12,7 @@ use super::NiceDisplay;
 
 #[cfg(test)]
 mod test {
-    use super::{Abs, Prc, Rem, NodeSize};
+    use super::{Abs, Prc, Rem, NodeSize, Vec2};
     #[test]
     fn all () {
         assert_eq!(NodeSize::new().with_abs(Abs(5)) + Abs(5) + Abs(5), NodeSize::new().with_abs(Abs(15)));
@@ -30,6 +30,10 @@ mod test {
 
         new_amount += amount;
         assert_eq!(new_amount, NodeSize::new().with_abs(Abs(30)).with_prc(Prc(40)).with_rem(Rem(30)));
+
+        let node: NodeSize<Vec2> = Rem(Vec2::new(10.0, 12.0)).into();
+        assert_eq!(node, NodeSize::<Vec2>::new().with_x(Rem(10.0)).with_y(Rem(12.0)));
+
     }
 }
 
@@ -456,142 +460,160 @@ impl NodeSizeEvaluate<Vec4> for NodeSize<Vec4> {
 impl NodeSize<Vec2> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec2::new(v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec2::new(v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec2::new(v2, 0.0)) } }
         self
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec2::new(v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec2::new(v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec2::new(v2, 0.0)) } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec2::new(0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec2::new(0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec2::new(0.0, v2)) } }
         self
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec2::new(0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec2::new(0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec2::new(0.0, v2)) } }
     }
 }
 impl NodeSize<Vec3> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec3::new(v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec3::new(v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec3::new(v2, 0.0, 0.0)) } }
         self
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec3::new(v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec3::new(v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec3::new(v2, 0.0, 0.0)) } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec3::new(0.0, v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec3::new(0.0, v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec3::new(0.0, v2, 0.0)) } }
         self
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec3::new(0.0, v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec3::new(0.0, v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec3::new(0.0, v2, 0.0)) } }
     }
     /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
-    pub fn with_z(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
+    pub fn with_z(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.z = v2 } else { self.abs = Some(Vec3::new(0.0, 0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.z = v2 } else { self.prc = Some(Vec3::new(0.0, 0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec3::new(0.0, 0.0, v2)) } }
         self
     }
     /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
-    pub fn set_z(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
+    pub fn set_z(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.z = v2 } else { self.abs = Some(Vec3::new(0.0, 0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.z = v2 } else { self.prc = Some(Vec3::new(0.0, 0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec3::new(0.0, 0.0, v2)) } }
     }
 }
 impl NodeSize<Vec4> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
-    pub fn with_x(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
         self
     }
     /// ## Set X
     /// Sets the X value of appropriate units with the new value.
-    pub fn set_x(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.x = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.x = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.x = v2 } }
+    pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.x = v2 } else { self.abs = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
     }
     /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
-    pub fn with_y(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
         self
     }
     /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
-    pub fn set_y(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.y = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.y = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.y = v2 } }
+    pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.y = v2 } else { self.abs = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
     }
     /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
-    pub fn with_z(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
+    pub fn with_z(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.z = v2 } else { self.abs = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.z = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
         self
     }
     /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
-    pub fn set_z(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.z = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.z = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.z = v2 } }
+    pub fn set_z(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.z = v2 } else { self.abs = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.z = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
     }
     /// ## With W
     /// Replaces the W value of appropriate units with the new value.
-    pub fn with_w(self, other: NodeSize<f32>) -> Self {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.w = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.w = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.w = v2 } }
+    pub fn with_w(mut self, other: impl Into<NodeSize<f32>>) -> Self {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.w = v2 } else { self.abs = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.w = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.w = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
         self
     }
     /// ## Set W
     /// Sets the W value of appropriate units with the new value.
-    pub fn set_w(&mut self, other: NodeSize<f32>) {
-        if let Some(mut v1) = self.abs { if let Some(v2) = other.abs { v1.w = v2 } }
-        if let Some(mut v1) = self.prc { if let Some(v2) = other.prc { v1.w = v2 } }
-        if let Some(mut v1) = self.rem { if let Some(v2) = other.rem { v1.w = v2 } }
+    pub fn set_w(&mut self, other: impl Into<NodeSize<f32>>) {
+        let other = other.into();
+        if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.w = v2 } else { self.abs = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
+        if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.w = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
+        if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.w = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
     }
 }
 

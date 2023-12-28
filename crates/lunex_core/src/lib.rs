@@ -21,6 +21,8 @@ pub mod prelude {
     pub use super::{UINodeTree, UINode};
     pub use super::LunexError;
 
+    pub use lunex_engine::{Abs, Prc, Rem, NodeSize};
+
     pub use lunex_engine::layout;
 
 }

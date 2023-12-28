@@ -62,7 +62,9 @@ fn build_ui() -> Result<(), LunexError> {
     let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
-    layout::Window::FULL.build(&mut ui, "Node1/2")?;
+    layout::Window::FULL.build(&mut ui, "Node1/Node2")?;
+
+    layout::Window::new().with_width(Rem(10.0)).with_height(Rem(12.0)).build(&mut ui, "Node3")?;
 
     println!("\n{}\n", ui.tree("show-hidden"));
     Ok(())

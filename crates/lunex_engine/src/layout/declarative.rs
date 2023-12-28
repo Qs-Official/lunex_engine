@@ -29,38 +29,38 @@ impl Window {
     }
     /// ## With pos
     /// Replaces the position with the new value.
-    pub fn with_pos(mut self, pos: NodeSize<Vec2>) -> Self {
-        self.pos = pos;
+    pub fn with_pos(mut self, pos: impl Into<NodeSize<Vec2>>) -> Self {
+        self.pos = pos.into();
         self
     }
     /// ## With x
     /// Replaces the x position with the new value.
-    pub fn with_x(mut self, width: NodeSize<f32>) -> Self {
-        self.pos.set_x(width);
+    pub fn with_x(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+        self.pos.set_x(width.into());
         self
     }
     /// ## With y
     /// Replaces the y position with the new value.
-    pub fn with_y(mut self, height: NodeSize<f32>) -> Self {
-        self.pos.set_y(height);
+    pub fn with_y(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+        self.pos.set_y(height.into());
         self
     }
     /// ## With size
     /// Replaces the size with the new value.
-    pub fn with_size(mut self, size: NodeSize<Vec2>) -> Self {
-        self.size = size;
+    pub fn with_size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
+        self.size = size.into();
         self
     }
     /// ## With width
     /// Replaces the width with the new value.
-    pub fn with_width(mut self, width: NodeSize<f32>) -> Self {
-        self.size.set_x(width);
+    pub fn with_width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+        self.size.set_x(width.into());
         self
     }
     /// ## With height
     /// Replaces the height with the new value.
-    pub fn with_height(mut self, height: NodeSize<f32>) -> Self {
-        self.size.set_y(height);
+    pub fn with_height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+        self.size.set_y(height.into());
         self
     }
     /// ## Compute
