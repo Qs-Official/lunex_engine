@@ -34,6 +34,8 @@ mod test {
         let node: NodeSize<Vec2> = Rem(Vec2::new(10.0, 12.0)).into();
         assert_eq!(node, NodeSize::<Vec2>::new().with_x(Rem(10.0)).with_y(Rem(12.0)));
 
+        let _: NodeSize<Vec2> = NodeSize::from_standard((1.0, 2.0));
+
     }
 }
 
@@ -106,7 +108,8 @@ pub struct NodeSize<T> {
 // #===============================#
 // #=== GENERIC IMPLEMENTATIONS ===#
 
-impl <T> NodeSize<T> {
+// # Impl `with_abs` and `set_abs` ...
+impl<T> NodeSize<T> {
     /// ## With
     /// Replaces the value of appropriate units with the new value.
     pub fn with(mut self, other: NodeSize<T>) -> Self {
@@ -157,6 +160,25 @@ impl <T> NodeSize<T> {
     }
 }
 
+// # Impl `from_standard` Tailwind scale
+impl<T: Mul<f32, Output = T>> NodeSize<T> {
+    /// ## From Standard
+    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
+    /// * `0.5 == 0.125rem`
+    /// * `1 == 0.25rem`
+    /// * `2 == 0.5rem`
+    /// * `3 == 0.75rem`
+    /// * `4 == 1rem`
+    /// * _and so on..._
+    /// 
+    pub fn from_standard(size: impl Into<T>) -> NodeSize<T> {
+        Rem(size.into() * 0.25).into()
+    }
+}
+
+
+// CONVERSION ======
+
 // # Impl into `Abs(T) -> NodeSize(T)`
 impl <T> Into<NodeSize<T>> for Abs<T> {
     fn into(self) -> NodeSize<T> {
@@ -175,6 +197,7 @@ impl <T> Into<NodeSize<T>> for Rem<T> {
         NodeSize::new().with_rem(self)
     }
 }
+
 
 // ADDITION ======
 
@@ -344,6 +367,7 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for NodeSize<T> {
     }
 }
 
+
 // MULTIPLICATION ======
 
 // # Impl `Abs(T) * Abs(T)`
@@ -495,12 +519,36 @@ impl<T: Mul<f32, Output = T>> Mul<f32> for Rem<T> {
     }
 }
 
-
+// # Impl `NodeSize(T) *= f32`
+impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for NodeSize<T> {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = *self * rhs
+    }
+}
+// # Impl `Abs(T) *= f32`
+impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Abs<T> {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = Abs(self.0 * rhs);
+    }
+}
+// # Impl `Prc(T) *= f32`
+impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Prc<T> {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = Prc(self.0 * rhs);
+    }
+}
+// # Impl `Rem(T) *= f32`
+impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Rem<T> {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = Rem(self.0 * rhs);
+    }
+}
 
 
 // #================================#
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
+// # Impl `splat2`
 impl Abs<Vec2> {
     /// ### Same as
     /// ```no_run
@@ -510,6 +558,7 @@ impl Abs<Vec2> {
         Abs(Vec2::splat(v))
     }
 }
+// # Impl `splat3`
 impl Abs<Vec3> {
     /// ### Same as
     /// ```no_run
@@ -519,6 +568,7 @@ impl Abs<Vec3> {
         Abs(Vec3::splat(v))
     }
 }
+// # Impl `splat4`
 impl Abs<Vec4> {
     /// ### Same as
     /// ```no_run
@@ -529,6 +579,7 @@ impl Abs<Vec4> {
     }
 }
 
+// # Impl `splat2`
 impl Prc<Vec2> {
     /// ### Same as
     /// ```no_run
@@ -538,6 +589,7 @@ impl Prc<Vec2> {
         Prc(Vec2::splat(v))
     }
 }
+// # Impl `splat3`
 impl Prc<Vec3> {
     /// ### Same as
     /// ```no_run
@@ -547,6 +599,7 @@ impl Prc<Vec3> {
         Prc(Vec3::splat(v))
     }
 }
+// # Impl `splat4`
 impl Prc<Vec4> {
     /// ### Same as
     /// ```no_run
@@ -557,6 +610,7 @@ impl Prc<Vec4> {
     }
 }
 
+// # Impl `splat2`
 impl Rem<Vec2> {
     /// ### Same as
     /// ```no_run
@@ -566,6 +620,7 @@ impl Rem<Vec2> {
         Rem(Vec2::splat(v))
     }
 }
+// # Impl `splat3`
 impl Rem<Vec3> {
     /// ### Same as
     /// ```no_run
@@ -575,6 +630,7 @@ impl Rem<Vec3> {
         Rem(Vec3::splat(v))
     }
 }
+// # Impl `splat4`
 impl Rem<Vec4> {
     /// ### Same as
     /// ```no_run
@@ -585,112 +641,8 @@ impl Rem<Vec4> {
     }
 }
 
-// # Impl from_standard TailwindCSS scale
-impl NodeSize<f32> {
-    /// ## From Standard
-    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
-    /// * `0.5 == 0.125rem`
-    /// * `1 == 0.25rem`
-    /// * `2 == 0.5rem`
-    /// * `3 == 0.75rem`
-    /// * `4 == 1rem`
-    /// * _and so on..._
-    /// 
-    pub fn from_standard(size: f32) -> NodeSize<f32> {
-        Rem(size * 0.25).into()
-    }
-}
-// # Impl from_standard TailwindCSS scale
-impl NodeSize<Vec2> {
-    /// ## From Standard
-    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
-    /// * `0.5 == 0.125rem`
-    /// * `1 == 0.25rem`
-    /// * `2 == 0.5rem`
-    /// * `3 == 0.75rem`
-    /// * `4 == 1rem`
-    /// * _and so on..._
-    /// 
-    pub fn from_standard(size: impl Into<Vec2>) -> NodeSize<Vec2> {
-        Rem(size.into() * 0.25).into()
-    }
-}
-// # Impl from_standard TailwindCSS scale
-impl NodeSize<Vec3> {
-    /// ## From Standard
-    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
-    /// * `0.5 == 0.125rem`
-    /// * `1 == 0.25rem`
-    /// * `2 == 0.5rem`
-    /// * `3 == 0.75rem`
-    /// * `4 == 1rem`
-    /// * _and so on..._
-    /// 
-    pub fn from_standard(size: impl Into<Vec3>) -> NodeSize<Vec3> {
-        Rem(size.into() * 0.25).into()
-    }
-}
-// # Impl from_standard TailwindCSS scale
-impl NodeSize<Vec4> {
-    /// ## From Standard
-    /// Creates new NodeSize from the standardized [TailwindCSS](https://tailwindcss.com/docs/customizing-spacing#default-spacing-scale) convention.
-    /// * `0.5 == 0.125rem`
-    /// * `1 == 0.25rem`
-    /// * `2 == 0.5rem`
-    /// * `3 == 0.75rem`
-    /// * `4 == 1rem`
-    /// * _and so on..._
-    /// 
-    pub fn from_standard(size: impl Into<Vec4>) -> NodeSize<Vec4> {
-        Rem(size.into() * 0.25).into()
-    }
-}
 
-/// ## NodeSize Evaluate
-/// Trait for implementing evaluation logic for (T)
-pub trait NodeSizeEvaluate<T> {
-    /// ## Evaluate
-    /// Evaluates the NodeSize for (T)
-    fn evaluate(&self, parent_size: T, font_size: T) -> T;
-}
-
-impl NodeSizeEvaluate<f32> for NodeSize<f32> {
-    fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
-        let mut out = 0.0;
-        if let Some(v) = self.abs { out += v }
-        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
-        if let Some(v) = self.rem { out += v * font_size }
-        out
-    }
-}
-impl NodeSizeEvaluate<Vec2> for NodeSize<Vec2> {
-    fn evaluate(&self, parent_size: Vec2, font_size: Vec2) -> Vec2 {
-        let mut out = Vec2::ZERO;
-        if let Some(v) = self.abs { out += v }
-        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
-        if let Some(v) = self.rem { out += v * font_size }
-        out
-    }
-}
-impl NodeSizeEvaluate<Vec3> for NodeSize<Vec3> {
-    fn evaluate(&self, parent_size: Vec3, font_size: Vec3) -> Vec3 {
-        let mut out = Vec3::ZERO;
-        if let Some(v) = self.abs { out += v }
-        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
-        if let Some(v) = self.rem { out += v * font_size }
-        out
-    }
-}
-impl NodeSizeEvaluate<Vec4> for NodeSize<Vec4> {
-    fn evaluate(&self, parent_size: Vec4, font_size: Vec4) -> Vec4 {
-        let mut out = Vec4::ZERO;
-        if let Some(v) = self.abs { out += v }
-        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
-        if let Some(v) = self.rem { out += v * font_size }
-        out
-    }
-}
-
+// # Impl `with_x` and `set_x` ...
 impl NodeSize<Vec2> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
@@ -727,6 +679,7 @@ impl NodeSize<Vec2> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec2::new(0.0, v2)) } }
     }
 }
+// # Impl `with_x` and `set_x` ...
 impl NodeSize<Vec3> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
@@ -780,6 +733,7 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec3::new(0.0, 0.0, v2)) } }
     }
 }
+// # Impl `with_x` and `set_x` ...
 impl NodeSize<Vec4> {
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
@@ -848,6 +802,53 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.abs { if let Some(v1) = &mut self.abs { v1.w = v2 } else { self.abs = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.w = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.w = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
+    }
+}
+
+
+
+/// ## NodeSize Evaluate
+/// Trait for implementing evaluation logic for (T)
+pub trait NodeSizeEvaluate<T> {
+    /// ## Evaluate
+    /// Evaluates the NodeSize for (T)
+    fn evaluate(&self, parent_size: T, font_size: T) -> T;
+}
+
+impl NodeSizeEvaluate<f32> for NodeSize<f32> {
+    fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
+        let mut out = 0.0;
+        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
+        if let Some(v) = self.rem { out += v * font_size }
+        out
+    }
+}
+impl NodeSizeEvaluate<Vec2> for NodeSize<Vec2> {
+    fn evaluate(&self, parent_size: Vec2, font_size: Vec2) -> Vec2 {
+        let mut out = Vec2::ZERO;
+        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
+        if let Some(v) = self.rem { out += v * font_size }
+        out
+    }
+}
+impl NodeSizeEvaluate<Vec3> for NodeSize<Vec3> {
+    fn evaluate(&self, parent_size: Vec3, font_size: Vec3) -> Vec3 {
+        let mut out = Vec3::ZERO;
+        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
+        if let Some(v) = self.rem { out += v * font_size }
+        out
+    }
+}
+impl NodeSizeEvaluate<Vec4> for NodeSize<Vec4> {
+    fn evaluate(&self, parent_size: Vec4, font_size: Vec4) -> Vec4 {
+        let mut out = Vec4::ZERO;
+        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.prc { out += (v/100.0) * parent_size }
+        if let Some(v) = self.rem { out += v * font_size }
+        out
     }
 }
 
