@@ -70,3 +70,13 @@ pub enum DivSize<T> {
     /// Div will be sized as specified while still following set rules.
     Exact(NodeSize<T>),
 }
+
+
+/// ## Div Item Orientation
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum DivItemOrientation {
+    /// ## Horizontal
+    #[default] Horizontal,
+    /// ## Vertical
+    Vertical,
+}

@@ -1,8 +1,7 @@
-
-use lunex_layout::prelude::*;
 use std::borrow::Borrow;
 
-use lunex_nodetree::prelude::*;
+use lunex_engine::nodes::prelude::*;
+use lunex_engine::layout;
 
 use crate::{UINode, UINodeTree, Container};
 
@@ -46,7 +45,7 @@ impl <P> NodeComputeTrait for UINodeTree<P> {
 }
 
 
-impl BuildAsNode for declarative::Window {
+impl BuildAsNode for layout::Window {
     fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeTreeError> where Self: Sized {
         ui.create_node(path.borrow())?;
         let mut container: Container<P> = Container::new();

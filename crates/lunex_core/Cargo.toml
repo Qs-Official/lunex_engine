@@ -11,3 +11,4 @@
 [dependencies]
   bevy              = { workspace = true }
   lunex_engine      = { workspace = true }
+  lunex_theme       = { workspace = true }

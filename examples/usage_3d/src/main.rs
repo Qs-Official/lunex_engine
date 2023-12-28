@@ -66,7 +66,7 @@ fn setup(
 
     let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
 
-    lui::Window::FULL.build(&mut ui, "Node1").unwrap();
+    layout::Window::FULL.build(&mut ui, "Node1").unwrap();
 
 
     //ui.insert_data("Node1", Container::new()).unwrap();

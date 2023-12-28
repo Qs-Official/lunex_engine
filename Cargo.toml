@@ -55,9 +55,6 @@
 
   lunex_core         = { path = "crates/lunex_core" }
   lunex_engine       = { path = "crates/lunex_engine" }
-  #lunex_layout       = { path = "crates/lunex_layout" }
-  #lunex_nodetree     = { path = "crates/lunex_nodetree" }
   #lunex_preset       = { path = "crates/lunex_preset" }
-  #lunex_theme        = { path = "crates/lunex_theme" }
-  #lunex_types        = { path = "crates/lunex_types" }
+  lunex_theme        = { path = "crates/lunex_theme" }
   #lunex_typographic  = { path = "crates/lunex_typographic" }
