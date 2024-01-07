@@ -1,7 +1,7 @@
 use bevy::ecs::component::Component;
 use crate::NiceDisplay;
 use crate::import::*;
-use crate::NodeTreeError;
+use crate::NodeError;
 
 
 // #==================#
@@ -13,11 +13,11 @@ use crate::NodeTreeError;
 pub enum LunexError {
     /// Error that occurs when something went wrong with NodeTree.
     #[error("Something went wrong with NodeTree")]
-    NodeTreeError(NodeTreeError),
+    NodeError(NodeError),
 }
-impl From<NodeTreeError> for LunexError {
-    fn from(value: NodeTreeError) -> Self {
-        LunexError::NodeTreeError(value)
+impl From<NodeError> for LunexError {
+    fn from(value: NodeError) -> Self {
+        LunexError::NodeError(value)
     }
 }
 
