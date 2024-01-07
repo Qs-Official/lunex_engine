@@ -67,6 +67,39 @@ pub trait UINodeDataTrait<T> {
 }
 impl <T: Default> UINodeDataTrait<T> for UINodeTree<T> {
     fn add_custom_data(&mut self, data: T) -> Option<T> {
+        self.node.add_custom_data(data)
+    }
+
+    fn insert_custom_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeTreeError> {
+        self.node.insert_custom_data(path, data)
+    }
+
+    fn take_custom_data(&mut self) -> Option<T> {
+        self.node.take_custom_data()
+    }
+
+    fn remove_custom_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError> {
+        self.node.remove_custom_data(path)
+    }
+
+    fn obtain_custom_data(&self) -> Option<&T> {
+        self.node.obtain_custom_data()
+    }
+
+    fn obtain_custom_data_mut(&mut self) -> Option<&mut T> {
+        self.node.obtain_custom_data_mut()
+    }
+
+    fn borrow_custom_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError> {
+        self.node.borrow_custom_data(path)
+    }
+
+    fn borrow_custom_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError> {
+        self.node.borrow_custom_data_mut(path)
+    }
+}
+impl <T: Default> UINodeDataTrait<T> for UINode<T> {
+    fn add_custom_data(&mut self, data: T) -> Option<T> {
         let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
         core::mem::replace(&mut container.data, Some(data))
     }
