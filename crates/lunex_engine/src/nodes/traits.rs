@@ -140,34 +140,50 @@ pub trait NodeCreationTrait<T> {
 pub trait NodeDataTrait<T> {
     /// ## Add data
     /// Adds new data to this node and returns the previous data.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::insert_data`] for hierarchy insert
     fn add_data(&mut self, data: T) -> Option<T>;
 
     /// ## Insert data
     /// Inserts new data to this node or any other subnode and returns the previous data.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::add_data`] for direct insert
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Take data
     /// Removes data from this node and returns them.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::remove_data`] for hierarchy retrieval
     fn take_data(&mut self) -> Option<T>;
 
     /// ## Remove data
     /// Removes data from this node or any other subnode and returns them.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::take_data`] for direct retrieval
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Obtain data
     /// Borrows data from this node.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::borrow_data`] for hierarchy retrieval
     fn obtain_data(&self) -> Option<&T>;
 
     /// ## Obtain data mut
     /// Borrows data from this node as mut.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::borrow_data_mut`] for hierarchy retrieval
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
 
     /// ## Borrow data
     /// Borrows data from this node or any other subnode.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::obtain_data`] for direct retrieval
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError>;
 
     /// ## Borrow data mut
     /// Borrows data from this node or any other subnode as mut.
+    /// ### 📌 Note
+    /// * Use [`NodeDataTrait::obtain_data_mut`] for direct retrieval
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError>;
 }
 
@@ -213,6 +229,11 @@ pub trait NodeTreeInitTrait {
 /// Trait with all node display implementations.
 pub trait NodeDisplayTrait<T> {
     /// ## Tree
-    /// Generates overview of the inner structure as a string.
+    /// Generates overview of the inner structure of subnodes as a printable string.
+    /// 
+    /// It also displays information about layout by default.
+    /// 
+    /// You can supply additional parameters like `show-hidden`.
+    /// 
     fn tree(&self, params: impl Borrow<str>) -> String;
 }
