@@ -267,6 +267,13 @@ pub trait UINodeTreeInitTrait {
     /// Creates new NodeTree.
     fn new(name: impl Borrow<str>) -> Self;
 }
+impl <T: Default> UINodeTreeInitTrait for UINodeTree<T> {
+    fn new(name: impl Borrow<str>) -> Self {
+        let mut tree: UINodeTree<T> = NodeTreeInitTrait::new(name);
+        tree.add_data(Container::default());
+        tree
+    }
+}
 
 
 
