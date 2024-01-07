@@ -95,6 +95,7 @@ pub trait NodeGeneralTrait<T> {
 
 /// ## Node creation trait
 /// Trait with all node creation implementations.
+/// Lunex abstacts over this trait with another trait.
 pub trait NodeCreationTrait<T> {
     /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.

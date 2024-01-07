@@ -435,7 +435,7 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
     }
 }
 impl <T> NodeCreationTrait<T> for Node<T> {
-    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>{
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError> {
         if !name.borrow().is_empty() {
             if name.borrow() == "." { return Err(NodeTreeError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
             if self.nodes.contains_key(name.borrow()) == false {
@@ -465,7 +465,7 @@ impl <T> NodeCreationTrait<T> for Node<T> {
         }
     }
 
-    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>{
+    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError> {
         self.insert_node(path, Node::new())
     }
 
