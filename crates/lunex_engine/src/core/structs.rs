@@ -21,10 +21,6 @@ pub struct Container<P> {
     //text: Option<TextCapsule>, // It modifies ContentSize though?
 
     //depth: f32,
-
-    //roll: f32,
-    //yaw: f32,
-    //pitch: f32
 }
 
 impl <P:Default> Container<P> {

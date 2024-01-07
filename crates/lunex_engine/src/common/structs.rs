@@ -1,14 +1,13 @@
 use bevy::ecs::component::Component;
 use crate::NiceDisplay;
 use crate::import::*;
-
 use crate::NodeTreeError;
 
 
 // #==================#
 // #=== ERROR TYPE ===#
 
-/// ## NodeTree error
+/// ## Lunex error
 /// Error type indicating something went wrong.
 #[derive(Debug, Error, Clone, PartialEq)]
 pub enum LunexError {
@@ -37,8 +36,8 @@ pub struct NodeLink {
 
 
 
-/// ## Rectangle 3D
-/// A struct for holding a 3D rectangle data.
+/// ## Rectangle 2D
+/// A struct for holding a 2D rectangle data.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rect2D {
     pub pos : Vec2,
@@ -101,8 +100,8 @@ impl Into<Rect3D> for Rect2D {
 }
 
 
-/// ## Rectangle 2D
-/// A struct for holding a 2D rectangle data.
+/// ## Rectangle 3D
+/// A struct for holding a 3D rectangle data.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rect3D {
     pub pos : Vec3,

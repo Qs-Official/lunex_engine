@@ -15,10 +15,12 @@ pub trait NodeGeneralTrait<T> {
     /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
     fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeTreeError>;
 
+    /// # !!! Maybe should be moved to private trait?
     /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
     fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>;
 
+    /// # !!! Maybe should be moved to private trait?
     /// ## Create node
     /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>;
