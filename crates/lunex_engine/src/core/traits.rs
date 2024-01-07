@@ -13,56 +13,56 @@ use super::{UINode, UINodeTree, Container};
 // #=== DIRECT UINODE TRAITS ===#
 
 
-/// ## Node user data trait
+/// ## UINode user data trait
 /// Trait that abstracts over [`NodeDataTrait`] to provide tailored
 /// implementations for [`UINodeTree`] data management.
 pub trait UINodeDataTrait<T> {
     /// ## Add ui data
     /// Adds new data to this node and returns the previous data.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn add_ui_data(&mut self, data: T) -> Option<T>;
 
     /// ## Insert ui data
     /// Inserts new data to this node or any other subnode and returns the previous data.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn insert_ui_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Take ui data
     /// Removes data from this node and returns them.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn take_ui_data(&mut self) -> Option<T>;
 
     /// ## Remove ui data
     /// Removes data from this node or any other subnode and returns them.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn remove_ui_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Obtain ui data
     /// Borrows data from this node.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn obtain_ui_data(&self) -> Option<&T>;
 
     /// ## Obtain ui data mut
     /// Borrows data from this node as mut.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn obtain_ui_data_mut(&mut self) -> Option<&mut T>;
 
     /// ## Borrow ui data
     /// Borrows data from this node or any other subnode.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn borrow_ui_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError>;
 
     /// ## Borrow ui data mut
     /// Borrows data from this node or any other subnode as mut.
-    /// ## Panics
-    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
+    /// ## ⚠️ Panics 🚧
+    /// Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn borrow_ui_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError>;
 }
 impl <T: Default> UINodeDataTrait<T> for UINodeTree<T> {
@@ -139,6 +139,18 @@ impl <T: Default> UINodeDataTrait<T> for UINode<T> {
         Ok(container.data.as_mut())
     }
 }
+
+
+/// ## UINodetree init trait
+/// Trait that abstracts over [`NodeTreeInitTrait`] to provide tailored
+/// implementations for [`UINodeTree`] initialization.
+pub trait UINodeTreeInitTrait {
+    /// ## New
+    /// Creates new NodeTree.
+    fn new(name: impl Borrow<str>) -> Self;
+}
+
+
 
 /// ## Node compute trait
 /// Trait with all node layout computation implementations.

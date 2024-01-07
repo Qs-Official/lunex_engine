@@ -9,21 +9,11 @@ use super::{Node, NodeTreeError};
 pub trait NodeGeneralTrait<T> {
     /// ## Add node
     /// Adds new subnode to this node and returns the new subnodes' name.
-    fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>) -> Result<String, NodeTreeError>;
+    fn add_node(&mut self, name: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>;
 
     /// ## Insert node
     /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
-    fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeTreeError>;
-
-    /// # !!! Maybe should be moved to private trait?
-    /// ## Make node
-    /// Makes new subnode in this node and returns the new subnodes' name.
-    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>;
-
-    /// # !!! Maybe should be moved to private trait?
-    /// ## Create node
-    /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
-    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>;
+    fn insert_node(&mut self, path: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>;
 
     /// ## Take node
     /// Removes subnode from this node and returns it.
@@ -41,14 +31,6 @@ pub trait NodeGeneralTrait<T> {
     /// Borrows subnode from this node as mut.
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
 
-    /// ## Obtain or create node
-    /// Borrows subnode from this node. If the node doesn't exist, it creates one.
-    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
-
-    /// ## Obtain or create node mut
-    /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
-    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
-
     /// ## Borrow node
     /// Borrows subnode from this node or any other subnode.
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
@@ -57,16 +39,11 @@ pub trait NodeGeneralTrait<T> {
     /// Borrows subnode from this node or any other subnode as mut.
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
 
-    /// ## Borrow or create node
-    /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
-    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
-
-    /// ## Borrow or create node mut
-    /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
-    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;    
-
     /// ## Merge
     /// Merges node or NodeTree into this node.
+    /// ## ⚠️ Warning 🚧
+    /// Any data that supplied node contains will be dropped. Only subnodes will get merged.
+    /// Use [`NodeGeneralTrait::insert_node`] if you want to preserve UI data.
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeTreeError>;
 
     /// ## Crawl
@@ -75,19 +52,59 @@ pub trait NodeGeneralTrait<T> {
 
     /// ## Tree node
     /// Generates overview of the inner structure of subnodes as a string.
+    /// 
+    /// You can supply additional paramets like `show-hidden`.
+    /// 
+    /// There is a better tree
     fn tree_node(&self, params: impl Borrow<str>) -> String;
 
     /// ## Get name
-    /// Returns name of the node. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// Returns name of the node. `Cached` & `Read-only`.
+    /// 
+    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
     fn get_name(&self) -> &String;
 
     /// ## Get path
-    /// Returns depth within the hierarchy. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// Returns depth within the hierarchy. `Cached` & `Read-only`.
+    /// 
+    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
     fn get_path(&self) -> &String;
 
     /// ## Get depth
-    /// Returns full path without the name. `Cached` & `Read-only`. Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// Returns full path without the name. `Cached` & `Read-only`.
+    /// 
+    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
     fn get_depth(&self) -> f32;
+}
+
+/// ## Node creation trait
+/// Trait with all node creation implementations.
+pub trait NodeCreationTrait<T> {
+    /// ## Make node
+    /// Makes new subnode in this node and returns the new subnodes' name.
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>;
+
+    /// ## Create node
+    /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
+    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>;
+
+    /// ## Obtain or create node
+    /// Borrows subnode from this node. If the node doesn't exist, it creates one.
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
+
+    /// ## Obtain or create node mut
+    /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
+
+    /// ## Borrow or create node
+    /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
+
+    /// ## Borrow or create node mut
+    /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
+    /// ## ⚠️ Warning 🚧
+    /// The created node is empty **WITHOUT** UI data.
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;    
 }
 
 /// ## Node data trait

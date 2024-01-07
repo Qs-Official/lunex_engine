@@ -1,7 +1,7 @@
 use bevy::ecs::component::Component;
 use crate::import::*;
 use crate::NiceDisplay;
-use super::{NodeGeneralTrait, NodeDataTrait, NodeTopDataTrait, NodeInitTrait, NodeTreeInitTrait, NodeDisplayTrait};
+use super::{NodeGeneralTrait, NodeCreationTrait, NodeDataTrait, NodeTopDataTrait, NodeInitTrait, NodeTreeInitTrait, NodeDisplayTrait};
 
 
 // #==================#
@@ -11,9 +11,6 @@ use super::{NodeGeneralTrait, NodeDataTrait, NodeTopDataTrait, NodeInitTrait, No
 /// Error type indicating something went wrong.
 #[derive(Debug, Error, Clone, PartialEq)]
 pub enum NodeTreeError {
-    /// Error that happens when merging nodes. The node being merged must not contain data. Process the data before merging.
-    #[error("Data from merging node was not processed/dropped before merging")]
-    DataConflict,
 
     /// Error that happens when merging nodes. Two subnodes share the same name thus cannot be merged.
     #[error("Duplicate name conflict for '{0:}' when trying to merge nodes")]
@@ -107,20 +104,12 @@ impl <D, T> NodeTreeInitTrait for NodeTree<D, T> {
     }
 }
 impl <D, T> NodeGeneralTrait<T> for NodeTree<D, T> {
-    fn add_node(&mut self, name: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeTreeError>{
+    fn add_node(&mut self, name: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>{
         self.node.add_node(name, node)
     }
 
-    fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>,) -> Result<String, NodeTreeError>{
+    fn insert_node(&mut self, path: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>{
         self.node.insert_node(path, node)
-    }
-
-    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>{
-        self.node.make_node(name)
-    }
-
-    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>{
-        self.node.create_node(path)
     }
 
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeTreeError> {
@@ -139,28 +128,12 @@ impl <D, T> NodeGeneralTrait<T> for NodeTree<D, T> {
         self.node.obtain_node_mut(name)
     }
 
-    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
-        self.node.obtain_or_create_node(name)
-    }
-
-    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
-        self.node.obtain_or_create_node_mut(name)
-    }
-  
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
         self.node.borrow_node(path)
     }
 
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
         self.node.borrow_node_mut(path)
-    }
-
-    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
-        self.node.borrow_or_create_node(path)
-    }
-
-    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
-        self.node.borrow_or_create_node_mut(path)
     }
 
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeTreeError> {
@@ -185,6 +158,31 @@ impl <D, T> NodeGeneralTrait<T> for NodeTree<D, T> {
 
     fn get_depth(&self) -> f32 {
         self.node.get_depth()
+    }
+}
+impl <D, T> NodeCreationTrait<T> for NodeTree<D, T> {
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>{
+        self.node.make_node(name)
+    }
+
+    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>{
+        self.node.create_node(path)
+    }
+
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
+        self.node.obtain_or_create_node(name)
+    }
+
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
+        self.node.obtain_or_create_node_mut(name)
+    }
+
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
+        self.node.borrow_or_create_node(path)
+    }
+
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
+        self.node.borrow_or_create_node_mut(path)
     }
 }
 impl <D, T> NodeDataTrait<T> for NodeTree<D, T> {
@@ -304,7 +302,8 @@ impl <T> NodeInitTrait for Node<T> {
     }
 }
 impl <T> NodeGeneralTrait<T> for Node<T> {
-    fn add_node(&mut self, name: impl Borrow<str>, mut node: Node<T>) -> Result<String, NodeTreeError>{
+    fn add_node(&mut self, name: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>{
+        let mut node = node.into();
         if !name.borrow().is_empty() {
             if name.borrow() == "." { return Err(NodeTreeError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
             if self.nodes.contains_key(name.borrow()) == false {
@@ -332,45 +331,11 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
         }
     }
 
-    fn insert_node(&mut self, path: impl Borrow<str>, node: Node<T>) -> Result<String, NodeTreeError>{
+    fn insert_node(&mut self, path: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>{
         match path.borrow().rsplit_once('/'){
             None => self.add_node(path, node),
             Some((rempath, name)) => self.borrow_node_mut(rempath)?.add_node(name, node),
         }
-    }
-
-    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>{
-        if !name.borrow().is_empty() {
-            if name.borrow() == "." { return Err(NodeTreeError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
-            if self.nodes.contains_key(name.borrow()) == false {
-                let mut node = Node::new();
-                node.name = name.borrow().to_owned();
-                node.path = if self.path.is_empty() { name.borrow().to_owned() } else { self.path.to_owned() + "/" + name.borrow() };
-                node.depth = self.depth + 1.0;
-                self.nodes.insert(name.borrow().to_owned(), node);
-                Ok(name.borrow().to_owned())
-            } else {
-                Err(NodeTreeError::NameInUse(name.borrow().to_owned()))
-            }
-        } else {
-            let mut generated_name = format!(".||#:{}", self.nodes.len());
-            let mut i = 0;
-            while self.nodes.contains_key(&generated_name) == true {
-                generated_name = format!(".||#:{}", self.nodes.len()+i);
-                i += 1;
-                if i > 100 { return Err(NodeTreeError::InvalidPath("Failed to generate name, max threshold reached!".to_owned())); }
-            }
-            let mut node = Node::new();
-            node.name = generated_name.to_owned();
-            node.path = if self.path.is_empty() { generated_name.to_owned() } else { self.path.to_owned() + "/" + &generated_name };
-            node.depth = self.depth + 1.0;
-            self.nodes.insert(generated_name.to_owned(), node);
-            Ok(generated_name)
-        }
-    }
-
-    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>{
-        self.insert_node(path, Node::new())
     }
 
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeTreeError> {
@@ -411,16 +376,6 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
         }
     }
 
-    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
-        let _ = self.make_node(name.borrow());
-        self.obtain_node(name)
-    }
-
-    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
-        let _ = self.make_node(name.borrow());
-        self.obtain_node_mut(name)
-    }
-  
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
         match path.borrow().split_once('/') {
             None => self.obtain_node(path),
@@ -435,23 +390,9 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
         }
     }
 
-    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
-        match path.borrow().split_once('/') {
-            None => self.obtain_or_create_node(path),
-            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node(rempath),
-        }
-    }
-
-    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
-        match path.borrow().split_once('/') {
-            None => self.obtain_or_create_node_mut(path),
-            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node_mut(rempath),
-        }
-    }
-
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeTreeError> {
         let node = node.into();
-        if let Some(_) = node.data { return Err(NodeTreeError::DataConflict); }
+        //if let Some(_) = node.data { return Err(NodeTreeError::DataConflict); }
         for (name, _) in &node.nodes {
             if self.nodes.contains_key(name) { return Err(NodeTreeError::DuplicateName(name.to_owned())); }
         }
@@ -491,6 +432,65 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
 
     fn get_depth(&self) -> f32 {
         self.depth
+    }
+}
+impl <T> NodeCreationTrait<T> for Node<T> {
+    fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>{
+        if !name.borrow().is_empty() {
+            if name.borrow() == "." { return Err(NodeTreeError::NameInUse("The special symbol '.' is used to refer to 'self' and is not available for use".to_owned())) }
+            if self.nodes.contains_key(name.borrow()) == false {
+                let mut node = Node::new();
+                node.name = name.borrow().to_owned();
+                node.path = if self.path.is_empty() { name.borrow().to_owned() } else { self.path.to_owned() + "/" + name.borrow() };
+                node.depth = self.depth + 1.0;
+                self.nodes.insert(name.borrow().to_owned(), node);
+                Ok(name.borrow().to_owned())
+            } else {
+                Err(NodeTreeError::NameInUse(name.borrow().to_owned()))
+            }
+        } else {
+            let mut generated_name = format!(".||#:{}", self.nodes.len());
+            let mut i = 0;
+            while self.nodes.contains_key(&generated_name) == true {
+                generated_name = format!(".||#:{}", self.nodes.len()+i);
+                i += 1;
+                if i > 100 { return Err(NodeTreeError::InvalidPath("Failed to generate name, max threshold reached!".to_owned())); }
+            }
+            let mut node = Node::new();
+            node.name = generated_name.to_owned();
+            node.path = if self.path.is_empty() { generated_name.to_owned() } else { self.path.to_owned() + "/" + &generated_name };
+            node.depth = self.depth + 1.0;
+            self.nodes.insert(generated_name.to_owned(), node);
+            Ok(generated_name)
+        }
+    }
+
+    fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>{
+        self.insert_node(path, Node::new())
+    }
+
+    fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
+        let _ = self.make_node(name.borrow());
+        self.obtain_node(name)
+    }
+
+    fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
+        let _ = self.make_node(name.borrow());
+        self.obtain_node_mut(name)
+    }
+
+    fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError> {
+        match path.borrow().split_once('/') {
+            None => self.obtain_or_create_node(path),
+            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node(rempath),
+        }
+    }
+
+    fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError> {
+        match path.borrow().split_once('/') {
+            None => self.obtain_or_create_node_mut(path),
+            Some((name, rempath)) => self.obtain_or_create_node_mut(name)?.borrow_or_create_node_mut(rempath),
+        }
     }
 }
 impl <T> NodeDataTrait<T> for Node<T> {
