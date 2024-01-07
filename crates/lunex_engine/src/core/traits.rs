@@ -291,7 +291,6 @@ impl <P> UINodeComputeTrait for UINode<P> {
     fn compute(&mut self, parent: Rect3D) {
         
         if let Some(container) = &mut self.data {
-            println!("HI");
             container.rect = container.layout.compute(parent, 16.0);
 
             for (_, node) in &mut self.nodes {
