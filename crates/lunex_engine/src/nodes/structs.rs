@@ -1,9 +1,7 @@
 use bevy::ecs::component::Component;
-
 use crate::import::*;
 use crate::NiceDisplay;
-
-use super::{NodeGeneralTrait, NodeDataTrait, NodeDisplayTrait};
+use super::{NodeGeneralTrait, NodeDataTrait, NodeTopDataTrait, NodeInitTrait, NodeTreeInitTrait, NodeDisplayTrait};
 
 
 // #==================#
@@ -56,17 +54,17 @@ pub enum NodeTreeError {
 /// ### Paths
 /// Whitespaces are allowed in paths, but are not encouraged.
 /// Putting a dot as first symbol like this `".name"` will hide the node from the tree. If you want to
-/// display hidden nodes too, pass `"show-hidden"` as params to [NodeDisplayTrait::tree] method.
+/// display hidden nodes too, pass `"show-hidden"` as params to [`NodeDisplayTrait::tree`] method.
 /// Just `"."` will refer to the same node. `".."` is not supported for the sake of simplicity
 /// and performance.
 /// 
 /// You can also not specify the name when creating a node. That will mean the name will be
 /// generated. The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes`.
 /// Meaning nodes with names like `".||#:0"`, `".||#:1"`, `".||#:2"` can exist. Please refrain from
-/// manually using these names or [NodeGeneralTrait::add_node] will return errors.
+/// manually using these names or [`NodeGeneralTrait::add_node`] will return errors.
 /// ### Generics
-/// * (D) => A type holding surface data that is stored in [NodeTree] for all nodes to share.
-/// * (T) => A type holding node-specific data that any [Node] can store.
+/// * (`D`) => A type holding surface top-data that is stored in [`NodeTree`] for all nodes to share.
+/// * (`T`) => A type holding node-specific data that any [`Node`] can store.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeTree<D, T> {
     /// ## Top-level data
@@ -77,44 +75,35 @@ pub struct NodeTree<D, T> {
     /// The starting root node.
     pub node: Node<T>,
 }
-impl <D, T> NodeTree<D, T> {
-    /// ## New
-    /// Creates new NodeTree.
-    pub fn new(name: impl Borrow<str>) -> Self {
-        let mut node = Node::new();
-        node.name = name.borrow().into();
-        node.path = "".into();
-        NodeTree { data: None, node }
-    }
-    
-    /// ## Add top-level data
-    /// Adds new top-level data and returns previous top-level data.
-    pub fn add_topdata(&mut self, data: D) -> Option<D> {
+impl <D, T> NodeTopDataTrait<D> for NodeTree<D, T> {
+    fn add_topdata(&mut self, data: D) -> Option<D> {
         core::mem::replace(&mut self.data, Some(data))
     }
 
-    /// ## Take top-level data
-    /// Removes top-level data and returns it.
-    pub fn take_topdata(&mut self) -> Option<D> {
+    fn take_topdata(&mut self) -> Option<D> {
         core::mem::replace(&mut self.data, None)
     }
 
-    /// ## Obtain top-level data
-    /// Borrows top-level data.
-    pub fn obtain_topdata(&self) -> Option<&D> {
+    fn obtain_topdata(&self) -> Option<&D> {
         match &self.data {
             Some(value) => Some(value),
             None => None,
         }
     }
 
-    /// ## Obtain top-level data mut
-    /// Borrows top-level data as mut.
-    pub fn obtain_topdata_mut(&mut self) -> Option<&mut D> {
+    fn obtain_topdata_mut(&mut self) -> Option<&mut D> {
         match &mut self.data {
             Some(value) => Some(value),
             None => None,
         }
+    }
+}
+impl <D, T> NodeTreeInitTrait for NodeTree<D, T> {
+    fn new(name: impl Borrow<str>) -> Self {
+        let mut node = Node::new();
+        node.name = name.borrow().into();
+        node.path = "".into();
+        NodeTree { data: None, node }
     }
 }
 impl <D, T> NodeGeneralTrait<T> for NodeTree<D, T> {
@@ -247,7 +236,7 @@ impl <D, T> Into<Node<T>> for NodeTree<D, T>{
 // #=== NODE ===#
 
 /// ## Node
-/// A struct representing organized data in [NodeTree].
+/// A struct representing organized data in [`NodeTree`].
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {
     /// ## Name
@@ -267,20 +256,6 @@ pub struct Node<T> {
     /// All subnodes this node contains. Treat is as `Read-only` unless you know what you are doing.
     /// Use the struct methods to manipulate the values inside.
     pub nodes: HashMap<String, Node<T>>,
-}
-impl <T> Node<T> {
-    /// ## New
-    /// Creates new node.
-    pub fn new() -> Self {
-        Node {
-            name: "".into(),
-            path: "".into(),
-            depth: 0.0,
-
-            data: None,
-            nodes: HashMap::new(),
-        }
-    }
 }
 impl <T> Node<T> {
     /// Generate overview of the inner tree and write the mapped output to the given string with data formatted to a certain level depth
@@ -314,6 +289,18 @@ impl <T:NiceDisplay> Node<T> {
             string = node.cascade_tree_display(string, level + 1, param);
         }
         string
+    }
+}
+impl <T> NodeInitTrait for Node<T> {
+    fn new() -> Self {
+        Node {
+            name: "".into(),
+            path: "".into(),
+            depth: 0.0,
+
+            data: None,
+            nodes: HashMap::new(),
+        }
     }
 }
 impl <T> NodeGeneralTrait<T> for Node<T> {

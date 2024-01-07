@@ -74,17 +74,16 @@ pub struct Rem<T>(pub T);
 /// # Node Size
 /// A struct holding size NodeSize data used in UI.
 /// It can be constructed from the following units:
-/// * [Abs]
-/// * [Prc]
-/// * [Rem]
+/// * [`Abs`] = Absolute units
+/// * [`Prc`] = Percentage units
+/// * [`Rem`] = Rem units
 /// 
-/// size 1 = 0.25rem = 4px
 /// ### Support
-/// First class implementations for (T)
-/// * [f32]
-/// * [Vec2]
-/// * [Vec3]
-/// * [Vec4]
+/// First class implementations for (`T`)
+/// * [`f32`]
+/// * [`Vec2`]
+/// * [`Vec3`]
+/// * [`Vec4`]
 /// ### Example
 /// ```
 /// # use lunex_core::{NodeSize, Abs, Rem};

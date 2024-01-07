@@ -126,6 +126,44 @@ pub trait NodeDataTrait<T> {
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError>;
 }
 
+/// ## Node top data trait
+/// Trait with all nodetree top-data management implementations.
+pub trait NodeTopDataTrait<D> {
+    /// ## Add top-level data
+    /// Adds new top-level data and returns previous top-level data.
+    fn add_topdata(&mut self, data: D) -> Option<D>;
+
+    /// ## Take top-level data
+    /// Removes top-level data and returns it.
+    fn take_topdata(&mut self) -> Option<D>;
+
+    /// ## Obtain top-level data
+    /// Borrows top-level data.
+    fn obtain_topdata(&self) -> Option<&D>;
+
+    /// ## Obtain top-level data mut
+    /// Borrows top-level data as mut.
+    fn obtain_topdata_mut(&mut self) -> Option<&mut D>;
+}
+
+/// ## Node init trait
+/// Trait with all init methods for empty nodes. Lunex abstacts over
+/// this trait with another trait.
+pub trait NodeInitTrait {
+    /// ## New
+    /// Creates new node.
+    fn new() -> Self;
+}
+
+/// ## Nodetree init trait
+/// Trait with init methods for nodetrees. Lunex abstacts over
+/// this trait with another trait.
+pub trait NodeTreeInitTrait {
+    /// ## New
+    /// Creates new NodeTree.
+    fn new(name: impl Borrow<str>) -> Self;
+}
+
 /// ## Node display trait
 /// Trait with all node display implementations.
 pub trait NodeDisplayTrait<T> {

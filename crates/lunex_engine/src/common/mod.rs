@@ -15,4 +15,6 @@ pub mod prelude {
     pub use super::NodeLink;
 
     pub use super::LunexError;
+
+    pub use super::{Rect2D, Rect3D};
 }
