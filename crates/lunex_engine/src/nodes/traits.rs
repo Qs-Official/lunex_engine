@@ -25,25 +25,33 @@ pub trait NodeGeneralTrait<T> {
 
     /// ## Obtain node
     /// Borrows subnode from this node.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::borrow_node`] for hierarchy retrieval
     fn obtain_node(&self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
 
     /// ## Obtain node mut
     /// Borrows subnode from this node as mut.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::borrow_node_mut`] for hierarchy retrieval
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
 
     /// ## Borrow node
     /// Borrows subnode from this node or any other subnode.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::obtain_node`] for direct retrieval
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
 
     /// ## Borrow node mut
     /// Borrows subnode from this node or any other subnode as mut.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::obtain_node_mut`] for direct retrieval
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
 
     /// ## Merge
-    /// Merges node or NodeTree into this node.
-    /// ## ⚠️ Warning 🚧
-    /// Any data that supplied node contains will be dropped. Only subnodes will get merged.
-    /// Use [`NodeGeneralTrait::insert_node`] if you want to preserve UI data.
+    /// Merges subnodes of supplied node or nodetree into this node.
+    /// ### ⚠️ Warning
+    /// * Any data that supplied node contains will be dropped.
+    /// * Returns error if there is a name collision.
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeTreeError>;
 
     /// ## Crawl
@@ -51,29 +59,29 @@ pub trait NodeGeneralTrait<T> {
     fn crawl(&self) -> Vec<&Node<T>>;
 
     /// ## Tree node
-    /// Generates overview of the inner structure of subnodes as a string.
+    /// Generates overview of the inner structure of subnodes as a printable string.
     /// 
-    /// You can supply additional paramets like `show-hidden`.
-    /// 
-    /// There is a better tree
+    /// You can supply additional parameters like `show-hidden`.
+    /// ### 📌 Note
+    /// * Prefer [`NodeDisplayTrait::tree`] method instad if (`T`) implements [`crate::NiceDisplay`]
     fn tree_node(&self, params: impl Borrow<str>) -> String;
 
     /// ## Get name
     /// Returns name of the node. `Cached` & `Read-only`.
-    /// 
-    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// ### ⚠️ Warning
+    /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_name(&self) -> &String;
 
     /// ## Get path
     /// Returns depth within the hierarchy. `Cached` & `Read-only`.
-    /// 
-    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// ### ⚠️ Warning
+    /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_path(&self) -> &String;
 
     /// ## Get depth
     /// Returns full path without the name. `Cached` & `Read-only`.
-    /// 
-    /// ⚠️ Not guaranteed to be correct if node is not put inside NodeTree correctly.
+    /// ### ⚠️ Warning
+    /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_depth(&self) -> f32;
 }
 
@@ -90,20 +98,26 @@ pub trait NodeCreationTrait<T> {
 
     /// ## Obtain or create node
     /// Borrows subnode from this node. If the node doesn't exist, it creates one.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::borrow_or_create_node`] for hierarchy retrieval
     fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
 
     /// ## Obtain or create node mut
     /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::borrow_or_create_node_mut`] for hierarchy retrieval
     fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;
 
     /// ## Borrow or create node
     /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::obtain_or_create_node`] for direct retrieval
     fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeTreeError>;
 
     /// ## Borrow or create node mut
     /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
-    /// ## ⚠️ Warning 🚧
-    /// The created node is empty **WITHOUT** UI data.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval
     fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeTreeError>;    
 }
 
