@@ -20,73 +20,91 @@ pub trait UINodeDataTrait<T> {
     /// ## Add custom data
     /// Adds new data to this node and returns the previous data.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn add_custom_data(&mut self, data: T) -> Option<T>;
 
     /// ## Insert custom data
     /// Inserts new data to this node or any other subnode and returns the previous data.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn insert_custom_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Take custom data
     /// Removes data from this node and returns them.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn take_custom_data(&mut self) -> Option<T>;
 
     /// ## Remove custom data
     /// Removes data from this node or any other subnode and returns them.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn remove_custom_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError>;
 
     /// ## Obtain custom data
     /// Borrows data from this node.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn obtain_custom_data(&self) -> Option<&T>;
 
     /// ## Obtain custom data mut
     /// Borrows data from this node as mut.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn obtain_custom_data_mut(&mut self) -> Option<&mut T>;
 
     /// ## Borrow custom data
     /// Borrows data from this node or any other subnode.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn borrow_custom_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError>;
 
     /// ## Borrow custom data mut
     /// Borrows data from this node or any other subnode as mut.
     /// ## Panics
-    /// Panics if somebody wrongly initialized/changed UINode with direct access methods (not in prelude)
+    /// Panics if UINode is missing [`Container`] data (happens if somebody used direct access methods not in prelude)
     fn borrow_custom_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError>;
 }
 impl <T: Default> UINodeDataTrait<T> for UINodeTree<T> {
     fn add_custom_data(&mut self, data: T) -> Option<T> {
-        let Some(container) = self.obtain_data_mut() else { panic!("This UINode was wrongly initialized!") };
+        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
         core::mem::replace(&mut container.data, Some(data))
     }
 
     fn insert_custom_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeTreeError> {
-        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode was wrongly initialized!") };
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
         Ok(core::mem::replace(&mut container.data, Some(data)))
     }
 
-    fn take_custom_data(&mut self) -> Option<T>;
+    fn take_custom_data(&mut self) -> Option<T> {
+        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
+        core::mem::replace(&mut container.data, None)
+    }
 
-    fn remove_custom_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError>;
+    fn remove_custom_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeTreeError> {
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
+        Ok(core::mem::replace(&mut container.data, None))
+    }
 
-    fn obtain_custom_data(&self) -> Option<&T>;
+    fn obtain_custom_data(&self) -> Option<&T> {
+        let Some(container) = self.obtain_data() else { panic!("This UINode is missing UI data!") };
+        container.data.as_ref()
+    }
 
-    fn obtain_custom_data_mut(&mut self) -> Option<&mut T>;
+    fn obtain_custom_data_mut(&mut self) -> Option<&mut T> {
+        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
+        container.data.as_mut()
+    }
 
-    fn borrow_custom_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError>;
+    fn borrow_custom_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeTreeError> {
+        let Some(container) = self.borrow_data(path)? else { panic!("This UINode is missing UI data!") };
+        Ok(container.data.as_ref())
+    }
 
-    fn borrow_custom_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError>;
+    fn borrow_custom_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeTreeError> {
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
+        Ok(container.data.as_mut())
+    }
 }
 
 /// ## Node compute trait

@@ -6,5 +6,5 @@ pub use traits::*;
 
 pub mod prelude {
     pub use super::{UINode, UINodeTree};
-    pub use super::{BuildAsNode, SyncToNode, NodeComputeTrait};
+    pub use super::{BuildAsNode, SyncToNode, UINodeDataTrait, UINodeComputeTrait};
 }

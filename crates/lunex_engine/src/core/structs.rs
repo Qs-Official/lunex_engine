@@ -13,6 +13,9 @@ pub struct InterfaceData {
     //pub themes: Theme,
 }
 
+/// ## Container
+/// A struct holding all UI data appended to [`UINode`]. Responsible for storing layout, custom data, cache, etc.
+/// Every [`UINode`] needs to have this to work properly.
 #[derive(Debug, Default)]
 pub struct Container<P> {
     pub data: Option<P>,

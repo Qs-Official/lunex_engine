@@ -511,17 +511,11 @@ impl <T> NodeDataTrait<T> for Node<T> {
     }
 
     fn obtain_data(&self) -> Option<&T> {
-        match &self.data {
-            Some(value) => Some(value),
-            None => None,
-        }
+        self.data.as_ref()
     }
     
     fn obtain_data_mut(&mut self) -> Option<&mut T> {
-        match &mut self.data {
-            Some(value) => Some(value),
-            None => None,
-        }
+        self.data.as_mut()
     }
 
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T> , NodeTreeError> {
