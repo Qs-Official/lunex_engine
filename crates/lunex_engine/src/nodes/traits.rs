@@ -9,18 +9,26 @@ use super::{Node, NodeTreeError};
 pub trait NodeGeneralTrait<T> {
     /// ## Add node
     /// Adds new subnode to this node and returns the new subnodes' name.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::insert_node`] for hierarchy insert
     fn add_node(&mut self, name: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>;
 
     /// ## Insert node
     /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::add_node`] for direct insert
     fn insert_node(&mut self, path: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeTreeError>;
 
     /// ## Take node
     /// Removes subnode from this node and returns it.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::take_node`] for hierarchy retrieval
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeTreeError>;
 
     /// ## Remove node
     /// Removes subnode from this node or any other subnode and returns it.
+    /// ### 📌 Note
+    /// * Use [`NodeGeneralTrait::take_node`] for direct retrieval
     fn remove_node(&mut self, path: impl Borrow<str>) -> Result<Node<T>, NodeTreeError>;
 
     /// ## Obtain node
@@ -90,10 +98,14 @@ pub trait NodeGeneralTrait<T> {
 pub trait NodeCreationTrait<T> {
     /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::create_node`] for hierarchy creation
     fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeTreeError>;
 
     /// ## Create node
     /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
+    /// ### 📌 Note
+    /// * Use [`NodeCreationTrait::make_node`] for direct creation
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeTreeError>;
 
     /// ## Obtain or create node
