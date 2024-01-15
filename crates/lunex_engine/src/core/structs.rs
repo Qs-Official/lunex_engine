@@ -5,9 +5,9 @@ use colored::Colorize;
 use crate::nodes::prelude::*;
 use crate::layout::Layout;
 
-//pub type UI<T> = UINodeTree<T>;
-pub type UINodeTree<T = NoData> = NodeTree<InterfaceData, Container<T>>;
-pub type UINode<T = NoData> = Node<Container<T>>;
+//pub type UI<T> = UiTree<T>;
+pub type UiTree<T = NoData> = NodeTree<InterfaceData, Container<T>>;
+pub type UiNode<T = NoData> = Node<Container<T>>;
 
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
@@ -21,8 +21,8 @@ pub struct InterfaceData {
 }
 
 /// ## Container
-/// A struct holding all UI data appended to [`UINode`]. Responsible for storing layout, custom data, cache, etc.
-/// Every [`UINode`] needs to have this to work properly.
+/// A struct holding all UI data appended to [`UiNode`]. Responsible for storing layout, custom data, cache, etc.
+/// Every [`UiNode`] needs to have this to work properly.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Container<T: Default + Component> {
     pub data: Option<T>,

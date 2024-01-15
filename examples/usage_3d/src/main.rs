@@ -59,7 +59,7 @@ fn setup(
 
 fn build_ui() -> Result<(), LunexError> {
 
-    let mut ui: UINodeTree<()> = UINodeTree::new("HUD");
+    let mut ui: UiTree<()> = UiTree::new("HUD");
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
 

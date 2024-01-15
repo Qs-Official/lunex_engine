@@ -6,7 +6,7 @@ use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Rect3D;
 
-use super::{UINode, UINodeTree, Container};
+use super::{UiNode, UiTree, Container};
 
 
 
@@ -16,7 +16,7 @@ use super::{UINode, UINodeTree, Container};
 
 /// ## UINodetree init trait
 /// Trait that abstracts over [`NodeTreeInitTrait`] to provide tailored
-/// implementations for [`UINodeTree`] initialization.
+/// implementations for [`UiTree`] initialization.
 pub trait UINodeCreationTrait<T:Default + Component> {
     /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
@@ -34,27 +34,27 @@ pub trait UINodeCreationTrait<T:Default + Component> {
     /// Borrows subnode from this node. If the node doesn't exist, it creates one.
     /// ### 📌 Note
     /// * Use [`NodeCreationTrait::borrow_or_create_node`] for hierarchy retrieval
-    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UINode<T>, NodeError>;
+    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<T>, NodeError>;
 
     /// ## Obtain or create node mut
     /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
     /// ### 📌 Note
     /// * Use [`NodeCreationTrait::borrow_or_create_node_mut`] for hierarchy retrieval
-    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError>;
+    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError>;
 
     /// ## Borrow or create node
     /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
     /// ### 📌 Note
     /// * Use [`NodeCreationTrait::obtain_or_create_node`] for direct retrieval
-    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UINode<T>, NodeError>;
+    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<T>, NodeError>;
 
     /// ## Borrow or create node mut
     /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
     /// ### 📌 Note
     /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval
-    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError>;  
+    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError>;  
 }
-impl <T: Default + Component> UINodeCreationTrait<T> for UINodeTree<T> {
+impl <T: Default + Component> UINodeCreationTrait<T> for UiTree<T> {
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError>{
         self.node.make_ui_node(name)
     }
@@ -63,23 +63,23 @@ impl <T: Default + Component> UINodeCreationTrait<T> for UINodeTree<T> {
         self.node.create_ui_node(path)
     }
 
-    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UINode<T>, NodeError> {
+    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<T>, NodeError> {
         self.node.obtain_or_create_ui_node(name)
     }
 
-    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError> {
+    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError> {
         self.node.obtain_or_create_ui_node_mut(name)
     }
 
-    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UINode<T>, NodeError> {
+    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<T>, NodeError> {
         self.node.borrow_or_create_ui_node(path)
     }
 
-    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError> {
+    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError> {
         self.node.borrow_or_create_ui_node_mut(path)
     }
 }
-impl <T: Default + Component> UINodeCreationTrait<T> for UINode<T> {
+impl <T: Default + Component> UINodeCreationTrait<T> for UiNode<T> {
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError> {
         let n = self.make_node(name)?;
         self.insert_data(n.clone(), Container::default())?;
@@ -87,29 +87,29 @@ impl <T: Default + Component> UINodeCreationTrait<T> for UINode<T> {
     }
 
     fn create_ui_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeError> {
-        let mut node: UINode<T> = Node::new();
+        let mut node: UiNode<T> = Node::new();
         node.add_data(Container::default());
         self.insert_node(path, Node::new())
     }
 
-    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UINode<T>, NodeError> {
+    fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<T>, NodeError> {
         let _ = self.make_ui_node(name.borrow());
         self.obtain_node(name)
     }
 
-    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError> {
+    fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError> {
         let _ = self.make_ui_node(name.borrow());
         self.obtain_node_mut(name)
     }
 
-    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UINode<T>, NodeError> {
+    fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<T>, NodeError> {
         match path.borrow().split_once('/') {
             None => self.obtain_or_create_ui_node(path),
             Some((name, rempath)) => self.obtain_or_create_ui_node_mut(name)?.borrow_or_create_ui_node(rempath),
         }
     }
 
-    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError> {
+    fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<T>, NodeError> {
         match path.borrow().split_once('/') {
             None => self.obtain_or_create_ui_node_mut(path),
             Some((name, rempath)) => self.obtain_or_create_ui_node_mut(name)?.borrow_or_create_ui_node_mut(rempath),
@@ -117,16 +117,16 @@ impl <T: Default + Component> UINodeCreationTrait<T> for UINode<T> {
     }
 }
 
-/// ## UINode data trait
+/// ## UiNode data trait
 /// Trait that abstracts over [`NodeDataTrait`] to provide tailored
-/// implementations for [`UINodeTree`] data management.
+/// implementations for [`UiTree`] data management.
 pub trait UINodeDataTrait<T> {
     /// ## Add ui data
     /// Adds new data to this node and returns the previous data.
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::insert_ui_data`] for hierarchy insert
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn add_ui_data(&mut self, data: T) -> Option<T>;
 
     /// ## Insert ui data
@@ -134,7 +134,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::add_ui_data`] for direct insert
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn insert_ui_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeError>;
 
     /// ## Take ui data
@@ -142,7 +142,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::remove_ui_data`] for hierarchy retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn take_ui_data(&mut self) -> Option<T>;
 
     /// ## Remove ui data
@@ -150,7 +150,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::take_ui_data`] for direct retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn remove_ui_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeError>;
 
     /// ## Obtain ui data
@@ -158,7 +158,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::borrow_ui_data`] for hierarchy retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn obtain_ui_data(&self) -> Option<&T>;
 
     /// ## Obtain ui data mut
@@ -166,7 +166,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::borrow_ui_data_mut`] for hierarchy retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn obtain_ui_data_mut(&mut self) -> Option<&mut T>;
 
     /// ## Borrow ui data
@@ -174,7 +174,7 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::obtain_ui_data`] for direct retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn borrow_ui_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeError>;
 
     /// ## Borrow ui data mut
@@ -182,10 +182,10 @@ pub trait UINodeDataTrait<T> {
     /// ### 📌 Note
     /// * Use [`UINodeDataTrait::obtain_ui_data_mut`] for direct retrieval
     /// ### ⚠️ Panics
-    /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
+    /// * Panics if [`UiNode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn borrow_ui_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeError>;
 }
-impl <T: Default + Component> UINodeDataTrait<T> for UINodeTree<T> {
+impl <T: Default + Component> UINodeDataTrait<T> for UiTree<T> {
     fn add_ui_data(&mut self, data: T) -> Option<T> {
         self.node.add_ui_data(data)
     }
@@ -218,44 +218,44 @@ impl <T: Default + Component> UINodeDataTrait<T> for UINodeTree<T> {
         self.node.borrow_ui_data_mut(path)
     }
 }
-impl <T: Default + Component> UINodeDataTrait<T> for UINode<T> {
+impl <T: Default + Component> UINodeDataTrait<T> for UiNode<T> {
     fn add_ui_data(&mut self, data: T) -> Option<T> {
-        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.obtain_data_mut() else { panic!("This UiNode is missing UI data!") };
         core::mem::replace(&mut container.data, Some(data))
     }
 
     fn insert_ui_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeError> {
-        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UiNode is missing UI data!") };
         Ok(core::mem::replace(&mut container.data, Some(data)))
     }
 
     fn take_ui_data(&mut self) -> Option<T> {
-        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.obtain_data_mut() else { panic!("This UiNode is missing UI data!") };
         core::mem::replace(&mut container.data, None)
     }
 
     fn remove_ui_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeError> {
-        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UiNode is missing UI data!") };
         Ok(core::mem::replace(&mut container.data, None))
     }
 
     fn obtain_ui_data(&self) -> Option<&T> {
-        let Some(container) = self.obtain_data() else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.obtain_data() else { panic!("This UiNode is missing UI data!") };
         container.data.as_ref()
     }
 
     fn obtain_ui_data_mut(&mut self) -> Option<&mut T> {
-        let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.obtain_data_mut() else { panic!("This UiNode is missing UI data!") };
         container.data.as_mut()
     }
 
     fn borrow_ui_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeError> {
-        let Some(container) = self.borrow_data(path)? else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.borrow_data(path)? else { panic!("This UiNode is missing UI data!") };
         Ok(container.data.as_ref())
     }
 
     fn borrow_ui_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeError> {
-        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UINode is missing UI data!") };
+        let Some(container) = self.borrow_data_mut(path)? else { panic!("This UiNode is missing UI data!") };
         Ok(container.data.as_mut())
     }
 }
@@ -263,15 +263,15 @@ impl <T: Default + Component> UINodeDataTrait<T> for UINode<T> {
 
 /// ## UINodetree init trait
 /// Trait that abstracts over [`NodeTreeInitTrait`] to provide tailored
-/// implementations for [`UINodeTree`] initialization.
+/// implementations for [`UiTree`] initialization.
 pub trait UINodeTreeInitTrait {
     /// ## New
-    /// Creates new UINodeTree.
+    /// Creates new UiTree.
     fn new(name: impl Borrow<str>) -> Self;
 }
-impl <T: Default + Component> UINodeTreeInitTrait for UINodeTree<T> {
+impl <T: Default + Component> UINodeTreeInitTrait for UiTree<T> {
     fn new(name: impl Borrow<str>) -> Self {
-        let mut tree: UINodeTree<T> = NodeTreeInitTrait::new(name);
+        let mut tree: UiTree<T> = NodeTreeInitTrait::new(name);
         tree.add_data(Container::default());
         tree
     }
@@ -284,12 +284,12 @@ impl <T: Default + Component> UINodeTreeInitTrait for UINodeTree<T> {
 pub trait UINodeComputeTrait {
     fn compute(&mut self, parent: Rect3D);
 }
-impl <T:Default + Component> UINodeComputeTrait for UINodeTree<T> {
+impl <T:Default + Component> UINodeComputeTrait for UiTree<T> {
     fn compute(&mut self, parent: Rect3D) {
         self.node.compute(parent);
     }
 }
-impl <T:Default + Component> UINodeComputeTrait for UINode<T> {
+impl <T:Default + Component> UINodeComputeTrait for UiNode<T> {
     fn compute(&mut self, parent: Rect3D) {
         
         if let Some(container) = &mut self.data {
@@ -310,10 +310,10 @@ impl <T:Default + Component> UINodeComputeTrait for UINode<T> {
 /// ## Build as node
 /// Trait that [Layout] types implement so they can be build as new node.
 pub trait BuildAsNode {
-    fn build<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized;
+    fn build<T:Default + Component>(self, ui: &mut UiTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized;
 }
 impl BuildAsNode for layout::Window {
-    fn build<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
+    fn build<T:Default + Component>(self, ui: &mut UiTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
         ui.create_node(path.borrow())?;
         let mut container: Container<T> = Container::new();
         container.layout = self.into();
@@ -324,9 +324,9 @@ impl BuildAsNode for layout::Window {
 
 
 /// ## Sync to node
-/// Trait that [Component] types which represent values in [UINodeTree] need to
-/// implement to load and store data in [UINodeTree].
+/// Trait that [Component] types which represent values in [UiTree] need to
+/// implement to load and store data in [UiTree].
 pub trait SyncToNode {
-    fn load<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>);
-    fn save<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>);
+    fn load<T:Default + Component>(self, ui: &mut UiTree<T>, path: impl Borrow<str>);
+    fn save<T:Default + Component>(self, ui: &mut UiTree<T>, path: impl Borrow<str>);
 }

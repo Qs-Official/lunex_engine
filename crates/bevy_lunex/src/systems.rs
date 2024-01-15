@@ -3,8 +3,8 @@ use bevy::prelude::*;
 use lunex_engine::*;
 
 /// ## Compute camera ui
-/// This function triggers computation method on camera's [`UINodeTree`] component if there was a change.
-pub fn compute_camera_ui<T:Default + Component>(mut query: Query<(&Camera, &mut UINodeTree<T>), Or<(Changed<Camera>, Changed<UINodeTree<T>>)>>) {
+/// This function triggers computation method on camera's [`UiTree`] component if there was a change.
+pub fn compute_camera_ui<T:Default + Component>(mut query: Query<(&Camera, &mut UiTree<T>), Or<(Changed<Camera>, Changed<UiTree<T>>)>>) {
     for (cam, mut ui) in &mut query {
 
         // Extract camera size
@@ -27,13 +27,13 @@ pub fn weird<T: Component>(mut query: Query<&mut T>) {
 /// ## UI plugin
 /// THis
 #[derive(Debug, Default, Clone)]
-pub struct UIPlugin <T:Default + Component>(pub PhantomData<T>);
-impl <T:Default + Component> UIPlugin<T> {
+pub struct UiPlugin <T:Default + Component>(pub PhantomData<T>);
+impl <T:Default + Component> UiPlugin<T> {
     pub fn new() -> Self {
-        UIPlugin::<T>(PhantomData)
+        UiPlugin::<T>(PhantomData)
     }
 }
-impl <T:Default + Component> Plugin for UIPlugin<T> {
+impl <T:Default + Component> Plugin for UiPlugin<T> {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, compute_camera_ui::<T>);
     }
