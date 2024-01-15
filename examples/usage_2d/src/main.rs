@@ -13,14 +13,16 @@ fn setup(mut cmd: Commands) {
 
     cmd.spawn((
         Camera2dBundle { transform: Transform { translation: Vec3::new(0.0, 0.0, 100.0), ..default() }, ..default() },
-        //UI::UINodeTree::<MyWidget, NoData>::new("UI"),
+        MyUiWidget,
+        UiTree::<NoData>::new("UI"),
     ));
 
     cmd.spawn((
-        //UI::Link::<MyWidget>::path("window"),
-        //UI::Window::FULL,
+        MyUiWidget,
+        UiLink::path("window"),
+        UI::Window::FULL,
     ));
 
 }
 
-pub struct MyWidget;
+pub struct MyUiWidget;

@@ -18,6 +18,10 @@ pub fn compute_camera_ui<T:Default + Component>(mut query: Query<(&Camera, &mut 
 }
 
 
+pub fn weird<T: Component>(mut query: Query<&mut T>) {
+
+}
+
 
 
 /// ## UI plugin
