@@ -1,5 +1,7 @@
 use std::borrow::Borrow;
 
+use bevy::ecs::component::Component;
+
 use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Rect3D;
@@ -15,7 +17,7 @@ use super::{UINode, UINodeTree, Container};
 /// ## UINodetree init trait
 /// Trait that abstracts over [`NodeTreeInitTrait`] to provide tailored
 /// implementations for [`UINodeTree`] initialization.
-pub trait UINodeCreationTrait<T> {
+pub trait UINodeCreationTrait<T:Default + Component> {
     /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
     /// ### 📌 Note
@@ -52,7 +54,7 @@ pub trait UINodeCreationTrait<T> {
     /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval
     fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UINode<T>, NodeError>;  
 }
-impl <T: Default> UINodeCreationTrait<T> for UINodeTree<T> {
+impl <T: Default + Component> UINodeCreationTrait<T> for UINodeTree<T> {
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError>{
         self.node.make_ui_node(name)
     }
@@ -77,7 +79,7 @@ impl <T: Default> UINodeCreationTrait<T> for UINodeTree<T> {
         self.node.borrow_or_create_ui_node_mut(path)
     }
 }
-impl <T: Default> UINodeCreationTrait<T> for UINode<T> {
+impl <T: Default + Component> UINodeCreationTrait<T> for UINode<T> {
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError> {
         let n = self.make_node(name)?;
         self.insert_data(n.clone(), Container::default())?;
@@ -183,7 +185,7 @@ pub trait UINodeDataTrait<T> {
     /// * Panics if [`UINode`] is missing [`Container`] data _(should not happen unless you used methods not in prelude)_.
     fn borrow_ui_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeError>;
 }
-impl <T: Default> UINodeDataTrait<T> for UINodeTree<T> {
+impl <T: Default + Component> UINodeDataTrait<T> for UINodeTree<T> {
     fn add_ui_data(&mut self, data: T) -> Option<T> {
         self.node.add_ui_data(data)
     }
@@ -216,7 +218,7 @@ impl <T: Default> UINodeDataTrait<T> for UINodeTree<T> {
         self.node.borrow_ui_data_mut(path)
     }
 }
-impl <T: Default> UINodeDataTrait<T> for UINode<T> {
+impl <T: Default + Component> UINodeDataTrait<T> for UINode<T> {
     fn add_ui_data(&mut self, data: T) -> Option<T> {
         let Some(container) = self.obtain_data_mut() else { panic!("This UINode is missing UI data!") };
         core::mem::replace(&mut container.data, Some(data))
@@ -264,10 +266,10 @@ impl <T: Default> UINodeDataTrait<T> for UINode<T> {
 /// implementations for [`UINodeTree`] initialization.
 pub trait UINodeTreeInitTrait {
     /// ## New
-    /// Creates new NodeTree.
+    /// Creates new UINodeTree.
     fn new(name: impl Borrow<str>) -> Self;
 }
-impl <T: Default> UINodeTreeInitTrait for UINodeTree<T> {
+impl <T: Default + Component> UINodeTreeInitTrait for UINodeTree<T> {
     fn new(name: impl Borrow<str>) -> Self {
         let mut tree: UINodeTree<T> = NodeTreeInitTrait::new(name);
         tree.add_data(Container::default());
@@ -282,12 +284,12 @@ impl <T: Default> UINodeTreeInitTrait for UINodeTree<T> {
 pub trait UINodeComputeTrait {
     fn compute(&mut self, parent: Rect3D);
 }
-impl <P> UINodeComputeTrait for UINodeTree<P> {
+impl <T:Default + Component> UINodeComputeTrait for UINodeTree<T> {
     fn compute(&mut self, parent: Rect3D) {
         self.node.compute(parent);
     }
 }
-impl <P> UINodeComputeTrait for UINode<P> {
+impl <T:Default + Component> UINodeComputeTrait for UINode<T> {
     fn compute(&mut self, parent: Rect3D) {
         
         if let Some(container) = &mut self.data {
@@ -308,12 +310,12 @@ impl <P> UINodeComputeTrait for UINode<P> {
 /// ## Build as node
 /// Trait that [Layout] types implement so they can be build as new node.
 pub trait BuildAsNode {
-    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized;
+    fn build<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized;
 }
 impl BuildAsNode for layout::Window {
-    fn build<P:Default>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
+    fn build<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
         ui.create_node(path.borrow())?;
-        let mut container: Container<P> = Container::new();
+        let mut container: Container<T> = Container::new();
         container.layout = self.into();
         ui.insert_data(path, container)?;
         Ok(String::new())
@@ -325,6 +327,6 @@ impl BuildAsNode for layout::Window {
 /// Trait that [Component] types which represent values in [UINodeTree] need to
 /// implement to load and store data in [UINodeTree].
 pub trait SyncToNode {
-    fn load<P>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>);
-    fn save<P>(self, ui: &mut UINodeTree<P>, path: impl Borrow<str>);
+    fn load<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>);
+    fn save<T:Default + Component>(self, ui: &mut UINodeTree<T>, path: impl Borrow<str>);
 }
