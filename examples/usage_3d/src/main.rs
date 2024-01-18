@@ -1,13 +1,12 @@
 mod boilerplate;
 use boilerplate::*;
-
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;
-
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(UiPlugin::<NoData>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, move_player)
         .add_systems(Update, rotate_playercam)
