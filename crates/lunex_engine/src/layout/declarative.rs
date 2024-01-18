@@ -1,5 +1,5 @@
 use crate::import::*;
-use crate::{NiceDisplay, Align, Fit, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
+use crate::{NiceDisplay, Align, Cover, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
 
 use super::Layout;
 
@@ -99,12 +99,9 @@ pub struct Solid {
     /// ## Align Y
     /// Vertical alignment within parent.
     pub align_y: Align,
-    /// ## Fit Y
-    /// Horizontal container scaling.
-    pub fit_x: Fit,
-    /// ## Fit Y
-    /// Vertical container scaling.
-    pub fit_y: Fit,
+    /// ## Cover
+    /// Specifies container scaling.
+    pub cover: Cover,
 }
 impl Solid {
     /// ## New
@@ -114,8 +111,7 @@ impl Solid {
             size: Abs(Vec2::ONE).into(),
             align_x: Align::CENTER,
             align_y: Align::CENTER,
-            fit_x: Fit::Contain,
-            fit_y: Fit::Contain,
+            cover: Cover::Contain,
         }
     }
     /// ## With size
@@ -148,38 +144,24 @@ impl Solid {
         self.align_y = align;
         self
     }
-    /// ## With fit
-    /// Replaces both x & y fit values with the new value.
-    pub fn with_fit(mut self, fit: Fit) -> Self {
-        self.fit_x = fit;
-        self.fit_y = fit;
-        self
-    }
-    /// ## With fit x
-    /// Replaces the x fit with the new value.
-    pub fn with_fit_x(mut self, fit: Fit) -> Self {
-        self.fit_x = fit;
-        self
-    }
-    /// ## With fit y
-    /// Replaces the y fit with the new value.
-    pub fn with_fit_y(mut self, fit: Fit) -> Self {
-        self.fit_y = fit;
+    /// ## With cover
+    /// Replaces both x & y cover values with the new value.
+    pub fn with_cover(mut self, cover: Cover) -> Self {
+        self.cover = cover;
         self
     }
     /// ## Compute
     /// Computes the layout based on given parameters.
     pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
-
-        /*let scale = match self.scaling {
-            SolidScale::Fill => f32::max(width / self.width, height / self.height),
-            SolidScale::Fit => f32::min(width / self.width, height / self.height),
-        };*/
-
+        
         let size = self.size.evaluate(parent.size, font_size);
 
-
-        let scale = f32::min(parent.size.x / size.x, parent.size.y / size.y);
+        let scale = match self.cover {
+            Cover::Horizontal => parent.size.x / size.x,
+            Cover::Vertical => parent.size.y / size.y,
+            Cover::Contain => f32::min(parent.size.x / size.x, parent.size.y / size.y),
+            Cover::Full => f32::max(parent.size.x / size.x, parent.size.y / size.y),
+        };
 
         let center_point = Vec2::new(parent.pos.x + parent.size.x / 2.0, parent.pos.y + parent.size.y / 2.0);
 

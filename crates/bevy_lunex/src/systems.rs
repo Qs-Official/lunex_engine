@@ -23,6 +23,10 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
         for node in list {
             if let Some(container) = node.obtain_data() {
 
+                let mut color = Color::LIME_GREEN;
+
+                if let Layout::Solid(_) = container.layout { color = Color::YELLOW }
+
                 let mut pos = container.rect.pos.invert_y() + transform.translation;
                 pos.x += container.rect.size.x / 2.0;
                 pos.y += container.rect.size.y / -2.0;
@@ -31,7 +35,7 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
                     pos,
                     Quat::from_rotation_y(0.0),
                     container.rect.size,
-                    Color::LIME_GREEN,
+                    color,
                 );
             }
         }

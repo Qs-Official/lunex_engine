@@ -27,24 +27,34 @@ impl NiceDisplay for Align {
     }
 }
 
-/// ## Fit
+/// ## Cover
 /// Defines how a container is scaled relative to it's parent container
-/// * [`Fit::Contain`]
-/// * [`Fit::Cover`]
+/// * [`Cover::Horizonal`]
+/// * [`Cover::Vertical`]
+/// * [`Cover::Contain`]
+/// * [`Cover::Full`]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum Fit {
+pub enum Cover {
+    /// ## Horizontal cover
+    /// Stretches the container so that it always fully covers the horizontal axis of the parent.
+    Horizontal,
+    /// ## Vertical cover
+    /// Stretches the container so that it always fully covers the vertical axis of the parent.
+    Vertical,
     /// ## Contain
-    /// Stretches the container so that it is fully contained within the parent. [_Tailwind equivalent here..._](https://tailwindcss.com/docs/background-size#cover)
+    /// Stretches the container so that it is fully contained within the parent.
     #[default] Contain,
-    /// ## Cover
-    /// Stretches the container so that it fully covers the parent. [_Tailwind equivalent here..._](https://tailwindcss.com/docs/background-size#contain)
-    Cover,
+    // ## Full
+    /// Stretches the container so that it fully covers the parent.
+    Full,
 }
-impl NiceDisplay for Fit {
+impl NiceDisplay for Cover {
     fn to_nicestr(&self) -> String {
         match self {
-            Fit::Contain => format!("{}", "Contain".bold()),
-            Fit::Cover => format!("{}", "Cover".bold()),
+            Cover::Horizontal => format!("{}", "Horizontal".bold()),
+            Cover::Vertical => format!("{}", "Vertical".bold()),
+            Cover::Contain => format!("{}", "Contain".bold()),
+            Cover::Full => format!("{}", "Full".bold()),
         }
     }
 }
