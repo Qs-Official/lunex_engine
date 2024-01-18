@@ -1,4 +1,3 @@
-use bevy::ecs::component::Component;
 use crate::NiceDisplay;
 use crate::import::*;
 use crate::NodeError;
@@ -10,29 +9,16 @@ use crate::NodeError;
 /// ## Lunex error
 /// Error type indicating something went wrong.
 #[derive(Debug, Error, Clone, PartialEq)]
-pub enum LunexError {
+pub enum UiError {
     /// Error that occurs when something went wrong with NodeTree.
     #[error("Something went wrong with NodeTree")]
     NodeError(NodeError),
 }
-impl From<NodeError> for LunexError {
+impl From<NodeError> for UiError {
     fn from(value: NodeError) -> Self {
-        LunexError::NodeError(value)
+        UiError::NodeError(value)
     }
 }
-
-
-
-
-/// ## Node link
-/// A component that points to a specific node.
-#[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct NodeLink {
-    pub path: String,
-}
-
-
-
 
 
 

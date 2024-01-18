@@ -1,10 +1,10 @@
 // #======================#
 // #=== PRELUDE EXPORT ===#
 
-//pub use lunex_engine::prelude::*;
-
 pub mod macros;
+
 pub mod systems;
+
 
 pub mod prelude {
 
@@ -19,12 +19,11 @@ pub mod prelude {
     //pub use super::{ShadowNodeTree, ShadowNode};
     //pub use lunex_engine::nodes::prelude::{ NodeGeneralTrait, NodeDisplayTrait };
 
+    pub use lunex_engine::common::prelude::*;
     pub use lunex_engine::core::prelude::*;
-    pub use lunex_engine::NoData;
+    pub use lunex_engine::layout;
     pub use super::UiLink;
-    //pub use lunex_engine::UI;
 
-    //pub use lunex_engine::*;
 }
 
 // #=======================#
@@ -54,17 +53,17 @@ pub struct Dimension(pub Vec2);
 
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct ShadowNodeTree {
+pub struct UiLogic {
     id_map: AHashMap<String, Entity>
 }
-impl ShadowNodeTree {
+impl UiLogic {
     pub fn build_set(cmd: &mut Commands, ui: UiTree, msh: &mut ResMut<Assets<Mesh>>, mat: &mut ResMut<Assets<StandardMaterial>>) {
         let shadownode = cmd.spawn((
 
             msh.add(shape::Quad { size: Vec2::splat(4.0), flip: false }.into()),
             mat.add(Color::rgb(0.5, 1.0, 0.5).into()),
 
-            ShadowNodeTree::default(),
+            UiLogic::default(),
             ShadowNode::default(),
             Dimension::default(),
             Transform::default(),

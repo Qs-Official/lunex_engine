@@ -12,9 +12,7 @@ pub mod prelude {
     pub use super::NodeSizeEvaluate;
     pub use super::NodeSize;
 
-    pub use super::NodeLink;
-
-    pub use super::LunexError;
+    pub use super::UiError;
 
     pub use super::{Rect2D, Rect3D};
 }

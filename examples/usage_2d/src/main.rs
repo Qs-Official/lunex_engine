@@ -11,15 +11,13 @@ fn main() {
 
 fn setup(mut cmd: Commands) {
 
-    cmd.spawn((
-        Camera2dBundle { transform: Transform { translation: Vec3::new(0.0, 0.0, 100.0), ..default() }, ..default() }
-    ));
+    cmd.spawn(Camera2dBundle { transform: Transform { translation: Vec3::new(0.0, 0.0, 100.0), ..default() }, ..default() });
 
     cmd.spawn((
         MyWidget,
-        // UiTree::<NoData>::new("UI"),
-        // UiLogic::build(), // Needs direct link at UiTree
-        // Transform, rendering, etc
+        UiTree::<NoData>::new("UI"),
+        //UiLogic::build(), // Needs direct link at UiTree
+        //Transform, rendering, etc
     ));
 
     // This entity needs to be spawn as child

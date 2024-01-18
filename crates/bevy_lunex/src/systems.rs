@@ -17,10 +17,32 @@ pub fn compute_camera_ui<T:Default + Component>(mut query: Query<(&Camera, &mut 
     }
 }
 
+pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<&UiTree<T>>, mut gizmos: Gizmos) {
+    for tree in &mut query {
+        let list = tree.crawl();
+        for node in list {
+            if let Some(container) = node.obtain_data() {
 
-pub fn weird<T: Component>(mut query: Query<&mut T>) {
+                /*gizmos.rect(
+                    Vec3::new(time.elapsed_seconds().cos() * 2.5, 1., 0.),
+                    Quat::from_rotation_y(PI / 2.),
+                    Vec2::splat(2.),
+                    Color::GREEN,
+                );*/
 
+                gizmos.rect_2d(
+                    container.rect.pos.truncate() + container.rect.size / 2.0,
+                    0.0,
+                    container.rect.size,
+                    Color::LIME_GREEN,
+                );
+            }
+        }
+    }
 }
+
+
+//pub fn weird<T: Component>(mut query: Query<&mut T>) {}
 
 
 
@@ -35,6 +57,8 @@ impl <T:Default + Component> UiPlugin<T> {
 }
 impl <T:Default + Component> Plugin for UiPlugin<T> {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, compute_camera_ui::<T>);
+        app
+            .add_systems(Update, draw_debug_gizmo::<T>)
+            .add_systems(Update, compute_camera_ui::<T>);
     }
 }

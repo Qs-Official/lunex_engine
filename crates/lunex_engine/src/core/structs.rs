@@ -10,6 +10,9 @@ pub type UiTree<T = NoData> = NodeTree<InterfaceData, Container<T>>;
 pub type UiNode<T = NoData> = Node<Container<T>>;
 
 
+
+/// ## No data
+/// Empty type to tell the compiler that there is no data stored in the separete nodes.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NoData;
 
@@ -32,13 +35,11 @@ pub struct Container<T: Default + Component> {
 
     //depth: f32,
 }
-
 impl <T:Default + Component> Container<T> {
     pub fn new() -> Container<T> {
         Container::default()
     }
 }
-
 impl <T: Default + Component> NiceDisplay for Container<T> {
     fn to_nicestr(&self) -> String {
         format!("{} {} {}", self.layout.to_nicestr(), "|||".black(), self.rect.to_nicestr())
