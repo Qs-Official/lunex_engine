@@ -55,6 +55,7 @@ fn setup(
     cmd.entity(player).push_children(&[cam]);
 
 
+    // Spawn the DOM
     cmd.spawn((
         MyWidget,
         Transform::from_xyz(0.0, 50.0, 0.0),
@@ -65,21 +66,15 @@ fn setup(
 
 fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
-    let mut ui = UiTree::<NoData>::new("HUD");
+    // Create new DOM
+    let mut ui = UiTree::<NoData>::new("UI_Widget");
 
-    layout::Window::FULL.build(&mut ui, "Node1")?;
+    // Create the layout
+    layout::Window::new().build(&mut ui, "Node1")?;
+    layout::Solid::new().with_align_y(Align::LEFT).build(&mut ui, "Node1/Node2")?;
 
-    layout::Solid::new().build(&mut ui, "Node1/Solid")?;
-
-    //layout::Window::FULL.with_pos(Prc::splat2(50.0)).with_size(Prc::splat2(100.0)).build(&mut ui, "Node2")?;
-
-    //layout::Window::FULL.with_pos(Abs::SM_VEC2).with_size(Abs::MD_VEC2).build(&mut ui, "Node3")?;
-
-    //layout::Window::EMPTY.with_size(Abs::splat2(15.) + Rem::splat2(5.)).build(&mut ui, "Node1/Node3")?;
-
-    ui.compute(Rect2D::new().with_size((100.0, 100.0)).into());
-
-    println!("\n{}\n", ui.tree("show-hidden"));
+    // Print layout tree
+    println!("\n{}\n", ui.tree(""));
 
     Ok(ui)
 }
@@ -89,6 +84,6 @@ pub struct MyWidget;
 
 fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>>, time: Res<Time>) {
     for mut ui in &mut query {
-        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 20.0, 100.0)).into());
+        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 30.0, 100.0)).into());
     }
 }

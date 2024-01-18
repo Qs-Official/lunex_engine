@@ -22,7 +22,7 @@ pub mod prelude {
 
     pub use super::common::prelude::*;
     pub use super::core::prelude::*;
-    pub use super::layout;
+    pub use super::layout::prelude::*;
 }
 
 // #=========================#
