@@ -808,13 +808,13 @@ impl NodeSize<Vec4> {
 
 /// ## NodeSize Evaluate
 /// Trait for implementing evaluation logic for (T)
-pub trait NodeSizeEvaluate<T> {
+pub trait NodeSizeEvaluate<T, TT> {
     /// ## Evaluate
     /// Evaluates the NodeSize for (T)
-    fn evaluate(&self, parent_size: T, font_size: T) -> T;
+    fn evaluate(&self, parent_size: T, font_size: TT) -> T;
 }
 
-impl NodeSizeEvaluate<f32> for NodeSize<f32> {
+impl NodeSizeEvaluate<f32, f32> for NodeSize<f32> {
     fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.abs { out += v }
@@ -823,8 +823,8 @@ impl NodeSizeEvaluate<f32> for NodeSize<f32> {
         out
     }
 }
-impl NodeSizeEvaluate<Vec2> for NodeSize<Vec2> {
-    fn evaluate(&self, parent_size: Vec2, font_size: Vec2) -> Vec2 {
+impl NodeSizeEvaluate<Vec2, f32> for NodeSize<Vec2> {
+    fn evaluate(&self, parent_size: Vec2, font_size: f32) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.abs { out += v }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
@@ -832,8 +832,8 @@ impl NodeSizeEvaluate<Vec2> for NodeSize<Vec2> {
         out
     }
 }
-impl NodeSizeEvaluate<Vec3> for NodeSize<Vec3> {
-    fn evaluate(&self, parent_size: Vec3, font_size: Vec3) -> Vec3 {
+impl NodeSizeEvaluate<Vec3, f32> for NodeSize<Vec3> {
+    fn evaluate(&self, parent_size: Vec3, font_size: f32) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.abs { out += v }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
@@ -841,8 +841,8 @@ impl NodeSizeEvaluate<Vec3> for NodeSize<Vec3> {
         out
     }
 }
-impl NodeSizeEvaluate<Vec4> for NodeSize<Vec4> {
-    fn evaluate(&self, parent_size: Vec4, font_size: Vec4) -> Vec4 {
+impl NodeSizeEvaluate<Vec4, f32> for NodeSize<Vec4> {
+    fn evaluate(&self, parent_size: Vec4, font_size: f32) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.abs { out += v }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }

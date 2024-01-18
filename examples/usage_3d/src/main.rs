@@ -8,12 +8,13 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData>::new())
         .add_systems(Startup, setup)
+        .add_systems(Update, ui_compute::<NoData>)
+
         .add_systems(Update, move_player)
         .add_systems(Update, rotate_playercam)
         .add_systems(Update, zoom_playercam)
         .run();
 }
-
 fn setup(
     mut cmd: Commands,
     mut msh: ResMut<Assets<Mesh>>,
@@ -56,6 +57,7 @@ fn setup(
 
     cmd.spawn((
         MyWidget,
+        Transform::from_xyz(0.0, 50.0, 0.0),
         build_ui().unwrap(),
     ));
 
@@ -67,7 +69,9 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
 
-    //layout::Window::FULL.with_x( Abs::SM + Rem::XL * 2.0 ).build(&mut ui, "Node2")?;
+    //layout::Window::FULL.with_pos(Prc::splat2(50.0)).with_size(Prc::splat2(100.0)).build(&mut ui, "Node2")?;
+
+    //layout::Window::FULL.with_pos(Abs::SM_VEC2).with_size(Abs::MD_VEC2).build(&mut ui, "Node3")?;
 
     //layout::Window::EMPTY.with_size(Abs::splat2(15.) + Rem::splat2(5.)).build(&mut ui, "Node1/Node3")?;
 
@@ -80,3 +84,9 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
+
+fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>>, time: Res<Time>) {
+    for mut ui in &mut query {
+        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 50.0, 100.0 + time.elapsed_seconds().sin() * 50.0)).into());
+    }
+}

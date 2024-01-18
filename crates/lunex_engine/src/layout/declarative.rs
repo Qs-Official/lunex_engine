@@ -1,10 +1,10 @@
 use crate::import::*;
-use crate::{NiceDisplay, Align, Rect2D, NodeSize, NodeSizeEvaluate, Prc};
+use crate::{NiceDisplay, Align, Fit, Rect2D, NodeSize, NodeSizeEvaluate, Prc};
 
 use super::Layout;
 
 /// ## Window Layout
-#[cfg_attr(feature = "bevy", derive(Component))]
+//#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Window {
     /// ## Position
@@ -26,7 +26,7 @@ impl Window {
     pub const fn new() -> Self {
         Window {
             pos : NodeSize::new(),
-            size: NodeSize::new(),
+            size: NodeSize::from_prc(Vec2::splat(100.0)),
         }
     }
     /// ## With pos
@@ -69,8 +69,8 @@ impl Window {
     /// Computes the layout based on given parameters.
     pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
         Rect2D {
-            pos: self.pos.evaluate(parent.size, Vec2::splat(font_size)),
-            size: self.size.evaluate(parent.size, Vec2::splat(font_size)),
+            pos: self.pos.evaluate(parent.size, font_size),
+            size: self.size.evaluate(parent.size, font_size),
         }
     }    
 }
@@ -87,7 +87,7 @@ impl NiceDisplay for Window {
 }
 
 /// ## Solid Layout
-#[cfg_attr(feature = "bevy", derive(Component))]
+//#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Solid {
     /// ## Size
@@ -98,7 +98,13 @@ pub struct Solid {
     pub align_x: Align,
     /// ## Align Y
     /// Vertical alignment within parent.
-    pub align_y: Align
+    pub align_y: Align,
+    /// ## Fit Y
+    /// Horizontal container scaling.
+    pub fit_x: Fit,
+    /// ## Fit Y
+    /// Vertical container scaling.
+    pub fit_y: Fit,
 }
 impl Solid {
     /// ## New
@@ -108,6 +114,8 @@ impl Solid {
             size: Prc(Vec2::ONE).into(),
             align_x: Align::CENTER,
             align_y: Align::CENTER,
+            fit_x: Fit::Contain,
+            fit_y: Fit::Contain,
         }
     }
     /// ## With size
@@ -138,6 +146,25 @@ impl Solid {
     /// Replaces the y alignment with the new value.
     pub fn with_align_y(mut self, align: Align) -> Self {
         self.align_y = align;
+        self
+    }
+    /// ## With fit
+    /// Replaces both x & y fit values with the new value.
+    pub fn with_fit(mut self, fit: Fit) -> Self {
+        self.fit_x = fit;
+        self.fit_y = fit;
+        self
+    }
+    /// ## With fit x
+    /// Replaces the x fit with the new value.
+    pub fn with_fit_x(mut self, fit: Fit) -> Self {
+        self.fit_x = fit;
+        self
+    }
+    /// ## With fit y
+    /// Replaces the y fit with the new value.
+    pub fn with_fit_y(mut self, fit: Fit) -> Self {
+        self.fit_y = fit;
         self
     }
 }

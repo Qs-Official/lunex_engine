@@ -17,25 +17,29 @@ pub fn compute_camera_ui<T:Default + Component>(mut query: Query<(&Camera, &mut 
     }
 }
 
-pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<&UiTree<T>>, mut gizmos: Gizmos) {
-    for tree in &mut query {
+pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Transform)>, mut gizmos: Gizmos) {
+    for (tree, transform) in &mut query {
         let list = tree.crawl();
         for node in list {
             if let Some(container) = node.obtain_data() {
 
-                /*gizmos.rect(
-                    Vec3::new(time.elapsed_seconds().cos() * 2.5, 1., 0.),
-                    Quat::from_rotation_y(PI / 2.),
-                    Vec2::splat(2.),
-                    Color::GREEN,
-                );*/
+                let mut pos = container.rect.pos.invert_y() + transform.translation;
+                pos.x += container.rect.size.x / 2.0;
+                pos.y += container.rect.size.y / -2.0;
 
-                gizmos.rect_2d(
+                gizmos.rect(
+                    pos,
+                    Quat::from_rotation_y(0.0),
+                    container.rect.size,
+                    Color::LIME_GREEN,
+                );
+
+                /*gizmos.rect_2d(
                     container.rect.pos.truncate() + container.rect.size / 2.0,
                     0.0,
                     container.rect.size,
                     Color::LIME_GREEN,
-                );
+                );*/
             }
         }
     }

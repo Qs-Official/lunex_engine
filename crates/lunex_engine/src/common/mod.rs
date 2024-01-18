@@ -15,4 +15,5 @@ pub mod prelude {
     pub use super::UiError;
 
     pub use super::{Rect2D, Rect3D};
+    pub use super::YInvert;
 }

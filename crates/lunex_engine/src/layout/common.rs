@@ -5,12 +5,12 @@ use super::{Window, Solid};
 
 
 /// ## Align
-/// Type used for aligning items in parametric containers.
+/// Type used for aligning UI items inside containers.
 /// 
 /// _Range_ : `-1.0 for START to 1.0 for END`
-/// * `Align::START`
-/// * `Align::CENTER`
-/// * `Align::END`
+/// * [`Align::START`]
+/// * [`Align::CENTER`]
+/// * [`Align::END`]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Align (pub f32);
 impl Align {
@@ -26,6 +26,33 @@ impl NiceDisplay for Align {
         format!("{}", self.0.to_string().bold())
     }
 }
+
+/// ## Fit
+/// Defines how a container is scaled relative to it's parent container
+/// * [`Fit::Contain`]
+/// * [`Fit::Cover`]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum Fit {
+    /// ## Contain
+    /// Stretches the container so that it is fully contained within the parent. [_Tailwind equivalent here..._](https://tailwindcss.com/docs/background-size#cover)
+    #[default] Contain,
+    /// ## Cover
+    /// Stretches the container so that it fully covers the parent. [_Tailwind equivalent here..._](https://tailwindcss.com/docs/background-size#contain)
+    Cover,
+}
+impl NiceDisplay for Fit {
+    fn to_nicestr(&self) -> String {
+        match self {
+            Fit::Contain => format!("{}", "Contain".bold()),
+            Fit::Cover => format!("{}", "Cover".bold()),
+        }
+    }
+}
+
+
+
+
+
 
 
 /// ## Layout
