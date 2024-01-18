@@ -68,7 +68,7 @@ impl Layout {
     pub fn compute(&self, parent: Rect3D, font_size: f32) -> Rect3D {
         match &self {
             Layout::Window(l) => l.compute(parent.into(), font_size).into(),
-            Layout::Solid(_) => todo!(),
+            Layout::Solid(l) => l.compute(parent.into(), font_size).into(),
         }
     }
 }

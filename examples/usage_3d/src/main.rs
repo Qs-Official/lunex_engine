@@ -69,6 +69,8 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
 
+    layout::Solid::new().build(&mut ui, "Node1/Solid")?;
+
     //layout::Window::FULL.with_pos(Prc::splat2(50.0)).with_size(Prc::splat2(100.0)).build(&mut ui, "Node2")?;
 
     //layout::Window::FULL.with_pos(Abs::SM_VEC2).with_size(Abs::MD_VEC2).build(&mut ui, "Node3")?;

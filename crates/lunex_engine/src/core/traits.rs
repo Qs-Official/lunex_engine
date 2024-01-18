@@ -321,6 +321,15 @@ impl BuildAsNode for layout::Window {
         Ok(String::new())
     }
 }
+impl BuildAsNode for layout::Solid {
+    fn build<T:Default + Component>(self, ui: &mut UiTree<T>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
+        ui.create_node(path.borrow())?;
+        let mut container: Container<T> = Container::new();
+        container.layout = self.into();
+        ui.insert_data(path, container)?;
+        Ok(String::new())
+    }
+}
 
 
 /// ## Sync to node

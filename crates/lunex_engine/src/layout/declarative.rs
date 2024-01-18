@@ -72,7 +72,7 @@ impl Window {
             pos: self.pos.evaluate(parent.size, font_size),
             size: self.size.evaluate(parent.size, font_size),
         }
-    }    
+    }
 }
 impl Into<Layout> for Window {
     fn into(self) -> Layout {
@@ -166,6 +166,36 @@ impl Solid {
     pub fn with_fit_y(mut self, fit: Fit) -> Self {
         self.fit_y = fit;
         self
+    }
+    /// ## Compute
+    /// Computes the layout based on given parameters.
+    pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
+
+        /*let scale = match self.scaling {
+            SolidScale::Fill => f32::max(width / self.width, height / self.height),
+            SolidScale::Fit => f32::min(width / self.width, height / self.height),
+        };*/
+
+        let size = self.size.evaluate(parent.size, font_size);
+
+        let scale = f32::min(parent.size.x / size.x, parent.size.y / size.y);
+
+        let center_point = [parent.pos.x + parent.size.x / 2.0, parent.pos.y + parent.size.y / 2.0];
+
+        let computed_width = size.x * scale;
+        let computed_height = size.y * scale;
+        let computed_point = [
+            center_point[0] - computed_width / 2.0,
+            center_point[1] - computed_height / 2.0,
+        ];
+
+        Rect2D {
+            pos: Vec2::new(
+                computed_point[0] + (computed_point[0] - parent.pos.x) * self.align_x.0,
+                computed_point[1] + (computed_point[1] - parent.pos.y) * self.align_y.0,
+            ),
+            size: (computed_width, computed_height).into(),
+        }
     }
 }
 impl Into<Layout> for Solid {

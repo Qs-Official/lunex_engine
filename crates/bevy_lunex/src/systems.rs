@@ -33,13 +33,6 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
                     container.rect.size,
                     Color::LIME_GREEN,
                 );
-
-                /*gizmos.rect_2d(
-                    container.rect.pos.truncate() + container.rect.size / 2.0,
-                    0.0,
-                    container.rect.size,
-                    Color::LIME_GREEN,
-                );*/
             }
         }
     }
