@@ -178,21 +178,19 @@ impl Solid {
 
         let size = self.size.evaluate(parent.size, font_size);
 
+
         let scale = f32::min(parent.size.x / size.x, parent.size.y / size.y);
 
-        let center_point = [parent.pos.x + parent.size.x / 2.0, parent.pos.y + parent.size.y / 2.0];
+        let center_point = Vec2::new(parent.pos.x + parent.size.x / 2.0, parent.pos.y + parent.size.y / 2.0);
 
         let computed_width = size.x * scale;
         let computed_height = size.y * scale;
-        let computed_point = [
-            center_point[0] - computed_width / 2.0,
-            center_point[1] - computed_height / 2.0,
-        ];
+        let computed_point = Vec2::new(center_point.x - computed_width / 2.0, center_point.y - computed_height / 2.0);
 
         Rect2D {
             pos: Vec2::new(
-                computed_point[0] + (computed_point[0] - parent.pos.x) * self.align_x.0,
-                computed_point[1] + (computed_point[1] - parent.pos.y) * self.align_y.0,
+                computed_point.x + (computed_point.x - parent.pos.x) * self.align_x.0,
+                computed_point.y + (computed_point.y - parent.pos.y) * self.align_y.0,
             ),
             size: (computed_width, computed_height).into(),
         }
