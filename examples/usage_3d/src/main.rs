@@ -15,12 +15,12 @@ fn main() {
 }
 
 fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut cmd: Commands,
+    mut msh: ResMut<Assets<Mesh>>,
+    mut mat: ResMut<Assets<StandardMaterial>>,
 ) {
     // light
-    commands.spawn(PointLightBundle {
+    cmd.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
             shadows_enabled: true,
@@ -31,10 +31,10 @@ fn setup(
     });
 
     // cube
-    let player = commands.spawn((
+    let player = cmd.spawn((
         PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 0.1 })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            mesh: msh.add(Mesh::from(shape::Cube { size: 0.1 })),
+            material: mat.add(Color::rgb(0.8, 0.7, 0.6).into()),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         },
@@ -42,7 +42,7 @@ fn setup(
     )).id();
 
     // camera
-    let cam = commands.spawn((
+    let cam = cmd.spawn((
         Camera3dBundle::default(),
         PlayerCam {
             orbit: Vec3::new(0.0, 0.0, 0.0),
@@ -51,12 +51,17 @@ fn setup(
         }
     )).id();
 
-    commands.entity(player).push_children(&[cam]);
+    cmd.entity(player).push_children(&[cam]);
 
-    build_ui().unwrap();
+
+    cmd.spawn((
+        MyWidget,
+        build_ui().unwrap(),
+    ));
+
 }
 
-fn build_ui() -> Result<(), UiError> {
+fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
     let mut ui = UiTree::<NoData>::new("HUD");
 
@@ -72,5 +77,8 @@ fn build_ui() -> Result<(), UiError> {
 
     println!("\n{}\n", ui.tree("show-hidden"));
 
-    Ok(())
+    Ok(ui)
 }
+
+#[derive(Component, Debug, Default, Clone, PartialEq)]
+pub struct MyWidget;
