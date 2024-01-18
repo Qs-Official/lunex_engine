@@ -89,6 +89,6 @@ pub struct MyWidget;
 
 fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>>, time: Res<Time>) {
     for mut ui in &mut query {
-        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 50.0, 100.0 + time.elapsed_seconds().sin() * 50.0)).into());
+        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 20.0, 100.0)).into());
     }
 }

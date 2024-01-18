@@ -291,9 +291,13 @@ impl <T:Default + Component> UINodeComputeTrait for UiTree<T> {
 }
 impl <T:Default + Component> UINodeComputeTrait for UiNode<T> {
     fn compute(&mut self, parent: Rect3D) {
+
+        let depth = self.get_depth();
         
         if let Some(container) = &mut self.data {
             container.rect = container.layout.compute(parent, 16.0);
+
+            container.rect.pos.z = depth;
 
             for (_, node) in &mut self.nodes {
                 node.compute(container.rect);
