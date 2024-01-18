@@ -1,5 +1,5 @@
 use crate::import::*;
-use crate::{NiceDisplay, Align, Fit, Rect2D, NodeSize, NodeSizeEvaluate, Prc};
+use crate::{NiceDisplay, Align, Fit, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
 
 use super::Layout;
 
@@ -111,7 +111,7 @@ impl Solid {
     /// Creates new Solid layout.
     pub fn new() -> Self {
         Solid {
-            size: Prc(Vec2::ONE).into(),
+            size: Abs(Vec2::ONE).into(),
             align_x: Align::CENTER,
             align_y: Align::CENTER,
             fit_x: Fit::Contain,
