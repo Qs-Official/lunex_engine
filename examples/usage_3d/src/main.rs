@@ -33,7 +33,7 @@ fn setup(
     // cube
     let player = cmd.spawn((
         PbrBundle {
-            mesh: msh.add(Mesh::from(shape::Cube { size: 0.1 })),
+            mesh: msh.add(Mesh::from(shape::Cube { size: 10.0 })),
             material: mat.add(Color::rgb(0.8, 0.7, 0.6).into()),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
@@ -46,7 +46,7 @@ fn setup(
         Camera3dBundle::default(),
         PlayerCam {
             orbit: Vec3::new(0.0, 0.0, 0.0),
-            distance: 7.5,
+            distance: 300.0,
             sensitivity: Vec2::splat(0.1),
         }
     )).id();
@@ -67,11 +67,9 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
     layout::Window::FULL.build(&mut ui, "Node1")?;
 
-    layout::Window::FULL.with_x( Abs::SM + Rem::XL * 2.0 ).build(&mut ui, "Node2")?;
+    //layout::Window::FULL.with_x( Abs::SM + Rem::XL * 2.0 ).build(&mut ui, "Node2")?;
 
-    layout::Window::EMPTY
-        .with_size(Abs::splat2(15.) + Rem::splat2(5.))
-        .build(&mut ui, "Node1/Node3")?;
+    //layout::Window::EMPTY.with_size(Abs::splat2(15.) + Rem::splat2(5.)).build(&mut ui, "Node1/Node3")?;
 
     ui.compute(Rect2D::new().with_size((100.0, 100.0)).into());
 

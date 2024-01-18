@@ -75,6 +75,6 @@ pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mut q
 pub fn zoom_playercam(mut mouse_wheel_events: EventReader<MouseWheel>, mut query: Query<&mut PlayerCam>) {
     let delta: f32 = mouse_wheel_events.read().map(|e| e.y).sum();
     for mut camera in &mut query {
-        camera.distance += -delta;
+        camera.distance += -delta*10.0;
     }
 }
