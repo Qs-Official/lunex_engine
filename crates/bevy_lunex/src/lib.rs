@@ -3,7 +3,11 @@
 
 pub mod macros;
 
+pub mod structs;
+pub use structs::*;
+
 pub mod systems;
+pub use systems::*;
 
 
 pub mod prelude {
@@ -12,6 +16,7 @@ pub mod prelude {
     pub use super::systems::*;
     //pub use super::{ShadowNodeTree, ShadowNode};
     pub use super::UiLink;
+    pub use super::structs::*;
 
     
     // RE-EXPORT LUNEX ENGINE
@@ -24,7 +29,7 @@ pub mod prelude {
 use std::borrow::Borrow;
 
 use bevy::prelude::*;
-use ahash::AHashMap;
+//use ahash::AHashMap;
 pub use lunex_engine::{UiNode, UiTree};
 
 
@@ -39,16 +44,8 @@ impl UiLink {
 }
 
 
-#[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
-pub struct Dimension(pub Vec2);
-impl Dimension {
-    pub fn new() -> Self {
-        Dimension(Vec2::ZERO)
-    }
-}
 
-
-
+/*
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct UiLogic {
     id_map: AHashMap<String, Entity>
@@ -102,3 +99,4 @@ impl ShadowNode {
         }
     }
 }
+*/

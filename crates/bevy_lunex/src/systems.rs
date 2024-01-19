@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use bevy::prelude::*;
 use lunex_engine::*;
 
-use crate::Dimension;
+use crate::{Dimension, MovableByCamera};
 
 
 /// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
@@ -21,7 +21,29 @@ pub fn fetch_dimension_from_camera<M: Component>(
         for mut dimension in &mut destination {
             // Extract camera size
             if let Some(size) = cam.physical_viewport_size() {
-                dimension.0 = Vec2::from((size.x as f32, size.y as f32));
+                dimension.size = Vec2::from((size.x as f32, size.y as f32));
+            }
+        }
+    }
+}
+
+/// This function pulls data from marked [`Camera`] and inserts it into marked [`Transform`] that has [`MovableByCamera`].
+/// ## 📦 Types
+/// * Generic `(M)` - Marker component scoping logic and data into one iterable group
+/// ## ⚠️ Warning
+/// * Developer should ensure that source query returns only one camera.
+///   Otherwise, it will lead to value overwriting. Just make sure only one camera
+///   is marked with `(M)` component at the same time.
+pub fn fetch_transform_from_camera<M: Component>(
+    source: Query<&Camera, (With<M>, Changed<Camera>)>,
+    mut destination: Query<&mut Transform, (With<M>, With<MovableByCamera>)>
+) {
+    // Undesired behaviour if source.len() > 1
+    for cam in &source {
+        for mut transform in &mut destination {
+            // Extract camera size
+            if let Some(size) = cam.physical_viewport_size() {
+                transform.translation = Vec3::from((size.x as f32 /-2.0, size.y as f32 /2.0, 0.0));
             }
         }
     }
@@ -36,7 +58,7 @@ pub fn compute_ui<T:Default + Component, M: Component>(
 ) {
     for (dimension, mut ui) in &mut query {
         // Compute the UI
-        ui.compute(Rect2D::new().with_size(dimension.0).into());
+        ui.compute(Rect2D::new().with_size(dimension.size).into());
     }
 }
 
@@ -110,7 +132,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, draw_debug_gizmo::<T>)
-            .add_systems(Update, fetch_dimension_from_camera::<M>.before(compute_ui::<T, M>))
+            .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
 }

@@ -11,7 +11,7 @@ use crate::NodeError;
 #[derive(Debug, Error, Clone, PartialEq)]
 pub enum UiError {
     /// Error that occurs when something went wrong with NodeTree.
-    #[error("Something went wrong with NodeTree")]
+    #[error("NodeTree error: {0}")]
     NodeError(NodeError),
 }
 impl From<NodeError> for UiError {
