@@ -9,31 +9,36 @@ fn main() {
         .run();
 }
 
-fn setup(mut cmd: Commands) {
+fn setup(mut commands: Commands) {
 
-    cmd.spawn((
+    commands.spawn((
         MyWidget,
         Camera2dBundle::new_with_far(100.0)
     ));
 
-    cmd.spawn((
+    commands.spawn((
         UiTreeBundle::<NoData, MyWidget>::from( ui() ),
-        MovableByCamera
-        //UiLogic::build(), // Needs direct link at UiTree
-    ));
+        MovableByCamera,
+    )).with_children(|parent| {
 
-    // This entity needs to be spawn as child
-    cmd.spawn((
-        MyWidget,
-        UiLink::path("Root"),
-        layout::Window::FULL.pack(),
-    ));
+        parent.spawn((
+            MyWidget,
+            UiLink::path("Root"),
+            layout::Window::FULL.pack(),
+        ));
+
+        parent.spawn((
+            MyWidget,
+            UiLink::path("Root/Square"),
+            layout::Solid::new().with_align_x(Align::START).pack(),
+        ));
+
+    });
+
 }
 
 fn ui() -> Result<UiTree<NoData>, UiError> {
-    let mut ui = UiTree::<NoData>::new("UI");
-    layout::Window::new().build(&mut ui, "Root")?;
-    layout::Solid::new().with_align_x(Align::START).build(&mut ui, "Root/Node2")?;
+    let ui = UiTree::<NoData>::new("UI");
     Ok(ui)
 }
 

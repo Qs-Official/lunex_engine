@@ -10,7 +10,7 @@ pub struct MovableByCamera;
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct UiLink {
-    path: String,
+    pub path: String,
 }
 impl UiLink {
     pub fn path( path: impl Borrow<str>) -> Self {

@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use bevy::prelude::*;
 use lunex_engine::*;
 
-use crate::{Dimension, MovableByCamera};
+use crate::{Dimension, MovableByCamera, UiLink};
 
 
 /// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
@@ -92,6 +92,22 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
 
 
 
+pub fn collect_ui<T:Default + Component, M: Component>(
+    mut uis: Query<(&mut UiTree<T>, &Children), With<M>>,
+    query: Query<(&UiLink, &Layout), With<M>>,
+) {
+    for (mut ui, children) in &mut uis {
+        for child in children {
+            let (link, layout) = query.get(*child).unwrap();
+            let node = ui.borrow_or_create_ui_node_mut(link.path.clone()).unwrap();
+            if let Some(container) = node.obtain_data_mut() {
+                container.layout = *layout;
+            }
+        }
+    }
+}
+
+
 /// Plugin implementing all UI logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
 /// * generic `(M)` - Marker component scoping logic and data into one iterable group
@@ -132,6 +148,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
     fn build(&self, app: &mut App) {
         app
             .add_systems(Update, draw_debug_gizmo::<T>)
+            .add_systems(Update, collect_ui::<T, M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
