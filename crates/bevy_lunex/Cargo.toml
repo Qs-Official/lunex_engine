@@ -11,4 +11,4 @@
 [dependencies]
   ahash        = { workspace = true }
   bevy         = { workspace = true }
-  lunex_engine = { workspace = true }
+  lunex_engine = { workspace = true, features = ["bevy"] }

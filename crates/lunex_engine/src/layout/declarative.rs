@@ -1,10 +1,12 @@
 use crate::import::*;
 use crate::{NiceDisplay, Align, Cover, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
+#[cfg(feature = "bevy")]
+use bevy::prelude::Component;
 
 use super::Layout;
 
 /// ## Window Layout
-//#[cfg_attr(feature = "bevy", derive(Component))]
+#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Window {
     /// ## Position
@@ -87,7 +89,7 @@ impl NiceDisplay for Window {
 }
 
 /// ## Solid Layout
-//#[cfg_attr(feature = "bevy", derive(Component))]
+#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Solid {
     /// ## Size

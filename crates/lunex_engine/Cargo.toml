@@ -15,4 +15,5 @@
   indexmap.workspace = true
   thiserror.workspace = true
 
-
+[features]
+  bevy  = []

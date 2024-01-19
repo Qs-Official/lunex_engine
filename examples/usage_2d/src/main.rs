@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;
 
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -14,32 +13,27 @@ fn setup(mut cmd: Commands) {
 
     cmd.spawn((
         MyWidget,
-        Camera2dBundle { transform: Transform { translation: Vec3::new(0.0, 0.0, 100.0), ..default() }, ..default() }
+        Camera2dBundle::new_with_far(100.0)
     ));
 
     cmd.spawn((
-        UiTreeBundle::<NoData, MyWidget>::from(init_ui()),
+        UiTreeBundle::<NoData, MyWidget>::from( ui() ),
         MovableByCamera
         //UiLogic::build(), // Needs direct link at UiTree
     ));
 
     // This entity needs to be spawn as child
-    /*cmd.spawn((
+    cmd.spawn((
         MyWidget,
-        UiLink::path("window"),
-        //UI::Window::FULL,
-    ));*/
+        UiLink::path("Root"),
+        layout::Window::FULL,
+    ));
 }
 
-fn init_ui() -> Result<UiTree<NoData>, UiError> {
-
-    // Create new DOM
-    let mut ui = UiTree::<NoData>::new("UI");
-
-    // Create the layout
-    layout::Window::new().build(&mut ui, "Root")?;
-    layout::Solid::new().with_align_x(Align::START).build(&mut ui, "Root/Node2")?;
-    
+fn ui() -> Result<UiTree<NoData>, UiError> {
+    let ui = UiTree::<NoData>::new("UI");
+    //layout::Window::new().build(&mut ui, "Root")?;
+    //layout::Solid::new().with_align_x(Align::START).build(&mut ui, "Root/Node2")?;
     Ok(ui)
 }
 
