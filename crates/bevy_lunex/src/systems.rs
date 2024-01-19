@@ -73,10 +73,15 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
 
 
 
-/// ## UI plugin
-/// THis
+/// ## Ui plugin
+/// 
+/// * `(T)` - Schema struct defining what data can be stored on [`UiNode`]
+/// 
+/// ```
+/// UiPlugin::<T, M>::new()
+/// ```
 #[derive(Debug, Default, Clone)]
-pub struct UiPlugin <T:Default + Component, M: Component>(pub PhantomData<T>, pub PhantomData<M>);
+pub struct UiPlugin <T:Default + Component, M: Component>(PhantomData<T>, PhantomData<M>);
 impl <T:Default + Component, M: Component> UiPlugin<T, M> {
     pub fn new() -> Self {
         UiPlugin::<T, M>(PhantomData, PhantomData)
