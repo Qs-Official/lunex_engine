@@ -44,10 +44,5 @@ fn setup(mut commands: Commands) {
 
 }
 
-fn ui() -> Result<UiTree<NoData>, UiError> {
-    let ui = UiTree::<NoData>::new("UI");
-    Ok(ui)
-}
-
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
