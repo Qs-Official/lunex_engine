@@ -1,8 +1,22 @@
+use std::borrow::Borrow;
+
 use bevy::prelude::*;
 use lunex_engine::prelude::*;
 
+
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct MovableByCamera;
+
+
+#[derive(Component, Debug, Default, Clone, PartialEq)]
+pub struct UiLink {
+    path: String,
+}
+impl UiLink {
+    pub fn path( path: impl Borrow<str>) -> Self {
+        UiLink { path: path.borrow().to_string() }
+    }
+}
 
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]

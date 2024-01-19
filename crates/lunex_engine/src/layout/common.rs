@@ -1,3 +1,6 @@
+#[cfg(feature = "bevy")]
+use bevy::prelude::Component;
+
 use crate::import::*;
 use crate::{NiceDisplay, NodeSize, Rect3D};
 
@@ -66,6 +69,7 @@ impl NiceDisplay for Cover {
 
 
 /// ## Layout
+#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Layout {
     Window(Window),

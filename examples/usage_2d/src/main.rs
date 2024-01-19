@@ -26,14 +26,14 @@ fn setup(mut cmd: Commands) {
     cmd.spawn((
         MyWidget,
         UiLink::path("Root"),
-        layout::Window::FULL,
+        layout::Window::FULL.pack(),
     ));
 }
 
 fn ui() -> Result<UiTree<NoData>, UiError> {
-    let ui = UiTree::<NoData>::new("UI");
-    //layout::Window::new().build(&mut ui, "Root")?;
-    //layout::Solid::new().with_align_x(Align::START).build(&mut ui, "Root/Node2")?;
+    let mut ui = UiTree::<NoData>::new("UI");
+    layout::Window::new().build(&mut ui, "Root")?;
+    layout::Solid::new().with_align_x(Align::START).build(&mut ui, "Root/Node2")?;
     Ok(ui)
 }
 

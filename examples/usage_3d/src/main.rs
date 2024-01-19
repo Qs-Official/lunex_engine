@@ -72,7 +72,7 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 
     // Create the layout
     layout::Window::new().build(&mut ui, "Node1")?;
-    layout::Solid::new().with_align_y(Align::LEFT).build(&mut ui, "Node1/Node2")?;
+    layout::Solid::new().with_align_x(Align::CENTER).with_align_y(Align(-2.0)).build(&mut ui, "Node1/Node2")?;
     
 
     // Print layout tree

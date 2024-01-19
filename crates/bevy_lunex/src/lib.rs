@@ -15,7 +15,6 @@ pub mod prelude {
     // BEVY-LUNEX SPECIFIC
     pub use super::systems::*;
     //pub use super::{ShadowNodeTree, ShadowNode};
-    pub use super::UiLink;
     pub use super::structs::*;
 
     
@@ -26,22 +25,10 @@ pub mod prelude {
 // #=======================#
 // #=== RE-EXPORT TYPES ===#
 
-use std::borrow::Borrow;
-
-use bevy::prelude::*;
 //use ahash::AHashMap;
-pub use lunex_engine::{UiNode, UiTree};
+//pub use lunex_engine::{UiNode, UiTree};
 
 
-#[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct UiLink {
-    path: String,
-}
-impl UiLink {
-    pub fn path( path: impl Borrow<str>) -> Self {
-        UiLink { path: path.borrow().to_string() }
-    }
-}
 
 
 

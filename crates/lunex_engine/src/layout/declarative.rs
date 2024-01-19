@@ -1,12 +1,9 @@
 use crate::import::*;
 use crate::{NiceDisplay, Align, Cover, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
-#[cfg(feature = "bevy")]
-use bevy::prelude::Component;
 
 use super::Layout;
 
 /// ## Window Layout
-#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Window {
     /// ## Position
@@ -75,6 +72,11 @@ impl Window {
             size: self.size.evaluate(parent.size, font_size),
         }
     }
+    /// ## Pack
+    /// Packs the struct into Layout
+    pub fn pack(self) -> Layout {
+        self.into()
+    }
 }
 impl Into<Layout> for Window {
     fn into(self) -> Layout {
@@ -89,7 +91,6 @@ impl NiceDisplay for Window {
 }
 
 /// ## Solid Layout
-#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Solid {
     /// ## Size
@@ -178,6 +179,11 @@ impl Solid {
             ),
             size: (computed_width, computed_height).into(),
         }
+    }
+    /// ## Pack
+    /// Packs the struct into Layout
+    pub fn pack(self) -> Layout {
+        self.into()
     }
 }
 impl Into<Layout> for Solid {
