@@ -6,7 +6,7 @@ use bevy_lunex::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData>::new())
+        .add_plugins(UiPlugin::<NoData, MyWidget>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)
 
@@ -15,6 +15,7 @@ fn main() {
         .add_systems(Update, zoom_playercam)
         .run();
 }
+
 fn setup(
     mut cmd: Commands,
     mut msh: ResMut<Assets<Mesh>>,
@@ -72,6 +73,7 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
     // Create the layout
     layout::Window::new().build(&mut ui, "Node1")?;
     layout::Solid::new().with_align_y(Align::LEFT).build(&mut ui, "Node1/Node2")?;
+    
 
     // Print layout tree
     println!("\n{}\n", ui.tree(""));

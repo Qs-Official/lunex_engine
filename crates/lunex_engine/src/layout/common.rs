@@ -116,9 +116,10 @@ pub enum DivSize<T> {
 }
 
 
-/// ## Div Item Orientation
+/// ## Stack orientation
+/// Dictates which directiou should the stack pile up
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum DivItemOrientation {
+pub enum StackOrientation {
     /// ## Horizontal
     #[default] Horizontal,
     /// ## Vertical
