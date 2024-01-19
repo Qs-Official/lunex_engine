@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_lunex::prelude::*;
+use bevy_lunex::{prelude::*, Dimension};
 
 
 fn main() {
@@ -14,12 +14,13 @@ fn setup(mut cmd: Commands) {
 
     cmd.spawn((
         MyWidget,
-        Camera2dBundle { transform: Transform { translation: Vec3::new(0.0, 0.0, 100.0), ..default() }, ..default() }
+        Camera2dBundle { transform: Transform { translation: Vec3::new(50.0, -50.0, 100.0), ..default() }, ..default() }
     ));
 
     cmd.spawn((
         MyWidget,
         init_ui().unwrap(),
+        Dimension::new(),
         Transform::from_xyz(0.0, 0.0, 0.0),
         //UiLogic::build(), // Needs direct link at UiTree
     ));

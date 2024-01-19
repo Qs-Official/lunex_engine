@@ -41,6 +41,11 @@ impl UiLink {
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct Dimension(pub Vec2);
+impl Dimension {
+    pub fn new() -> Self {
+        Dimension(Vec2::ZERO)
+    }
+}
 
 
 
