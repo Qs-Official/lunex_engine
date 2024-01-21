@@ -58,6 +58,7 @@ pub fn compute_ui<T:Default + Component, M: Component>(
 ) {
     for (dimension, mut ui) in &mut query {
         // Compute the UI
+        //println!("UI DIM: {}", dimension.size);
         ui.compute(Rect2D::new().with_size(dimension.size).into());
     }
 }
@@ -94,7 +95,7 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
 
 pub fn create_layout<T:Default + Component, M: Component>(
     mut uis: Query<(&mut UiTree<T>, &Children), With<M>>,
-    query: Query<(&UiLink, &Layout), With<M>>,
+    query: Query<(&UiLink, &Layout), (With<M>, Changed<Layout>)>,
 ) {
     for (mut ui, children) in &mut uis {
         for child in children {
@@ -104,10 +105,10 @@ pub fn create_layout<T:Default + Component, M: Component>(
                 if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data_mut() {
+                        //println!("Changed layout");
                         container.layout = *layout;
                     }
                 }
-
             }
         }
     }
@@ -135,7 +136,7 @@ pub fn sync_linked_transform<T:Default + Component, M: Component>(
 }
 
 pub fn sync_linked_dimension<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
     mut query: Query<(&UiLink, &mut Dimension), With<M>>,
 ) {
     for (ui, children) in &uis {
@@ -156,7 +157,7 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
 
 
 pub fn sync_linked_element_transform<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
     mut query: Query<(&UiLink, &mut Transform), (With<M>, With<Element>)>,
 ) {
     for (ui, children) in &uis {
@@ -229,9 +230,8 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
         app
             .add_systems(Update, create_layout::<T, M>)
             .add_systems(Update, sync_linked_transform::<T, M>)
-            .add_systems(Update, sync_linked_dimension::<T, M>)
+            .add_systems(Update, (sync_linked_dimension::<T, M>, reconstruct_element_mesh::<M>).chain())
             .add_systems(Update, sync_linked_element_transform::<T, M>)
-            .add_systems(Update, reconstruct_element_mesh::<M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
