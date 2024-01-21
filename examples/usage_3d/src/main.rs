@@ -25,20 +25,21 @@ fn setup(
     // light
     cmd.spawn(PointLightBundle {
         point_light: PointLight {
-            intensity: 1500.0,
+            intensity: 1500000.0,
+            range: 200000.0,
             shadows_enabled: true,
             ..default()
         },
-        transform: Transform::from_xyz(0.0, 10.0, 10.0).with_rotation(Quat::from_euler(EulerRot::YXZ, 0.0, 30_f32.to_radians(), 0.0)),
+        transform: Transform::from_xyz(0.0, 250.0, 250.0).with_rotation(Quat::from_euler(EulerRot::YXZ, 0.0, 30_f32.to_radians(), 0.0)),
         ..default()
     });
 
     // cube
     let player = cmd.spawn((
         PbrBundle {
-            mesh: msh.add(Mesh::from(shape::Cube { size: 10.0 })),
+            mesh: msh.add(Mesh::from(shape::Cube { size: 50.0 })),
             material: mat.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 0.5, 0.0),
+            transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
         },
         Player
@@ -55,6 +56,7 @@ fn setup(
         HUD
     )).id();
 
+    //cmd.entity(cam).push_children(&[light]);
     cmd.entity(player).push_children(&[cam]);
 
 
@@ -66,23 +68,16 @@ fn setup(
     ));
 
     cmd.spawn((
-        // Create new DOM called `MyWidget`
         UiTreeBundle::<NoData, HUD>::from( UiTree::<NoData>::new("MyWidget") ),
-        
-        // Marks the `Transform` to recive data from camera size
         MovableByCamera,
-
     )).with_children(|parent| {
 
-        // Spawn `Root` div
         parent.spawn((
             HUD,
             UiLink::path("Root"),
-            //                               (20px, 20px)                        (100% - 40px, 100% - 40px)
             layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
         ));
 
-        // Spawn `Square` div
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
@@ -91,7 +86,6 @@ fn setup(
         ));
 
     });
-
 }
 
 fn build_ui() -> Result<UiTree<NoData>, UiError> {
@@ -121,6 +115,6 @@ pub struct MyWidget;
 
 fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>, With<MyWidget>>, time: Res<Time>) {
     for mut ui in &mut query {
-        ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 30.0, 100.0)).into());
+        ui.compute(Rect2D::new().with_size((200.0 + time.elapsed_seconds().cos() * 60.0, 200.0)).into());
     }
 }

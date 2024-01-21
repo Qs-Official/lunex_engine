@@ -46,8 +46,17 @@ pub struct PlayerCam {
     pub distance: f32,
     pub sensitivity: Vec2,
 }
-pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mut query: Query<(&PlayerCam, &mut Transform)>) {
-    let delta: Vec2 = mouse_motion_events.read().map(|e| e.delta).sum();
+pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mouse_input: Res<Input<MouseButton>>, mut query: Query<(&PlayerCam, &mut Transform)>) {
+    let mut delta = Vec2::ZERO;
+    if mouse_input.pressed(MouseButton::Left) {
+        delta = mouse_motion_events.read().map(|e| e.delta).sum();
+    }
+    if mouse_input.just_pressed(MouseButton::Left) {
+        delta = Vec2::ZERO;
+    }
+
+
+    
     for (camera, mut transform) in &mut query {
 
         // ROTATION 
@@ -75,6 +84,6 @@ pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mut q
 pub fn zoom_playercam(mut mouse_wheel_events: EventReader<MouseWheel>, mut query: Query<&mut PlayerCam>) {
     let delta: f32 = mouse_wheel_events.read().map(|e| e.y).sum();
     for mut camera in &mut query {
-        camera.distance += -delta*10.0;
+        camera.distance += -delta*25.0;
     }
 }
