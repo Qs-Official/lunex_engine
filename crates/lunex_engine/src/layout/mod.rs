@@ -12,7 +12,8 @@ pub mod prelude {
     pub use super::Layout;
     pub use super::{Align, Cover};
 
-    pub mod layout {
+    #[allow(non_snake_case)]
+    pub mod Ui {
         pub use super::super::{Window, Solid};
     }
 }

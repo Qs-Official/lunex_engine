@@ -79,13 +79,13 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root"),
-            layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            Ui::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
         ));
 
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
-            layout::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
+            Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
             UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ass.load("image.png")), unlit: true, ..default() }) ),
         ));
 
