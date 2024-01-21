@@ -93,3 +93,27 @@ impl From<Handle<StandardMaterial>> for UiMaterialBundle {
         }
     }
 }
+
+#[derive(Bundle, Debug, Default, Clone)]
+pub struct UiColorMaterialBundle {
+    pub element: Element,
+    pub mesh: Handle<Mesh>,
+
+    pub material: Handle<ColorMaterial>,
+
+    pub dimension: Dimension,
+    pub transform: Transform,
+
+    pub visibility: Visibility,
+    pub global_transform: GlobalTransform,
+    pub inherited_visibility: InheritedVisibility,
+    pub view_visibility: ViewVisibility,
+}
+impl From<Handle<ColorMaterial>> for UiColorMaterialBundle {
+    fn from(value: Handle<ColorMaterial>) -> Self {
+        UiColorMaterialBundle {
+            material: value,
+            ..default()
+        }
+    }
+}

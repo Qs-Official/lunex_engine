@@ -187,6 +187,7 @@ pub fn reconstruct_element_mesh<M: Component>(
 ) {
     for (dimension, mut mesh) in &mut query {
         //info!("Recreating mesh: {}", dimension.size);
+        let _ = msh.remove(mesh.id());
         *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
