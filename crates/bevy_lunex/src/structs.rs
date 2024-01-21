@@ -94,6 +94,33 @@ impl From<Handle<StandardMaterial>> for UiMaterialBundle {
     }
 }
 
+
+#[derive(Bundle, Clone, Debug, Default)]
+pub struct UiImageBundle {
+    pub element: Element,
+    pub sprite: Sprite,
+
+    pub texture: Handle<Image>,
+
+    pub dimension: Dimension,
+    pub transform: Transform,
+
+    pub visibility: Visibility,
+    pub global_transform: GlobalTransform,
+    pub inherited_visibility: InheritedVisibility,
+    pub view_visibility: ViewVisibility,
+}
+impl From<Handle<Image>> for UiImageBundle {
+    fn from(value: Handle<Image>) -> Self {
+        UiImageBundle {
+            texture: value,
+            ..default()
+        }
+    }
+}
+
+
+
 #[derive(Bundle, Debug, Default, Clone)]
 pub struct UiColorMaterialBundle {
     pub element: Element,

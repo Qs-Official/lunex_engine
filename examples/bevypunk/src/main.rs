@@ -19,7 +19,7 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
 
     cmd.spawn((
         MyWidget,
-        Camera3dBundle {
+        Camera2dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 1000.0),
             camera: Camera::default(),
             ..default()
@@ -46,7 +46,9 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
             MyWidget,
             UiLink::path("Root/Square"),
             Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
-            UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("images/main_menu/background.png")), unlit: true, ..default() }) ),
+            
+            UiImageBundle::from(ast.load("images/main_menu/background.png")),
+            //UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("images/main_menu/background.png")), unlit: true, ..default() }) ),
         ));
 
     });
@@ -55,17 +57,3 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
-
-
-
-
-fn presetup(mut commands: Commands, asset_server: Res<AssetServer>, mut mat: ResMut<Assets<StandardMaterial>>) {
-    commands.insert_resource(AssetCache {
-        material: mat.add(StandardMaterial { base_color_texture: Some(asset_server.load("images/main_menu/background.png")), unlit: true, ..default() }),
-    });
-}
-
-#[derive(Resource)]
-pub struct AssetCache {
-    pub material: Handle<StandardMaterial>,
-}
