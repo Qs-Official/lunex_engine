@@ -98,8 +98,9 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root/Nodee"),
-            layout::Window::new_at(Prc((20.0, 60.0)), Abs::splat2(100.0)).pack(),
+            layout::Window::new_at(Prc((20.0, 60.0)), Abs::splat2(60.0)).pack(),
 
+            Dimension::default(),
             msh.add(shape::Quad { size: Vec2::splat(40.0), flip: false }.into()),
 
             Element,
@@ -132,7 +133,7 @@ struct RenderContainer {
     corner_radii: Vec4
 }
 fn render_update (mut painter: ShapePainter, query: Query<(&Dimension, &RenderContainer)>) {
-    for (dimension, color) in &query {
+    for (_dimension, color) in &query {
 
         //painter.set_translation(transform.translation);
         painter.set_scale(Vec3::splat(1.0));

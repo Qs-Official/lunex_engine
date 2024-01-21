@@ -115,7 +115,7 @@ pub fn create_layout<T:Default + Component, M: Component>(
 
 
 pub fn sync_linked_transform<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
     mut query: Query<(&UiLink, &mut Transform), (With<M>, Without<Element>)>,
 ) {
     for (ui, children) in &uis {
@@ -154,7 +154,8 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
     }
 }
 
-pub fn sync_linked_element<T:Default + Component, M: Component>(
+
+pub fn sync_linked_element_transform<T:Default + Component, M: Component>(
     uis: Query<(&UiTree<T>, &Children), With<M>>,
     mut query: Query<(&UiLink, &mut Transform), (With<M>, With<Element>)>,
 ) {
@@ -173,6 +174,16 @@ pub fn sync_linked_element<T:Default + Component, M: Component>(
                 }
             }
         }
+    }
+}
+
+pub fn reconstruct_element_mesh<M: Component>(
+    mut msh: ResMut<Assets<Mesh>>,
+    mut query: Query<(&Dimension, &mut Handle<Mesh>), (With<M>, With<Element>, Changed<Dimension>)>,
+) {
+    for (dimension, mut mesh) in &mut query {
+        println!("{:?}", dimension);
+        *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
 
@@ -219,7 +230,8 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
             .add_systems(Update, create_layout::<T, M>)
             .add_systems(Update, sync_linked_transform::<T, M>)
             .add_systems(Update, sync_linked_dimension::<T, M>)
-            .add_systems(Update, sync_linked_element::<T, M>)
+            .add_systems(Update, sync_linked_element_transform::<T, M>)
+            .add_systems(Update, reconstruct_element_mesh::<M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
