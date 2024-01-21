@@ -15,18 +15,18 @@ fn main() {
         .run();
 }
 
-fn startup(mut cmd: Commands, ast: Res<AssetCache>, mut mat: ResMut<Assets<StandardMaterial>>) {
+fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMut<Assets<StandardMaterial>>) {
 
-    cmd.spawn((
+    commands.spawn((
         MyWidget,
-        Camera2dBundle {
+        Camera3dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 1000.0),
             camera: Camera::default(),
             ..default()
         }
     ));
 
-    cmd.spawn((
+    commands.spawn((
         UiTreeBundle::<NoData, MyWidget> {
             tree: UiTree::<NoData>::new("MyWidget"),
             dimension: Dimension::new((1000.0, 1000.0)),
@@ -47,8 +47,8 @@ fn startup(mut cmd: Commands, ast: Res<AssetCache>, mut mat: ResMut<Assets<Stand
             UiLink::path("Root/Square"),
             Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
             
-            UiImage2dBundle::from(ast.main_background.clone()),
-            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.main_background.clone()), unlit: true, ..default() }) ),
+            //UiImage2dBundle::from(assets.main_background.clone()),
+            UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
         ));
 
     });
