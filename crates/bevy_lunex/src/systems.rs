@@ -147,8 +147,10 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
-                        //println!("Changed dimension: {}", container.rect.size);
-                        dimension.size = container.rect.size;
+                        if dimension.as_ref().size != container.rect.size {
+                            //info!("Updated dimension: {}", container.rect.size);
+                            dimension.size = container.rect.size;
+                        }
                     }
                 }
             }
@@ -184,7 +186,7 @@ pub fn reconstruct_element_mesh<M: Component>(
     mut query: Query<(&Dimension, &mut Handle<Mesh>), (With<M>, With<Element>, Changed<Dimension>)>,
 ) {
     for (dimension, mut mesh) in &mut query {
-        println!("{:?}", dimension);
+        //info!("Recreating mesh: {}", dimension.size);
         *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
