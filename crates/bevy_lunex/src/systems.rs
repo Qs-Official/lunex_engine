@@ -12,9 +12,9 @@ use crate::{Dimension, MovableByCamera, UiLink, Element};
 /// * Developer should ensure that source query returns only one camera.
 ///   Otherwise, it will lead to value overwriting. Just make sure only one camera
 ///   is marked with `(M)` component at the same time.
-pub fn fetch_dimension_from_camera<M: Component>(
+pub fn fetch_dimension_from_camera<T:Default + Component, M: Component>(
     source: Query<&Camera, (With<M>, Changed<Camera>)>,
-    mut destination: Query<&mut Dimension, With<M>>
+    mut destination: Query<&mut Dimension, (With<M>, With<UiTree<T>>)>
 ) {
     // Undesired behaviour if source.len() > 1
     for cam in &source {
@@ -147,6 +147,7 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
+                        //println!("Changed dimension: {}", container.rect.size);
                         dimension.size = container.rect.size;
                     }
                 }
@@ -232,7 +233,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
             .add_systems(Update, sync_linked_transform::<T, M>)
             .add_systems(Update, (sync_linked_dimension::<T, M>, reconstruct_element_mesh::<M>).chain())
             .add_systems(Update, sync_linked_element_transform::<T, M>)
-            .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
+            .add_systems(Update, (fetch_dimension_from_camera::<T, M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
 }

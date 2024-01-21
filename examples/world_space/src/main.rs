@@ -113,11 +113,11 @@ fn setup(
             }
         ));
 
-        parent.spawn((
+        /*parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
             layout::Solid::new().with_align_x(Align::CENTER).pack(),
-        ));
+        ));*/
 
     });
 }
