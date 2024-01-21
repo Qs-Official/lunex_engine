@@ -6,7 +6,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        //.add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+        .add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
 
         //.add_plugins(Shape2dPlugin::default())
         //.add_systems(Update, render_update)
@@ -47,8 +47,8 @@ fn startup(mut cmd: Commands, ast: Res<AssetCache>, mut mat: ResMut<Assets<Stand
             UiLink::path("Root/Square"),
             Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
             
-            UiImageBundle::from(ast.main_background.clone()),
-            //UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.main_background.clone()), unlit: true, ..default() }) ),
+            UiImage2dBundle::from(ast.main_background.clone()),
+            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.main_background.clone()), unlit: true, ..default() }) ),
         ));
 
     });

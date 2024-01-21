@@ -71,7 +71,7 @@ impl <T: Default + Component, M: Default + Component> From<Result<UiTree<T>, UiE
 
 
 #[derive(Bundle, Debug, Default, Clone)]
-pub struct UiMaterialBundle {
+pub struct UiMaterial3dBundle {
     pub element: Element,
     pub mesh: Handle<Mesh>,
 
@@ -85,9 +85,9 @@ pub struct UiMaterialBundle {
     pub inherited_visibility: InheritedVisibility,
     pub view_visibility: ViewVisibility,
 }
-impl From<Handle<StandardMaterial>> for UiMaterialBundle {
+impl From<Handle<StandardMaterial>> for UiMaterial3dBundle {
     fn from(value: Handle<StandardMaterial>) -> Self {
-        UiMaterialBundle {
+        UiMaterial3dBundle {
             material: value,
             ..default()
         }
@@ -96,7 +96,7 @@ impl From<Handle<StandardMaterial>> for UiMaterialBundle {
 
 
 #[derive(Bundle, Clone, Debug, Default)]
-pub struct UiImageBundle {
+pub struct UiImage2dBundle {
     pub element: Element,
     pub sprite: Sprite,
 
@@ -110,36 +110,10 @@ pub struct UiImageBundle {
     pub inherited_visibility: InheritedVisibility,
     pub view_visibility: ViewVisibility,
 }
-impl From<Handle<Image>> for UiImageBundle {
+impl From<Handle<Image>> for UiImage2dBundle {
     fn from(value: Handle<Image>) -> Self {
-        UiImageBundle {
+        UiImage2dBundle {
             texture: value,
-            ..default()
-        }
-    }
-}
-
-
-
-#[derive(Bundle, Debug, Default, Clone)]
-pub struct UiColorMaterialBundle {
-    pub element: Element,
-    pub mesh: Handle<Mesh>,
-
-    pub material: Handle<ColorMaterial>,
-
-    pub dimension: Dimension,
-    pub transform: Transform,
-
-    pub visibility: Visibility,
-    pub global_transform: GlobalTransform,
-    pub inherited_visibility: InheritedVisibility,
-    pub view_visibility: ViewVisibility,
-}
-impl From<Handle<ColorMaterial>> for UiColorMaterialBundle {
-    fn from(value: Handle<ColorMaterial>) -> Self {
-        UiColorMaterialBundle {
-            material: value,
             ..default()
         }
     }
