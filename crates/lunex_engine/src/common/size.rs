@@ -1,5 +1,8 @@
 use std::ops::Add;
 use std::ops::AddAssign;
+use std::ops::Neg;
+use std::ops::Sub;
+use std::ops::SubAssign;
 use std::ops::Mul;
 use std::ops::MulAssign;
 
@@ -361,6 +364,196 @@ impl<T: Add<Output = T> + Copy> AddAssign<Rem<T>> for NodeSize<T> {
     fn add_assign(&mut self, rhs: Rem<T>) {
         match self.rem {
             Some(v) => self.rem = Some(v + rhs.0),
+            None => self.rem = Some(rhs.0),
+        }
+    }
+}
+
+// NEGATION ======
+
+impl<T: Neg<Output = T>> Neg for Abs<T> {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Abs(-self.0)
+    }
+}
+impl<T: Neg<Output = T>> Neg for Prc<T> {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Prc(-self.0)
+    }
+}
+impl<T: Neg<Output = T>> Neg for Rem<T> {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        Rem(-self.0)
+    }
+}
+
+
+// SUBTRACTION ======
+
+// # Impl `Abs(T) - Abs(T)`
+impl<T: Sub<Output = T>> Sub for Abs<T> {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self::Output {
+        Abs(self.0 - other.0)
+    }
+}
+// # Impl `Abs(T) - Prc(T)`
+impl<T: Sub<Output = T>> Sub<Prc<T>> for Abs<T> where Prc<T>: Neg<Output = Prc<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Prc<T>) -> Self::Output {
+        NodeSize::new().with_abs(self).with_prc(-other)
+    }
+}
+// # Impl `Abs(T) - Rem(T)`
+impl<T: Sub<Output = T>> Sub<Rem<T>> for Abs<T> where Rem<T>: Neg<Output = Rem<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Rem<T>) -> Self::Output {
+        NodeSize::new().with_abs(self).with_rem(-other)
+    }
+}
+
+// # Impl `Prc(T) - Prc(T)`
+impl<T: Sub<Output = T>> Sub for Prc<T> {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self::Output {
+        Prc(self.0 - other.0)
+    }
+}
+// # Impl `Prc(T) - Abs(T)`
+impl<T: Sub<Output = T>> Sub<Abs<T>> for Prc<T> where Abs<T>: Neg<Output = Abs<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Abs<T>) -> Self::Output {
+        NodeSize::new().with_prc(self).with_abs(-other)
+    }
+}
+// # Impl `Prc(T) - Rem(T)`
+impl<T: Sub<Output = T>> Sub<Rem<T>> for Prc<T> where Rem<T>: Neg<Output = Rem<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Rem<T>) -> Self::Output {
+        NodeSize::new().with_prc(self).with_rem(-other)
+    }
+}
+
+// # Impl `Rem(T) - Rem(T)`
+impl<T: Sub<Output = T>> Sub for Rem<T> {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self::Output {
+        Rem(self.0 - other.0)
+    }
+}
+// # Impl `Rem(T) - Abs(T)`
+impl<T: Sub<Output = T>> Sub<Abs<T>> for Rem<T> where Abs<T>: Neg<Output = Abs<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Abs<T>) -> Self::Output {
+        NodeSize::new().with_rem(self).with_abs(-other)
+    }
+}
+// # Impl `Rem(T) - Prc(T)`
+impl<T: Sub<Output = T>> Sub<Prc<T>> for Rem<T> where Prc<T>: Neg<Output = Prc<T>> {
+    type Output = NodeSize<T>;
+    fn sub(self, other: Prc<T>) -> Self::Output {
+        NodeSize::new().with_rem(self).with_prc(-other)
+    }
+}
+
+// # Impl `NodeSize(T) - NodeSize(T)`
+impl<T: Sub<Output = T> + Sub> Sub for NodeSize<T> {
+    type Output = Self;
+    fn sub(self, other: Self) -> Self::Output {
+        let mut output = NodeSize::new();
+        if let Some(v1) = self.abs {
+            match other.abs {
+                Some(v2) => output.abs = Some(v1 - v2),
+                None => output.abs = Some(v1),
+            }
+        }
+        if let Some(v1) = self.prc {
+            match other.prc {
+                Some(v2) => output.prc = Some(v1 - v2),
+                None => output.prc = Some(v1),
+            }
+        }
+        if let Some(v1) = self.rem {
+            match other.rem {
+                Some(v2) => output.rem = Some(v1 - v2),
+                None => output.rem = Some(v1),
+            }
+        }
+        output
+    }
+}
+// # Impl `NodeSize(T) - Abs(T)`
+impl<T: Sub<Output = T> + Sub> Sub<Abs<T>> for NodeSize<T> {
+    type Output = Self;
+    fn sub(mut self, other: Abs<T>) -> Self::Output {
+        match self.abs {
+            Some(v) => {
+                self.abs = Some(v - other.0);
+                self
+            },
+            None => self.with_abs(other),
+        }
+    }
+}
+// # Impl `NodeSize(T) - Prc(T)`
+impl<T: Sub<Output = T> + Sub> Sub<Prc<T>> for NodeSize<T> {
+    type Output = Self;
+    fn sub(mut self, other: Prc<T>) -> Self::Output {
+        match self.prc {
+            Some(v) => {
+                self.prc = Some(v - other.0);
+                self
+            },
+            None => self.with_prc(other),
+        }
+    }
+}
+// # Impl `NodeSize(T) - Rem(T)`
+impl<T: Sub<Output = T> + Sub> Sub<Rem<T>> for NodeSize<T> {
+    type Output = Self;
+    fn sub(mut self, other: Rem<T>) -> Self::Output {
+        match self.rem {
+            Some(v) => {
+                self.rem = Some(v - other.0);
+                self
+            },
+            None => self.with_rem(other),
+        }
+    }
+}
+
+// # Impl `NodeSize(T) -= NodeSize(T)`
+impl<T: Sub<Output = T> + Copy> SubAssign for NodeSize<T> {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs
+    }
+}
+// # Impl `NodeSize(T) -= Abs(T)`
+impl<T: Sub<Output = T> + Copy> SubAssign<Abs<T>> for NodeSize<T> {
+    fn sub_assign(&mut self, rhs: Abs<T>) {
+        match self.abs {
+            Some(v) => self.abs = Some(v - rhs.0),
+            None => self.abs = Some(rhs.0),
+        }
+    }
+}
+// # Impl `NodeSize(T) -= Prc(T)`
+impl<T: Sub<Output = T> + Copy> SubAssign<Prc<T>> for NodeSize<T> {
+    fn sub_assign(&mut self, rhs: Prc<T>) {
+        match self.prc {
+            Some(v) => self.prc = Some(v - rhs.0),
+            None => self.prc = Some(rhs.0),
+        }
+    }
+}
+// # Impl `NodeSize(T) -= Rem(T)`
+impl<T: Sub<Output = T> + Copy> SubAssign<Rem<T>> for NodeSize<T> {
+    fn sub_assign(&mut self, rhs: Rem<T>) {
+        match self.rem {
+            Some(v) => self.rem = Some(v - rhs.0),
             None => self.rem = Some(rhs.0),
         }
     }
