@@ -2,14 +2,15 @@ mod boilerplate;
 use boilerplate::*;
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;
+use bevy_vector_shapes::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, MyWidget>::new())
         .add_plugins(UiPlugin::<NoData, HUD>::new())
         .add_systems(Startup, setup)
-        .add_systems(Update, ui_compute::<NoData>)
+        .add_plugins(ShapePlugin::default())
+        .add_systems(Update, render_update)
 
         .add_systems(Update, move_player)
         .add_systems(Update, rotate_playercam)
@@ -60,12 +61,6 @@ fn setup(
     cmd.entity(player).push_children(&[cam]);
 
 
-    // Spawn the DOM
-    cmd.spawn((
-        MyWidget,
-        Transform::from_xyz(0.0, 50.0, 0.0),
-        build_ui().unwrap(),
-    ));
 
     cmd.spawn((
         UiTreeBundle::<NoData, HUD>::from( UiTree::<NoData>::new("MyWidget") ),
@@ -76,45 +71,50 @@ fn setup(
             HUD,
             UiLink::path("Root"),
             layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+
+            Transform::default(),
+            Dimension::default(),
+            RenderContainer {
+                color: Color::DARK_GREEN,
+                corner_radii: Vec4::ZERO,
+            }
         ));
 
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
             layout::Solid::new().with_align_x(Align::CENTER).pack(),
+
             Transform::default(),
+            Dimension::default(),
+            RenderContainer {
+                color: Color::DARK_GRAY,
+                corner_radii: Vec4::splat(50.0),
+            }
         ));
 
     });
 }
 
-fn build_ui() -> Result<UiTree<NoData>, UiError> {
-
-    // Create new DOM
-    let mut ui = UiTree::<NoData>::new("UI_Widget");
-
-    // Create the layout
-    layout::Window::new().build(&mut ui, "Node1")?;
-    layout::Solid::new().with_align_x(Align::CENTER).with_align_y(Align(-2.0)).build(&mut ui, "Node1/Node2")?;
-    
-
-    // Print layout tree
-    //println!("\n{}\n", ui.tree(""));
-
-    Ok(ui)
-}
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct HUD;
 
 
+#[derive(Component)]
+struct RenderContainer {
+    color: Color,
+    corner_radii: Vec4
+}
+fn render_update (mut painter: ShapePainter, query: Query<(&Transform, &Dimension, &RenderContainer)>) {
+    for (transform, dimension, color) in &query {
 
+        //painter.set_translation(transform.translation);
+        painter.set_scale(Vec3::splat(1.0));
 
-#[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct MyWidget;
-
-fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>, With<MyWidget>>, time: Res<Time>) {
-    for mut ui in &mut query {
-        ui.compute(Rect2D::new().with_size((200.0 + time.elapsed_seconds().cos() * 60.0, 200.0)).into());
+        painter.color = color.color;
+        painter.thickness = 1.0;
+        painter.corner_radii = color.corner_radii;
+        painter.rect(Vec2::new(dimension.size.x, dimension.size.y));
     }
 }

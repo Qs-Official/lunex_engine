@@ -92,22 +92,29 @@ pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Tr
 
 
 
-pub fn collect_ui<T:Default + Component, M: Component>(
+pub fn create_layout<T:Default + Component, M: Component>(
     mut uis: Query<(&mut UiTree<T>, &Children), With<M>>,
     query: Query<(&UiLink, &Layout), With<M>>,
 ) {
     for (mut ui, children) in &mut uis {
         for child in children {
-            let (link, layout) = query.get(*child).unwrap();
-            let node = ui.borrow_or_create_ui_node_mut(link.path.clone()).unwrap();
-            if let Some(container) = node.obtain_data_mut() {
-                container.layout = *layout;
+            // If child matches
+            if let Ok((link, layout)) = query.get(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data_mut() {
+                        container.layout = *layout;
+                    }
+                }
+
             }
         }
     }
 }
 
-pub fn align_transforms<T:Default + Component, M: Component>(
+
+pub fn sync_linked_transform<T:Default + Component, M: Component>(
     uis: Query<(&UiTree<T>, &Children), With<M>>,
     mut query: Query<(&UiLink, &mut Transform), With<M>>,
 ) {
@@ -120,13 +127,28 @@ pub fn align_transforms<T:Default + Component, M: Component>(
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
                         transform.translation = container.rect.pos;
-
-                        // Should be separete system later
-                        transform.scale.x = container.rect.size.x;
-                        transform.scale.y = container.rect.size.y;
                     }
                 }
+            }
+        }
+    }
+}
 
+pub fn sync_linked_dimension<T:Default + Component, M: Component>(
+    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    mut query: Query<(&UiLink, &mut Dimension), With<M>>,
+) {
+    for (ui, children) in &uis {
+        for child in children {
+            // If child matches
+            if let Ok((link, mut dimension)) = query.get_mut(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_node(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data() {
+                        dimension.size = container.rect.size;
+                    }
+                }
             }
         }
     }
@@ -171,10 +193,53 @@ impl <T:Default + Component, M: Component> UiPlugin<T, M> {
 impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, draw_debug_gizmo::<T>)
-            .add_systems(Update, collect_ui::<T, M>)
-            .add_systems(Update, align_transforms::<T, M>)
+            .add_systems(Update, create_layout::<T, M>)
+            .add_systems(Update, sync_linked_transform::<T, M>)
+            .add_systems(Update, sync_linked_dimension::<T, M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
+    }
+}
+
+/// Plugin implementing all debug UI logic for the specified generic types.
+/// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
+/// * generic `(M)` - Marker component scoping logic and data into one iterable group
+/// 
+/// ## 🛠️ Example
+/// *1. Define the types used*
+/// ```
+///  #[derive(Component, Default)]
+///  struct NodeData { value: i32 } // What data will each node contain
+/// 
+///  #[derive(Component)]
+///  struct MyUiWidget; // Empty marker, used for multiple types of UI
+/// ```
+/// *2. Add the plugin to your app*
+/// ```
+///  App::new()
+///      .add_plugins(DefaultPlugins)
+///      .add_plugins(UiDebugPlugin::<NodeData, MyUiWidget>::new())
+///      .run();
+/// ```
+/// *3. Use the [`UiTree`] freely*
+/// ```
+///#  fn setup(mut commands: Commands) {
+///   commands.spawn((
+///      MyUiWidget,
+///      UiTree::<NodeData>::new("MyWidget")
+///   ));
+///#  }
+/// ```
+#[derive(Debug, Default, Clone)]
+pub struct UiDebugPlugin <T:Default + Component, M: Component>(PhantomData<T>, PhantomData<M>);
+impl <T:Default + Component, M: Component> UiDebugPlugin<T, M> {
+    pub fn new() -> Self {
+        UiDebugPlugin::<T, M>(PhantomData, PhantomData)
+    }
+}
+impl <T:Default + Component, M: Component> Plugin for UiDebugPlugin<T, M> {
+    fn build(&self, app: &mut App) {
+        app
+            .add_systems(Update, draw_debug_gizmo::<T>);
     }
 }

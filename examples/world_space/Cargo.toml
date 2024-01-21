@@ -11,3 +11,4 @@
 [dependencies]
   bevy         = { workspace = true }
   bevy_lunex   = { workspace = true }
+  bevy_vector_shapes = { workspace = true }
