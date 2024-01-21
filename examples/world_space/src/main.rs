@@ -92,7 +92,7 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root/Nodee"),
-            layout::Window::new_at(Prc(Vec2::new(100.0, 100.0)), Abs::splat2(100.0)).pack(),
+            layout::Window::new_at(Prc((100.0, 100.0)), Abs::splat2(100.0)).pack(),
 
             Transform::default(),
             Dimension::default(),

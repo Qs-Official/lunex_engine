@@ -745,6 +745,58 @@ impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Rem<T> {
 // #================================#
 // #=== SPECIFIC IMPLEMENTATIONS ===#
 
+// # Impl ((x, x)) => NodeSize(Vec2)
+impl Into<NodeSize<Vec2>> for Abs<(f32, f32)> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_abs((self.0.0, self.0.1).into())
+    }
+}
+impl Into<NodeSize<Vec2>> for Prc<(f32, f32)> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_prc((self.0.0, self.0.1).into())
+    }
+}
+impl Into<NodeSize<Vec2>> for Rem<(f32, f32)> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_rem((self.0.0, self.0.1).into())
+    }
+}
+
+// # Impl ((x, x, x)) => NodeSize(Vec3)
+impl Into<NodeSize<Vec3>> for Abs<(f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_abs((self.0.0, self.0.1, self.0.2).into())
+    }
+}
+impl Into<NodeSize<Vec3>> for Prc<(f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_prc((self.0.0, self.0.1, self.0.2).into())
+    }
+}
+impl Into<NodeSize<Vec3>> for Rem<(f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_rem((self.0.0, self.0.1, self.0.2).into())
+    }
+}
+
+// # Impl ((x, x, x, x)) => NodeSize(Vec4)
+impl Into<NodeSize<Vec4>> for Abs<(f32, f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_abs((self.0.0, self.0.1, self.0.2, self.0.3).into())
+    }
+}
+impl Into<NodeSize<Vec4>> for Prc<(f32, f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_prc((self.0.0, self.0.1, self.0.2, self.0.3).into())
+    }
+}
+impl Into<NodeSize<Vec4>> for Rem<(f32, f32, f32, f32)> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_rem((self.0.0, self.0.1, self.0.2, self.0.3).into())
+    }
+}
+
+
 // # Impl `splat2`
 impl Abs<Vec2> {
     /// ### Same as
@@ -1012,6 +1064,7 @@ pub trait NodeSizeEvaluate<T, TT> {
     fn evaluate(&self, parent_size: T, font_size: TT) -> T;
 }
 
+// # Impl evaluate
 impl NodeSizeEvaluate<f32, f32> for NodeSize<f32> {
     fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
         let mut out = 0.0;
@@ -1049,6 +1102,7 @@ impl NodeSizeEvaluate<Vec4, f32> for NodeSize<Vec4> {
     }
 }
 
+// # Impl to_nicestr
 impl NiceDisplay for NodeSize<f32> {
     fn to_nicestr(&self) -> String {
         let mut t = String::new();
