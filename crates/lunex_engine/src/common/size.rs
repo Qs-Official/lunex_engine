@@ -460,28 +460,44 @@ impl<T: Sub<Output = T>> Sub<Prc<T>> for Rem<T> where Prc<T>: Neg<Output = Prc<T
 }
 
 // # Impl `NodeSize(T) - NodeSize(T)`
-impl<T: Sub<Output = T> + Sub> Sub for NodeSize<T> {
+impl<T: Sub<Output = T> + Sub + Neg<Output = T>> Sub for NodeSize<T> {
     type Output = Self;
     fn sub(self, other: Self) -> Self::Output {
         let mut output = NodeSize::new();
+
         if let Some(v1) = self.abs {
             match other.abs {
                 Some(v2) => output.abs = Some(v1 - v2),
                 None => output.abs = Some(v1),
             }
+        } else {
+            if let Some(v2) = other.abs {
+                output.abs = Some(-v2)
+            }
         }
+
         if let Some(v1) = self.prc {
             match other.prc {
                 Some(v2) => output.prc = Some(v1 - v2),
                 None => output.prc = Some(v1),
             }
+        } else {
+            if let Some(v2) = other.prc {
+                output.prc = Some(-v2)
+            }
         }
+
         if let Some(v1) = self.rem {
             match other.rem {
                 Some(v2) => output.rem = Some(v1 - v2),
                 None => output.rem = Some(v1),
             }
+        } else {
+            if let Some(v2) = other.rem {
+                output.rem = Some(-v2)
+            }
         }
+
         output
     }
 }
@@ -526,7 +542,7 @@ impl<T: Sub<Output = T> + Sub> Sub<Rem<T>> for NodeSize<T> {
 }
 
 // # Impl `NodeSize(T) -= NodeSize(T)`
-impl<T: Sub<Output = T> + Copy> SubAssign for NodeSize<T> {
+impl<T: Sub<Output = T> + Copy + Neg<Output = T>> SubAssign for NodeSize<T> {
     fn sub_assign(&mut self, rhs: Self) {
         *self = *self - rhs
     }
