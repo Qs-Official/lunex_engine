@@ -5,6 +5,9 @@
     "examples/*",
   ]
 
+[profile.dev]
+  opt-level = 1
+
 [workspace.package]
   authors     = ["Dominik Kaspar"]
   version     = "0.0.1"

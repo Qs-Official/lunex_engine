@@ -6,16 +6,16 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        .add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+        //.add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
 
         //.add_plugins(Shape2dPlugin::default())
         //.add_systems(Update, render_update)
-        //.add_systems(PreStartup, presetup)
-        .add_systems(Startup, setup)
+        .add_systems(PreStartup, prestartup)
+        .add_systems(Startup, startup)
         .run();
 }
 
-fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<AssetServer>,) {
+fn startup(mut cmd: Commands, ast: Res<AssetCache>,) {
 
     cmd.spawn((
         MyWidget,
@@ -47,7 +47,7 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
             UiLink::path("Root/Square"),
             Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
             
-            UiImageBundle::from(ast.load("images/main_menu/background.png")),
+            UiImageBundle::from(ast.main_background.clone()),
             //UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("images/main_menu/background.png")), unlit: true, ..default() }) ),
         ));
 
@@ -57,3 +57,35 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
+
+
+
+#[derive(Resource)]
+pub struct AssetCache {
+    pub font: Handle<Font>,
+    pub font_bold: Handle<Font>,
+    pub button: Handle<Image>,
+
+    pub switch_base: Handle<Image>,
+    pub switch_head: Handle<Image>,
+
+    pub main_background: Handle<Image>,
+    pub main_board: Handle<Image>,
+    pub main_logo: Handle<Image>,
+    pub settings_background: Handle<Image>,
+}
+fn prestartup(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.insert_resource(AssetCache {
+        font: asset_server.load("fonts/rajdhani/Rajdhani-Medium.ttf"),
+        font_bold: asset_server.load("fonts/rajdhani/Rajdhani-Bold.ttf"),
+        button: asset_server.load("images/main_menu/button.png"),
+
+        switch_base: asset_server.load("images/settings/switch_base.png"),
+        switch_head: asset_server.load("images/settings/switch_head.png"),
+
+        main_background: asset_server.load("images/main_menu/background.png"),
+        main_board: asset_server.load("images/main_menu/board.png"),
+        main_logo: asset_server.load("images/main_menu/bevypunk.png"),
+        settings_background: asset_server.load("images/settings/background.png"),
+    });
+}
