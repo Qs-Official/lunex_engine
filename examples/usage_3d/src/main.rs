@@ -75,13 +75,13 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root"),
-            layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            Ui::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
         ));
 
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
-            layout::Solid::new().with_align_x(Align::CENTER).pack(),
+            Ui::Solid::new().with_align_x(Align::CENTER).pack(),
             Transform::default(),
         ));
 
@@ -94,8 +94,8 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
     let mut ui = UiTree::<NoData>::new("UI_Widget");
 
     // Create the layout
-    layout::Window::new().build(&mut ui, "Node1")?;
-    layout::Solid::new().with_align_x(Align::CENTER).with_align_y(Align(-2.0)).build(&mut ui, "Node1/Node2")?;
+    Ui::Window::new().build(&mut ui, "Node1")?;
+    Ui::Solid::new().with_align_x(Align::CENTER).with_align_y(Align(-2.0)).build(&mut ui, "Node1/Node2")?;
     
 
     // Print layout tree
