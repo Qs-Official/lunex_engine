@@ -32,7 +32,7 @@ impl Window {
     /// Creates new empty Window layout.
     pub fn new_at(pos: impl Into<NodeSize<Vec2>>, size: impl Into<NodeSize<Vec2>> ) -> Self {
         let s = size.into();
-        Window::new().with_pos(pos.into()).with_size(s)
+        Window::new().with_pos(pos.into() - s.clone() * 0.5).with_size(s)
     }
     /// ## With pos
     /// Replaces the position with the new value.
@@ -74,7 +74,7 @@ impl Window {
     /// Computes the layout based on given parameters.
     pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
         Rect2D {
-            pos: self.pos.evaluate(parent.size, font_size),
+            pos: parent.pos + self.pos.evaluate(parent.size, font_size),
             size: self.size.evaluate(parent.size, font_size),
         }
     }

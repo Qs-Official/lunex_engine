@@ -78,17 +78,8 @@ fn setup(
 
         parent.spawn((
             HUD,
-            UiLink::path("Full"),
-            layout::Window::FULL.pack(),
-
-            Transform::default(),
-            Dimension::default(),
-        ));
-
-        parent.spawn((
-            HUD,
             UiLink::path("Root"),
-            layout::Window::FULL.with_pos( Abs::splat2(160.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
 
             Transform::default(),
             Dimension::default(),
@@ -101,8 +92,7 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root/Nodee"),
-            //layout::Window::new_at(Prc::splat2(100.0), Abs::splat2(100.0)).pack(),
-            layout::Window::FULL.with_pos(Prc::splat2(100.0)).pack(),
+            layout::Window::new_at(Prc::splat2(100.0), Abs::splat2(100.0)).pack(),
 
             Transform::default(),
             Dimension::default(),
