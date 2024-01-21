@@ -7,6 +7,9 @@ use lunex_engine::prelude::*;
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct MovableByCamera;
 
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
+pub struct Element;
+
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct UiLink {

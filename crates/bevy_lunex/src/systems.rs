@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use bevy::prelude::*;
 use lunex_engine::*;
 
-use crate::{Dimension, MovableByCamera, UiLink};
+use crate::{Dimension, MovableByCamera, UiLink, Element};
 
 
 /// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
@@ -116,7 +116,7 @@ pub fn create_layout<T:Default + Component, M: Component>(
 
 pub fn sync_linked_transform<T:Default + Component, M: Component>(
     uis: Query<(&UiTree<T>, &Children), With<M>>,
-    mut query: Query<(&UiLink, &mut Transform), With<M>>,
+    mut query: Query<(&UiLink, &mut Transform), (With<M>, Without<Element>)>,
 ) {
     for (ui, children) in &uis {
         for child in children {
@@ -126,7 +126,7 @@ pub fn sync_linked_transform<T:Default + Component, M: Component>(
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
-                        transform.translation = container.rect.pos;
+                        transform.translation = container.rect.pos.invert_y();
                     }
                 }
             }
@@ -153,6 +153,29 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
         }
     }
 }
+
+pub fn sync_linked_element<T:Default + Component, M: Component>(
+    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    mut query: Query<(&UiLink, &mut Transform), (With<M>, With<Element>)>,
+) {
+    for (ui, children) in &uis {
+        for child in children {
+            // If child matches
+            if let Ok((link, mut transform)) = query.get_mut(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_node(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data() {
+                        transform.translation = container.rect.pos.invert_y();
+                        transform.translation.x += container.rect.size.x / 2.0;
+                        transform.translation.y += container.rect.size.y / -2.0;
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 /// Plugin implementing all UI logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
@@ -196,6 +219,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
             .add_systems(Update, create_layout::<T, M>)
             .add_systems(Update, sync_linked_transform::<T, M>)
             .add_systems(Update, sync_linked_dimension::<T, M>)
+            .add_systems(Update, sync_linked_element::<T, M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }

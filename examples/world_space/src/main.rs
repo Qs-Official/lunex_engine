@@ -89,28 +89,33 @@ fn setup(
             }
         ));
 
+        let material = mat.add(StandardMaterial {
+            base_color_texture: Some(ass.load("image.png")),
+            unlit: true,
+            ..default()
+        });
+
         parent.spawn((
             HUD,
             UiLink::path("Root/Nodee"),
-            layout::Window::new_at(Prc((100.0, 100.0)), Abs::splat2(100.0)).pack(),
+            layout::Window::new_at(Prc((20.0, 60.0)), Abs::splat2(100.0)).pack(),
 
-            Transform::default(),
-            Dimension::default(),
-            /*RenderContainer {
-                color: Color::YELLOW_GREEN,
-                corner_radii: Vec4::ZERO,
-            }*/
+            msh.add(shape::Quad { size: Vec2::splat(40.0), flip: false }.into()),
+
+            Element,
+            material,
+
+            UiImageBundle {
+
+                texture: ass.load("image.png"),
+                ..default()
+            }
         ));
 
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
             layout::Solid::new().with_align_x(Align::CENTER).pack(),
-
-            UiImageBundle {
-                texture: ass.load("image.png"),
-                ..default()
-            }
         ));
 
     });
@@ -135,6 +140,6 @@ fn render_update (mut painter: ShapePainter, query: Query<(&Dimension, &RenderCo
         painter.color = color.color;
         painter.thickness = 1.0;
         painter.corner_radii = color.corner_radii;
-        painter.rect(Vec2::new(dimension.size.x, dimension.size.y));
+        //painter.rect(Vec2::new(dimension.size.x, dimension.size.y));
     }
 }
