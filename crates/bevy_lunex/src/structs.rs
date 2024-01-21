@@ -71,12 +71,25 @@ impl <T: Default + Component, M: Default + Component> From<Result<UiTree<T>, UiE
 
 
 #[derive(Bundle, Debug, Default, Clone)]
-pub struct UiImageBundle {
-    pub sprite: Sprite,
-    pub texture: Handle<Image>,
+pub struct UiMaterialBundle {
+    pub element: Element,
+    pub mesh: Handle<Mesh>,
+
+    pub material: Handle<StandardMaterial>,
+
+    pub dimension: Dimension,
     pub transform: Transform,
+
     pub visibility: Visibility,
     pub global_transform: GlobalTransform,
     pub inherited_visibility: InheritedVisibility,
     pub view_visibility: ViewVisibility,
+}
+impl From<Handle<StandardMaterial>> for UiMaterialBundle {
+    fn from(value: Handle<StandardMaterial>) -> Self {
+        UiMaterialBundle {
+            material: value,
+            ..default()
+        }
+    }
 }
