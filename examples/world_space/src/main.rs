@@ -7,7 +7,10 @@ use bevy_vector_shapes::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
+
         .add_plugins(UiPlugin::<NoData, HUD>::new())
+        .add_plugins(UiDebugPlugin::<NoData, HUD>::new())
+
         .add_systems(Startup, setup)
         .add_plugins(ShapePlugin::default())
         .add_systems(Update, render_update)
@@ -22,6 +25,7 @@ fn setup(
     mut cmd: Commands,
     mut msh: ResMut<Assets<Mesh>>,
     mut mat: ResMut<Assets<StandardMaterial>>,
+    ass: Res<AssetServer>,
 ) {
     // light
     cmd.spawn(PointLightBundle {
@@ -43,7 +47,7 @@ fn setup(
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
         },
-        Player
+        //Player
     )).id();
 
     // camera
@@ -63,21 +67,49 @@ fn setup(
 
 
     cmd.spawn((
-        UiTreeBundle::<NoData, HUD>::from( UiTree::<NoData>::new("MyWidget") ),
+        UiTreeBundle::<NoData, HUD> {
+            tree: UiTree::<NoData>::new("MyWidget"),
+            dimension: Dimension::new((1000.0, 1000.0)),
+            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+            ..default()
+        },
         MovableByCamera,
     )).with_children(|parent| {
 
         parent.spawn((
             HUD,
+            UiLink::path("Full"),
+            layout::Window::FULL.pack(),
+
+            Transform::default(),
+            Dimension::default(),
+        ));
+
+        parent.spawn((
+            HUD,
             UiLink::path("Root"),
-            layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            layout::Window::FULL.with_pos( Abs::splat2(160.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
 
             Transform::default(),
             Dimension::default(),
             RenderContainer {
-                color: Color::DARK_GREEN,
+                color: Color::DARK_GRAY,
                 corner_radii: Vec4::ZERO,
             }
+        ));
+
+        parent.spawn((
+            HUD,
+            UiLink::path("Root/Nodee"),
+            //layout::Window::new_at(Prc::splat2(100.0), Abs::splat2(100.0)).pack(),
+            layout::Window::FULL.with_pos(Prc::splat2(100.0)).pack(),
+
+            Transform::default(),
+            Dimension::default(),
+            /*RenderContainer {
+                color: Color::YELLOW_GREEN,
+                corner_radii: Vec4::ZERO,
+            }*/
         ));
 
         parent.spawn((
@@ -85,11 +117,9 @@ fn setup(
             UiLink::path("Root/Square"),
             layout::Solid::new().with_align_x(Align::CENTER).pack(),
 
-            Transform::default(),
-            Dimension::default(),
-            RenderContainer {
-                color: Color::DARK_GRAY,
-                corner_radii: Vec4::splat(50.0),
+            UiImageBundle {
+                texture: ass.load("image.png"),
+                ..default()
             }
         ));
 
@@ -106,8 +136,8 @@ struct RenderContainer {
     color: Color,
     corner_radii: Vec4
 }
-fn render_update (mut painter: ShapePainter, query: Query<(&Transform, &Dimension, &RenderContainer)>) {
-    for (transform, dimension, color) in &query {
+fn render_update (mut painter: ShapePainter, query: Query<(&Dimension, &RenderContainer)>) {
+    for (dimension, color) in &query {
 
         //painter.set_translation(transform.translation);
         painter.set_scale(Vec3::splat(1.0));

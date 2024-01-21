@@ -28,6 +28,12 @@ impl Window {
             size: NodeSize::from_prc(Vec2::splat(100.0)),
         }
     }
+    /// ## New
+    /// Creates new empty Window layout.
+    pub fn new_at(pos: impl Into<NodeSize<Vec2>>, size: impl Into<NodeSize<Vec2>> ) -> Self {
+        let s = size.into();
+        Window::new().with_pos(pos.into()).with_size(s)
+    }
     /// ## With pos
     /// Replaces the position with the new value.
     pub fn with_pos(mut self, pos: impl Into<NodeSize<Vec2>>) -> Self {

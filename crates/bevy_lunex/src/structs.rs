@@ -33,16 +33,19 @@ impl Dimension {
 
 
 #[derive(Bundle, Debug, Default, Clone, PartialEq)]
-pub struct UiTreeBundle<T: Default + Component, M: Component> {
+pub struct UiTreeBundle <T: Default + Component, M: Component> {
+    pub tree: UiTree<T>,
     pub marker: M,
-    pub ui_tree: UiTree<T>,
     pub transform: Transform,
-    pub dimenstion: Dimension,
+    pub dimension: Dimension,
+
+    pub global_transform: GlobalTransform,
+    pub inherited_visibility: InheritedVisibility,
 }
 impl <T: Default + Component, M: Default + Component> From<UiTree<T>> for UiTreeBundle<T, M> {
     fn from(value: UiTree<T>) -> Self {
         UiTreeBundle::<T, M> {
-            ui_tree: value,
+            tree: value,
             ..default()
         }
     }
@@ -51,7 +54,7 @@ impl <T: Default + Component, M: Default + Component> From<Result<UiTree<T>, UiE
     fn from(value: Result<UiTree<T>, UiError>) -> Self {
         match value {
             Ok(val) => UiTreeBundle::<T, M> {
-                ui_tree: val,
+                tree: val,
                 ..default()
             },
             Err(e) => {
@@ -60,4 +63,17 @@ impl <T: Default + Component, M: Default + Component> From<Result<UiTree<T>, UiE
             }
         }
     }
+}
+
+
+
+#[derive(Bundle, Debug, Default, Clone)]
+pub struct UiImageBundle {
+    pub sprite: Sprite,
+    pub texture: Handle<Image>,
+    pub transform: Transform,
+    pub visibility: Visibility,
+    pub global_transform: GlobalTransform,
+    pub inherited_visibility: InheritedVisibility,
+    pub view_visibility: ViewVisibility,
 }
