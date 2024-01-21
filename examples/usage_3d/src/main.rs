@@ -7,6 +7,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData, MyWidget>::new())
+        .add_plugins(UiPlugin::<NoData, HUD>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)
 
@@ -48,9 +49,10 @@ fn setup(
         Camera3dBundle::default(),
         PlayerCam {
             orbit: Vec3::new(0.0, 0.0, 0.0),
-            distance: 300.0,
+            distance: 800.0,
             sensitivity: Vec2::splat(0.1),
-        }
+        },
+        HUD
     )).id();
 
     cmd.entity(player).push_children(&[cam]);
@@ -62,6 +64,33 @@ fn setup(
         Transform::from_xyz(0.0, 50.0, 0.0),
         build_ui().unwrap(),
     ));
+
+    cmd.spawn((
+        // Create new DOM called `MyWidget`
+        UiTreeBundle::<NoData, HUD>::from( UiTree::<NoData>::new("MyWidget") ),
+        
+        // Marks the `Transform` to recive data from camera size
+        MovableByCamera,
+
+    )).with_children(|parent| {
+
+        // Spawn `Root` div
+        parent.spawn((
+            HUD,
+            UiLink::path("Root"),
+            //                               (20px, 20px)                        (100% - 40px, 100% - 40px)
+            layout::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+        ));
+
+        // Spawn `Square` div
+        parent.spawn((
+            HUD,
+            UiLink::path("Root/Square"),
+            layout::Solid::new().with_align_x(Align::CENTER).pack(),
+            Transform::default(),
+        ));
+
+    });
 
 }
 
@@ -82,9 +111,15 @@ fn build_ui() -> Result<UiTree<NoData>, UiError> {
 }
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
+pub struct HUD;
+
+
+
+
+#[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
 
-fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>>, time: Res<Time>) {
+fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>, With<MyWidget>>, time: Res<Time>) {
     for mut ui in &mut query {
         ui.compute(Rect2D::new().with_size((100.0 + time.elapsed_seconds().cos() * 30.0, 100.0)).into());
     }

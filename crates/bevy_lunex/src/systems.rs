@@ -107,6 +107,30 @@ pub fn collect_ui<T:Default + Component, M: Component>(
     }
 }
 
+pub fn align_transforms<T:Default + Component, M: Component>(
+    uis: Query<(&UiTree<T>, &Children), With<M>>,
+    mut query: Query<(&UiLink, &mut Transform), With<M>>,
+) {
+    for (ui, children) in &uis {
+        for child in children {
+            // If child matches
+            if let Ok((link, mut transform)) = query.get_mut(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_node(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data() {
+                        transform.translation = container.rect.pos;
+
+                        // Should be separete system later
+                        transform.scale.x = container.rect.size.x;
+                        transform.scale.y = container.rect.size.y;
+                    }
+                }
+
+            }
+        }
+    }
+}
 
 /// Plugin implementing all UI logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
@@ -149,6 +173,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
         app
             .add_systems(Update, draw_debug_gizmo::<T>)
             .add_systems(Update, collect_ui::<T, M>)
+            .add_systems(Update, align_transforms::<T, M>)
             .add_systems(Update, (fetch_dimension_from_camera::<M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
             .add_systems(Update, compute_ui::<T, M>);
     }
