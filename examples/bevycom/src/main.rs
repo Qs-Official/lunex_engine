@@ -12,7 +12,6 @@ fn main() {
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)
 
-        .add_systems(Update, move_player)
         .add_systems(Update, rotate_playercam)
         .add_systems(Update, zoom_playercam)
         .run();
@@ -37,15 +36,14 @@ fn setup(
     });
 
     // cube
-    let player = cmd.spawn((
+    let player = cmd.spawn(
         PbrBundle {
-            mesh: msh.add(Mesh::from(shape::Cube { size: 50.0 })),
-            material: mat.add(Color::rgb(0.8, 0.7, 0.6).into()),
-            transform: Transform::from_xyz(0.0, 0.0, 0.0),
+            //mesh: msh.add(Mesh::from(shape::Cube { size: 50.0 })),
+            //material: mat.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            transform: Transform::from_xyz(0.0, 0.0, 0.0).with_scale(Vec3::new(1.0, 1.0, 1.0)),
             ..default()
-        },
-        Player
-    )).id();
+        }
+    ).id();
 
     // camera
     let cam = cmd.spawn((
@@ -62,14 +60,24 @@ fn setup(
 
 
     cmd.spawn((
-        MovableByCamera,
-        UiTreeBundle::<NoData, MyWidget>::from( UiTree::<NoData>::new("MyWidget") )
+        UiTreeBundle::<NoData, MyWidget> {
+            transform: Transform::from_xyz(0.0, 200.0, 0.0),
+            dimension: Dimension::new((400.0, 700.0)),
+            tree: UiTree::<NoData>::new("MyWidget"),
+            ..default()
+        },
+
+        msh.add(Mesh::from(shape::Cube { size: 15.0 })),
+        mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
+        Visibility::default(),
+        ViewVisibility::default(),
+
     )).with_children(|parent| {
 
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.with_pos(Abs((-200.0, -200.0))).pack(),
+            Ui::Window::FULL.pack(),
         ));
 
         parent.spawn((
@@ -89,6 +97,6 @@ pub struct MyWidget;
 
 fn ui_compute<T: Component + Default>(mut query: Query<&mut Dimension, (With<MyWidget>, With<UiTree<T>>)>, time: Res<Time>) {
     for mut dimension in &mut query {
-        dimension.size = (200.0 + time.elapsed_seconds().cos() * 60.0, 300.0 + time.elapsed_seconds().sin() * 50.0).into();
+        //dimension.size = (200.0 + time.elapsed_seconds().cos() * 60.0, 300.0 + time.elapsed_seconds().sin() * 50.0).into();
     }
 }
