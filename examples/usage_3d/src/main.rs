@@ -7,8 +7,8 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        .add_plugins(UiPlugin::<NoData, HUD>::new())
-        .add_plugins(UiDebugPlugin::<NoData, HUD>::new())
+        .add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)
 
@@ -54,69 +54,40 @@ fn setup(
             orbit: Vec3::new(0.0, 0.0, 0.0),
             distance: 800.0,
             sensitivity: Vec2::splat(0.1),
-        },
-        HUD
+        }
     )).id();
 
     //cmd.entity(cam).push_children(&[light]);
     cmd.entity(player).push_children(&[cam]);
 
 
-    // Spawn the DOM
     cmd.spawn((
-        MyWidget,
-        Transform::from_xyz(0.0, 50.0, 0.0),
-        build_ui().unwrap(),
-    ));
-
-    cmd.spawn((
-        UiTreeBundle::<NoData, HUD>::from( UiTree::<NoData>::new("MyWidget") ),
         MovableByCamera,
+        UiTreeBundle::<NoData, MyWidget>::from( UiTree::<NoData>::new("MyWidget") )
     )).with_children(|parent| {
 
         parent.spawn((
-            HUD,
+            MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            Ui::Window::FULL.with_pos(Abs((-200.0, -200.0))).pack(),
         ));
 
         parent.spawn((
-            HUD,
+            MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("background.png")), unlit: true, ..default() }) ),
+            Ui::Solid::new().with_size(Abs((807.0, 1432.0))).pack(),
+            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("board.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
     });
 }
 
-fn build_ui() -> Result<UiTree<NoData>, UiError> {
-
-    // Create new DOM
-    let mut ui = UiTree::<NoData>::new("UI_Widget");
-
-    // Create the layout
-    Ui::Window::new().build(&mut ui, "Node1")?;
-    Ui::Solid::new().with_align_x(Align::CENTER).with_align_y(Align(-2.0)).build(&mut ui, "Node1/Node2")?;
-    
-
-    // Print layout tree
-    //println!("\n{}\n", ui.tree(""));
-
-    Ok(ui)
-}
-
-#[derive(Component, Debug, Default, Clone, PartialEq)]
-pub struct HUD;
-
-
-
 
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
 
-fn ui_compute<T: Component + Default>(mut query: Query<&mut UiTree<T>, With<MyWidget>>, time: Res<Time>) {
-    for mut ui in &mut query {
-        ui.compute(Rect2D::new().with_size((200.0 + time.elapsed_seconds().cos() * 60.0, 200.0)).into());
+fn ui_compute<T: Component + Default>(mut query: Query<&mut Dimension, (With<MyWidget>, With<UiTree<T>>)>, time: Res<Time>) {
+    for mut dimension in &mut query {
+        dimension.size = (200.0 + time.elapsed_seconds().cos() * 60.0, 300.0 + time.elapsed_seconds().sin() * 50.0).into();
     }
 }
