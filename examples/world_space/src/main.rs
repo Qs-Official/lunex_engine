@@ -86,7 +86,7 @@ fn setup(
             HUD,
             UiLink::path("Root/Square"),
             Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
-            //UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ass.load("image.png")), unlit: true, ..default() }) ),
+            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ass.load("image.png")), unlit: true, ..default() }) ),
         ));
 
     });

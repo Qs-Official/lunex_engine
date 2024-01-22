@@ -1,6 +1,6 @@
 use std::borrow::Borrow;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, render::primitives::Aabb};
 use lunex_engine::prelude::*;
 
 
@@ -79,6 +79,8 @@ pub struct UiMaterial3dBundle {
 
     pub dimension: Dimension,
     pub transform: Transform,
+
+    pub aabb: Aabb,
 
     pub visibility: Visibility,
     pub global_transform: GlobalTransform,

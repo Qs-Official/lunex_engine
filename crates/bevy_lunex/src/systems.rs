@@ -186,13 +186,13 @@ pub fn reconstruct_element_mesh<M: Component>(
     mut query: Query<(&Dimension, &mut Handle<Mesh>, &mut Aabb), (With<M>, With<Element>, Changed<Dimension>)>,
 ) {
     for (dimension, mut mesh, mut aabb) in &mut query {
-        info!("Recreating mesh: {:?}", aabb);
+        //info!("Recreating mesh: {:?}", aabb);
         let _ = msh.remove(mesh.id());
 
-        /*aabb = Aabb {
+        *aabb = Aabb {
             center: Vec3A::ZERO,
-            half_extents: Vec3A::new(dimension.size.x, dimension.size.y, 1.0),
-        };*/
+            half_extents: Vec3A::new(dimension.size.x/2.0, dimension.size.y/2.0, 1.0),
+        };
         *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
