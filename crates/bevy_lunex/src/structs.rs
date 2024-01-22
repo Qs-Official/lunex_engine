@@ -107,6 +107,8 @@ pub struct UiImage2dBundle {
     pub dimension: Dimension,
     pub transform: Transform,
 
+    pub aabb: Aabb,
+
     pub visibility: Visibility,
     pub global_transform: GlobalTransform,
     pub inherited_visibility: InheritedVisibility,

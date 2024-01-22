@@ -49,7 +49,7 @@ fn setup(
 
     // camera
     let cam = cmd.spawn((
-        Camera3dBundle::default(),
+        Camera2dBundle::default(),
         PlayerCam {
             orbit: Vec3::new(0.0, 0.0, 0.0),
             distance: 800.0,

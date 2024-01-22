@@ -209,7 +209,7 @@ pub fn reconstruct_element_mesh<M: Component>(
 ///  struct NodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for multiple types of UI
+///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of UI
 /// ```
 /// *2. Add the plugin to your app*
 /// ```
@@ -257,7 +257,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
 ///  struct NodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for multiple types of UI
+///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of UI
 /// ```
 /// *2. Add the plugin to your app*
 /// ```
