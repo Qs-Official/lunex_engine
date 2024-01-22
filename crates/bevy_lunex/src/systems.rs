@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use bevy::prelude::*;
+use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb};
 use lunex_engine::*;
 
 use crate::{Dimension, MovableByCamera, UiLink, Element};
@@ -183,11 +183,16 @@ pub fn sync_linked_element_transform<T:Default + Component, M: Component>(
 
 pub fn reconstruct_element_mesh<M: Component>(
     mut msh: ResMut<Assets<Mesh>>,
-    mut query: Query<(&Dimension, &mut Handle<Mesh>), (With<M>, With<Element>, Changed<Dimension>)>,
+    mut query: Query<(&Dimension, &mut Handle<Mesh>, &mut Aabb), (With<M>, With<Element>, Changed<Dimension>)>,
 ) {
-    for (dimension, mut mesh) in &mut query {
-        //info!("Recreating mesh: {}", dimension.size);
+    for (dimension, mut mesh, mut aabb) in &mut query {
+        info!("Recreating mesh: {:?}", aabb);
         let _ = msh.remove(mesh.id());
+
+        /*aabb = Aabb {
+            center: Vec3A::ZERO,
+            half_extents: Vec3A::new(dimension.size.x, dimension.size.y, 1.0),
+        };*/
         *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
