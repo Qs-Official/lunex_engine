@@ -8,6 +8,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(UiPlugin::<NoData, MyWidget>::new())
         .add_plugins(UiPlugin::<NoData, HUD>::new())
+        .add_plugins(UiDebugPlugin::<NoData, HUD>::new())
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)
 
@@ -21,6 +22,7 @@ fn setup(
     mut cmd: Commands,
     mut msh: ResMut<Assets<Mesh>>,
     mut mat: ResMut<Assets<StandardMaterial>>,
+    assets: Res<AssetServer>,
 ) {
     // light
     cmd.spawn(PointLightBundle {
@@ -81,8 +83,8 @@ fn setup(
         parent.spawn((
             HUD,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().with_align_x(Align::CENTER).pack(),
-            Transform::default(),
+            Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
+            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("background.png")), unlit: true, ..default() }) ),
         ));
 
     });

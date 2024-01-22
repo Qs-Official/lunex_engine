@@ -66,7 +66,7 @@ pub fn compute_ui<T:Default + Component, M: Component>(
 /// This function renders the outlines of the [`UiTree`] in the world
 /// ## 📦 Types
 /// * Generic `(T)` - Schema struct defining what data can be stored on a single [`UiNode`]
-pub fn draw_debug_gizmo<T:Default + Component>(mut query: Query<(&UiTree<T>, &Transform)>, mut gizmos: Gizmos) {
+pub fn draw_debug_gizmo<T:Default + Component, M: Component>(mut query: Query<(&UiTree<T>, &Transform), With<M>>, mut gizmos: Gizmos) {
     for (tree, transform) in &mut query {
         let list = tree.crawl();
         for node in list {
@@ -280,6 +280,6 @@ impl <T:Default + Component, M: Component> UiDebugPlugin<T, M> {
 impl <T:Default + Component, M: Component> Plugin for UiDebugPlugin<T, M> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, draw_debug_gizmo::<T>);
+            .add_systems(Update, draw_debug_gizmo::<T, M>);
     }
 }
