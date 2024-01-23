@@ -1,12 +1,11 @@
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;
-use bevy_vector_shapes::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        .add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+        .add_plugins(UiPlugin::<NoData, NoData, MyWidget>::new())
+        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         //.add_plugins(Shape2dPlugin::default())
         //.add_systems(Update, render_update)
@@ -19,7 +18,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
 
     commands.spawn((
         MyWidget,
-        Camera3dBundle {
+        Camera2dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 1000.0),
             camera: Camera::default(),
             ..default()
@@ -27,8 +26,8 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
     ));
 
     commands.spawn((
-        UiTreeBundle::<NoData, MyWidget> {
-            tree: UiTree::<NoData>::new("MyWidget"),
+        UiTreeBundle::<NoData, NoData, MyWidget> {
+            tree: UiTree::new("MyWidget"),
             dimension: Dimension::new((1000.0, 1000.0)),
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
@@ -39,16 +38,16 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            Ui::Window::FULL.pos( Abs(20.0) ).size( Prc(100.0) - Abs(40.0) ).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
+            Ui::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
             
-            //UiImage2dBundle::from(assets.main_background.clone()),
-            UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
+            UiImage2dBundle::from(assets.main_background.clone()),
+            //UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
         ));
 
     });
