@@ -61,7 +61,7 @@ fn setup(
     cmd.spawn((
         UiTreeBundle::<NoData, NoData, MyWidget> {
             transform: Transform::from_xyz(0.0, 300.0, 0.0),
-            dimension: Dimension::new((400.0, 400.0)),
+            //dimension: Dimension::new((400.0, 400.0)),
             tree: UiTree::new("MyWidget"),
             ..default()
         },
@@ -92,8 +92,8 @@ fn setup(
             MyWidget,
             head.add("Huh"),
 
-            Ui::Div::new().pad( Abs(10.0) ).pad( Abs((10.0, 10.0, 10.0, 10.0)) ).pack(),
-            
+            Ui::Div::new().pad( Abs(10.0) ).mar( Abs((1.0, 2.0, 3.0, 4.0)) ).pack(),
+
         ));
 
     });
