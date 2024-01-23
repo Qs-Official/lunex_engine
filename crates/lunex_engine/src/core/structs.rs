@@ -5,7 +5,7 @@ use colored::Colorize;
 use crate::nodes::prelude::*;
 use crate::layout::Layout;
 
-//pub type UI<T> = UiTree<T>;
+//pub type Ui<T> = UiTree<T>;
 pub type UiTree<T = NoData> = NodeTree<InterfaceData, Container<T>>;
 pub type UiNode<T = NoData> = Node<Container<T>>;
 
@@ -32,7 +32,7 @@ impl Default for InterfaceData {
 }
 
 /// ## Container
-/// A struct holding all UI data appended to [`UiNode`]. Responsible for storing layout, custom data, cache, etc.
+/// A struct holding all Ui data appended to [`UiNode`]. Responsible for storing layout, custom data, cache, etc.
 /// Every [`UiNode`] needs to have this to work properly.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Container<T: Default + Component> {

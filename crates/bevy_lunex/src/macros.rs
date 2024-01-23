@@ -1,7 +1,7 @@
 
 
-/// ## UI Plugin
-/// Bundles all your UI systems into one plugin for clarity and ease of use.
+/// ## Ui Plugin
+/// Bundles all your Ui systems into one plugin for clarity and ease of use.
 /// 
 /// Implements `new()` for easy creation.
 /// 
@@ -13,7 +13,7 @@
 /// ui_plugin!(MyPlugin, add_systems(Update, system1), add_systems(Update, system2));
 /// ```
 /// 
-/// In case you use generic system for `UI<T>`, you can use that generic here too.
+/// In case you use generic system for `Ui<T>`, you can use that generic here too.
 /// ```rust
 /// ui_plugin!(MyPlugin, add_systems(Update, generic_system::<T>));
 /// ```

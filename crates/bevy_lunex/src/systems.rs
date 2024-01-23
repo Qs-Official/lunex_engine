@@ -57,8 +57,8 @@ pub fn compute_ui<T:Default + Component, M: Component>(
     mut query: Query<(&Dimension, &mut UiTree<T>), (With<M>, Or<(Changed<Dimension>, Changed<UiTree<T>>)>)>
 ) {
     for (dimension, mut ui) in &mut query {
-        // Compute the UI
-        //println!("UI DIM: {}", dimension.size);
+        // Compute the Ui
+        //println!("Ui DIM: {}", dimension.size);
         ui.compute(Rect2D::new().with_size(dimension.size).into());
     }
 }
@@ -198,7 +198,7 @@ pub fn reconstruct_element_mesh<M: Component>(
 }
 
 
-/// Plugin implementing all UI logic for the specified generic types.
+/// Plugin implementing all Ui logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
 /// * generic `(M)` - Marker component scoping logic and data into one iterable group
 /// 
@@ -209,7 +209,7 @@ pub fn reconstruct_element_mesh<M: Component>(
 ///  struct NodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of UI
+///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of Ui
 /// ```
 /// *2. Add the plugin to your app*
 /// ```
@@ -246,7 +246,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
     }
 }
 
-/// Plugin implementing all debug UI logic for the specified generic types.
+/// Plugin implementing all debug Ui logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
 /// * generic `(M)` - Marker component scoping logic and data into one iterable group
 /// 
@@ -257,7 +257,7 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
 ///  struct NodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of UI
+///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of Ui
 /// ```
 /// *2. Add the plugin to your app*
 /// ```

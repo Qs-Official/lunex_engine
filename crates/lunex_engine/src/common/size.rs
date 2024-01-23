@@ -75,7 +75,7 @@ pub struct Prc<T>(pub T);
 pub struct Rem<T>(pub T);
 
 /// # Node Size
-/// A struct holding size NodeSize data used in UI.
+/// A struct holding size NodeSize data used in Ui.
 /// It can be constructed from the following units:
 /// * [`Abs`] = Absolute units
 /// * [`Prc`] = Percentage units

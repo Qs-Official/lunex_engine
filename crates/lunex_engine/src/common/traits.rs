@@ -12,7 +12,7 @@ pub trait NiceDisplay {
 }
 
 /// ## Y invert
-/// Trait for implementing Y value invert for Glam types due to inverted coordinate system between UI and Bevy.
+/// Trait for implementing Y value invert for Glam types due to inverted coordinate system between Ui and Bevy.
 pub trait YInvert {
     /// Multiplies the Y value by -1
     fn invert_y(self) -> Self;

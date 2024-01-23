@@ -8,7 +8,7 @@ use super::{Window, Solid};
 
 
 /// ## Align
-/// Type used for aligning UI items inside containers.
+/// Type used for aligning Ui items inside containers.
 /// 
 /// _Range_ : `-1.0 for START to 1.0 for END`
 /// * [`Align::START`]
