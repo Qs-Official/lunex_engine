@@ -6,8 +6,8 @@ use bevy_lunex::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        //.add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+        .add_plugins(UiPlugin::<NoData, NoData, MyWidget>::new())
+        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         .add_systems(Startup, setup)
         .add_systems(Update, ui_compute::<NoData>)

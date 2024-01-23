@@ -12,9 +12,9 @@ use crate::{Dimension, MovableByCamera, UiLink, Element};
 /// * Developer should ensure that source query returns only one camera.
 ///   Otherwise, it will lead to value overwriting. Just make sure only one camera
 ///   is marked with `(M)` component at the same time.
-pub fn fetch_dimension_from_camera<T:Default + Component, M: Component>(
-    source: Query<&Camera, (With<M>, Changed<Camera>)>,
-    mut destination: Query<&mut Dimension, (With<M>, With<UiTree<T>>)>
+pub fn fetch_dimension_from_camera<M:Default + Component, N:Default + Component, T: Component>(
+    source: Query<&Camera, (With<T>, Changed<Camera>)>,
+    mut destination: Query<&mut Dimension, (With<T>, With<UiTree<M, N>>)>
 ) {
     // Undesired behaviour if source.len() > 1
     for cam in &source {
@@ -34,9 +34,9 @@ pub fn fetch_dimension_from_camera<T:Default + Component, M: Component>(
 /// * Developer should ensure that source query returns only one camera.
 ///   Otherwise, it will lead to value overwriting. Just make sure only one camera
 ///   is marked with `(M)` component at the same time.
-pub fn fetch_transform_from_camera<M: Component>(
-    source: Query<&Camera, (With<M>, Changed<Camera>)>,
-    mut destination: Query<&mut Transform, (With<M>, With<MovableByCamera>)>
+pub fn fetch_transform_from_camera<T: Component>(
+    source: Query<&Camera, (With<T>, Changed<Camera>)>,
+    mut destination: Query<&mut Transform, (With<T>, With<MovableByCamera>)>
 ) {
     // Undesired behaviour if source.len() > 1
     for cam in &source {
@@ -53,8 +53,8 @@ pub fn fetch_transform_from_camera<M: Component>(
 /// ## 📦 Types
 /// * Generic `(T)` - Schema struct defining what data can be stored on a single [`UiNode`]
 /// * Generic `(M)` - Marker component scoping logic and data into one iterable group
-pub fn compute_ui<T:Default + Component, M: Component>(
-    mut query: Query<(&Dimension, &mut UiTree<T>), (With<M>, Or<(Changed<Dimension>, Changed<UiTree<T>>)>)>
+pub fn compute_ui<M:Default + Component, N:Default + Component, T: Component>(
+    mut query: Query<(&Dimension, &mut UiTree<M, N>), (With<T>, Or<(Changed<Dimension>, Changed<UiTree<M, N>>)>)>
 ) {
     for (dimension, mut ui) in &mut query {
         // Compute the Ui
@@ -66,7 +66,7 @@ pub fn compute_ui<T:Default + Component, M: Component>(
 /// This function renders the outlines of the [`UiTree`] in the world
 /// ## 📦 Types
 /// * Generic `(T)` - Schema struct defining what data can be stored on a single [`UiNode`]
-pub fn draw_debug_gizmo<T:Default + Component, M: Component>(mut query: Query<(&UiTree<T>, &Transform), With<M>>, mut gizmos: Gizmos) {
+pub fn draw_debug_gizmo<M:Default + Component, N:Default + Component, T: Component>(mut query: Query<(&UiTree<M, N>, &Transform), With<T>>, mut gizmos: Gizmos) {
     for (tree, transform) in &mut query {
         let list = tree.crawl();
         for node in list {
@@ -93,9 +93,9 @@ pub fn draw_debug_gizmo<T:Default + Component, M: Component>(mut query: Query<(&
 
 
 
-pub fn create_layout<T:Default + Component, M: Component>(
-    mut uis: Query<(&mut UiTree<T>, &Children), With<M>>,
-    query: Query<(&UiLink, &Layout), (With<M>, Changed<Layout>)>,
+pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>(
+    mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
+    query: Query<(&UiLink, &Layout), (With<T>, Changed<Layout>)>,
 ) {
     for (mut ui, children) in &mut uis {
         for child in children {
@@ -115,9 +115,9 @@ pub fn create_layout<T:Default + Component, M: Component>(
 }
 
 
-pub fn sync_linked_transform<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
-    mut query: Query<(&UiLink, &mut Transform), (With<M>, Without<Element>)>,
+pub fn sync_linked_transform<M:Default + Component, N:Default + Component, T: Component>(
+    uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
+    mut query: Query<(&UiLink, &mut Transform), (With<T>, Without<Element>)>,
 ) {
     for (ui, children) in &uis {
         for child in children {
@@ -135,9 +135,9 @@ pub fn sync_linked_transform<T:Default + Component, M: Component>(
     }
 }
 
-pub fn sync_linked_dimension<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
-    mut query: Query<(&UiLink, &mut Dimension), With<M>>,
+pub fn sync_linked_dimension<M:Default + Component, N:Default + Component, T: Component>(
+    uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
+    mut query: Query<(&UiLink, &mut Dimension), With<T>>,
 ) {
     for (ui, children) in &uis {
         for child in children {
@@ -159,9 +159,9 @@ pub fn sync_linked_dimension<T:Default + Component, M: Component>(
 }
 
 
-pub fn sync_linked_element_transform<T:Default + Component, M: Component>(
-    uis: Query<(&UiTree<T>, &Children), (With<M>, Changed<UiTree<T>>)>,
-    mut query: Query<(&UiLink, &mut Transform), (With<M>, With<Element>)>,
+pub fn sync_linked_element_transform<M:Default + Component, N:Default + Component, T: Component>(
+    uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
+    mut query: Query<(&UiLink, &mut Transform), (With<T>, With<Element>)>,
 ) {
     for (ui, children) in &uis {
         for child in children {
@@ -181,9 +181,9 @@ pub fn sync_linked_element_transform<T:Default + Component, M: Component>(
     }
 }
 
-pub fn reconstruct_element_mesh<M: Component>(
+pub fn reconstruct_element_mesh<T: Component>(
     mut msh: ResMut<Assets<Mesh>>,
-    mut query: Query<(&Dimension, &mut Handle<Mesh>, &mut Aabb), (With<M>, With<Element>, Changed<Dimension>)>,
+    mut query: Query<(&Dimension, &mut Handle<Mesh>, &mut Aabb), (With<T>, With<Element>, Changed<Dimension>)>,
 ) {
     for (dimension, mut mesh, mut aabb) in &mut query {
         //info!("Recreating mesh: {:?}", aabb);
@@ -228,21 +228,21 @@ pub fn reconstruct_element_mesh<M: Component>(
 ///#  }
 /// ```
 #[derive(Debug, Default, Clone)]
-pub struct UiPlugin <T:Default + Component, M: Component>(PhantomData<T>, PhantomData<M>);
-impl <T:Default + Component, M: Component> UiPlugin<T, M> {
+pub struct UiPlugin <M:Default + Component, N:Default + Component, T: Component>(PhantomData<M>, PhantomData<N>, PhantomData<T>);
+impl <M:Default + Component, N:Default + Component, T: Component> UiPlugin<M, N, T> {
     pub fn new() -> Self {
-        UiPlugin::<T, M>(PhantomData, PhantomData)
+        UiPlugin::<M, N, T>(PhantomData, PhantomData, PhantomData)
     }
 }
-impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
+impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, create_layout::<T, M>)
-            .add_systems(Update, sync_linked_transform::<T, M>)
-            .add_systems(Update, (sync_linked_dimension::<T, M>, reconstruct_element_mesh::<M>).chain())
-            .add_systems(Update, sync_linked_element_transform::<T, M>)
-            .add_systems(Update, (fetch_dimension_from_camera::<T, M>, fetch_transform_from_camera::<M>).before(compute_ui::<T, M>))
-            .add_systems(Update, compute_ui::<T, M>);
+            .add_systems(Update, create_layout::<M, N, T>)
+            .add_systems(Update, sync_linked_transform::<M, N, T>)
+            .add_systems(Update, (sync_linked_dimension::<M, N, T>, reconstruct_element_mesh::<T>).chain())
+            .add_systems(Update, sync_linked_element_transform::<M, N, T>)
+            .add_systems(Update, (fetch_dimension_from_camera::<M, N, T>, fetch_transform_from_camera::<T>).before(compute_ui::<M, N, T>))
+            .add_systems(Update, compute_ui::<M, N, T>);
     }
 }
 
@@ -276,15 +276,15 @@ impl <T:Default + Component, M: Component> Plugin for UiPlugin<T, M> {
 ///#  }
 /// ```
 #[derive(Debug, Default, Clone)]
-pub struct UiDebugPlugin <T:Default + Component, M: Component>(PhantomData<T>, PhantomData<M>);
-impl <T:Default + Component, M: Component> UiDebugPlugin<T, M> {
+pub struct UiDebugPlugin <M:Default + Component, N:Default + Component, T: Component>(PhantomData<M>, PhantomData<N>, PhantomData<T>);
+impl <M:Default + Component, N:Default + Component, T: Component> UiDebugPlugin<M, N, T> {
     pub fn new() -> Self {
-        UiDebugPlugin::<T, M>(PhantomData, PhantomData)
+        UiDebugPlugin::<M, N, T>(PhantomData, PhantomData, PhantomData)
     }
 }
-impl <T:Default + Component, M: Component> Plugin for UiDebugPlugin<T, M> {
+impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiDebugPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, draw_debug_gizmo::<T, M>);
+            .add_systems(Update, draw_debug_gizmo::<M, N, T>);
     }
 }
