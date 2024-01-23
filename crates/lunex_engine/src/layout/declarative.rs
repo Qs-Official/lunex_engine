@@ -72,10 +72,10 @@ impl Window {
     }
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
+    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
         Rect2D {
-            pos: parent.pos + self.pos.evaluate(parent.size, font_size),
-            size: self.size.evaluate(parent.size, font_size),
+            pos: parent.pos + self.pos.evaluate(abs_scale, parent.size, font_size),
+            size: self.size.evaluate(abs_scale, parent.size, font_size),
         }
     }
     /// ## Pack
@@ -161,9 +161,9 @@ impl Solid {
     }
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub fn compute(&self, parent: Rect2D, font_size: f32) -> Rect2D {
+    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
         
-        let size = self.size.evaluate(parent.size, font_size);
+        let size = self.size.evaluate(abs_scale, parent.size, font_size);
 
         let scale = match self.cover {
             Cover::Horizontal => parent.size.x / size.x,

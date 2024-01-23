@@ -77,14 +77,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((818.0, 965.0))).pack(),
-            //UiImage2dBundle::from(assets.load("board.png")),
+            Ui::Window::FULL.with_size(Abs((818.0, 965.0))).pack(),
             UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 

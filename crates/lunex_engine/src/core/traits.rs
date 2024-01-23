@@ -295,7 +295,7 @@ impl <T:Default + Component> UINodeComputeTrait for UiNode<T> {
         let depth = self.get_depth();
         
         if let Some(container) = &mut self.data {
-            container.rect = container.layout.compute(parent, 16.0);
+            container.rect = container.layout.compute(parent, 1.0, 16.0);
 
             container.rect.pos.z = depth;
 

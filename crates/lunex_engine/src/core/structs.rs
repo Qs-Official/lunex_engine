@@ -18,9 +18,17 @@ pub struct NoData;
 
 
 
-#[derive(Component, Debug, Default, Clone, PartialEq)]
+#[derive(Component, Debug, Clone, PartialEq)]
 pub struct InterfaceData {
+    pub abs_scale: f32,
     //pub themes: Theme,
+}
+impl Default for InterfaceData {
+    fn default() -> Self {
+        InterfaceData {
+            abs_scale: 1.0,
+        }
+    }
 }
 
 /// ## Container

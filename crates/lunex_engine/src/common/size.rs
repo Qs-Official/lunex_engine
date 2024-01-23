@@ -1061,41 +1061,41 @@ impl NodeSize<Vec4> {
 pub trait NodeSizeEvaluate<T, TT> {
     /// ## Evaluate
     /// Evaluates the NodeSize for (T)
-    fn evaluate(&self, parent_size: T, font_size: TT) -> T;
+    fn evaluate(&self, abs_scale: TT, parent_size: T, font_size: TT) -> T;
 }
 
 // # Impl evaluate
 impl NodeSizeEvaluate<f32, f32> for NodeSize<f32> {
-    fn evaluate(&self, parent_size: f32, font_size: f32) -> f32 {
+    fn evaluate(&self, abs_scale: f32, parent_size: f32, font_size: f32) -> f32 {
         let mut out = 0.0;
-        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.abs { out += v * abs_scale }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
 }
 impl NodeSizeEvaluate<Vec2, f32> for NodeSize<Vec2> {
-    fn evaluate(&self, parent_size: Vec2, font_size: f32) -> Vec2 {
+    fn evaluate(&self, abs_scale: f32, parent_size: Vec2, font_size: f32) -> Vec2 {
         let mut out = Vec2::ZERO;
-        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.abs { out += v * abs_scale }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
 }
 impl NodeSizeEvaluate<Vec3, f32> for NodeSize<Vec3> {
-    fn evaluate(&self, parent_size: Vec3, font_size: f32) -> Vec3 {
+    fn evaluate(&self, abs_scale: f32, parent_size: Vec3, font_size: f32) -> Vec3 {
         let mut out = Vec3::ZERO;
-        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.abs { out += v * abs_scale }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
 }
 impl NodeSizeEvaluate<Vec4, f32> for NodeSize<Vec4> {
-    fn evaluate(&self, parent_size: Vec4, font_size: f32) -> Vec4 {
+    fn evaluate(&self, abs_scale: f32, parent_size: Vec4, font_size: f32) -> Vec4 {
         let mut out = Vec4::ZERO;
-        if let Some(v) = self.abs { out += v }
+        if let Some(v) = self.abs { out += v * abs_scale }
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         if let Some(v) = self.rem { out += v * font_size }
         out
