@@ -90,9 +90,9 @@ fn setup(
 
         parent.spawn((
             MyWidget,
-            head.add("Huh"),
+            head.add("Div"),
 
-            Ui::Div::new().pad( Abs(10.0) ).mar( Abs((1.0, 2.0, 3.0, 4.0)) ).pack(),
+            Ui::Div::new().pad(Abs(10.0)).mar(Abs(5.0)).pack(),
 
         ));
 
