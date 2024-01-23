@@ -14,10 +14,10 @@ pub mod prelude {
 pub mod ltm {
     use bevy::ecs::component::Component;
 
-    /// # Container
+    /// # NodeData
     /// Marker component to apply container styling to the container
     #[derive(Debug, Default, Clone, Copy, PartialEq, Component)]
-    pub struct Container;
+    pub struct NodeData;
 
 
     /// # Base Color
