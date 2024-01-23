@@ -91,6 +91,14 @@ pub fn draw_debug_gizmo<M:Default + Component, N:Default + Component, T: Compone
     }
 }
 
+/// This function prints all changed [`UiTree`]s.
+pub fn print_debug_tree<M:Default + Component, N:Default + Component, T: Component>(
+    uis: Query<&UiTree<M, N>, (With<T>, Changed<UiTree<M, N>>)>
+) {
+    for ui in &uis {
+        println!("\n{}\n", ui.tree(""));
+    }
+}
 
 
 pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>(
@@ -288,6 +296,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiDebugPlugin<
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiDebugPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, draw_debug_gizmo::<M, N, T>);
+            .add_systems(Update, draw_debug_gizmo::<M, N, T>)
+            .add_systems(Update, print_debug_tree::<M, N, T>);
     }
 }
