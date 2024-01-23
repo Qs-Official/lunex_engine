@@ -1,4 +1,4 @@
-use crate::{Rect3D, NiceDisplay};
+use crate::{import::*, Rect3D, NiceDisplay};
 use bevy::ecs::component::Component;
 use colored::Colorize;
 
@@ -24,12 +24,14 @@ pub struct MasterData<M: Default + Component> {
     pub data: M,
 
     pub abs_scale: f32,
+    pub font_size: f32,
 }
 impl <M: Default + Component> Default for MasterData<M> {
     fn default() -> Self {
         MasterData {
             data: Default::default(),
             abs_scale: 1.0,
+            font_size: 16.0,
         }
     }
 }
@@ -47,6 +49,9 @@ pub struct NodeData<N: Default + Component> {
     pub data: Option<N>,
     pub rect: Rect3D,
     pub layout: Layout,
+    
+    pub font_size: Option<f32>,
+    pub content_size: Vec2,
 }
 impl <N:Default + Component> NodeData<N> {
     pub fn new() -> NodeData<N> {
