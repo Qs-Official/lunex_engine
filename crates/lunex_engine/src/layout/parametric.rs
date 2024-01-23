@@ -23,7 +23,7 @@ pub struct Div { // Most basic type, basically every div is List
     //pub align_y: Option<Align>,
 
 
-    pub size: NodeSize<Vec2>,
+    pub size: NodeSize<Vec2>,   //Is it cap size or specified size???
 
     //Should be computed so NodeData + alternative recursion from bottom to up
     //pub content_size: Abs (Vec2),
@@ -33,7 +33,7 @@ pub struct Div { // Most basic type, basically every div is List
     // Padding used for rendering. 0 by default
     //pub border: NodeSize<Vec4>,
     // Padding distancing other divs from border
-    //pub margin: NodeSize<Vec4>,
+    pub margin: NodeSize<Vec4>,
 
     // If this div breaks the stack?
     // Questionable if it shouldn't be a stack limit instead
@@ -112,6 +112,61 @@ impl Div {
     /// Replaces the bottom padding with the new value.
     pub fn pad_b(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
         self.padding.set_w(pad);
+        self
+    }
+
+    /// ## With margin
+    /// Replaces the margin with the new value.
+    pub fn mar(mut self, mar: impl Into<NodeSize<Vec4>>) -> Self {
+        self.margin = mar.into();
+        self
+    }
+
+    /// ## With margin horizontal
+    /// Replaces the horizontal margin with the new value.
+    pub fn mar_x(mut self, mar: impl Into<NodeSize<Vec2>>) -> Self {
+        let mar: NodeSize<Vec2> = mar.into();
+        let val = mar.get_x();
+        self.margin.set_x(val);
+        self.margin.set_z(val);
+        self
+    }
+
+    /// ## With margin vertical
+    /// Replaces the vertical margin with the new value.
+    pub fn mar_y(mut self, mar: impl Into<NodeSize<Vec2>>) -> Self {
+        let mar: NodeSize<Vec2> = mar.into();
+        let val = mar.get_y();
+        self.margin.set_y(val);
+        self.margin.set_w(val);
+        self
+    }
+
+    /// ## With margin right
+    /// Replaces the right margin with the new value.
+    pub fn mar_r(mut self, mar: impl Into<NodeSize<f32>>) -> Self {
+        self.margin.set_x(mar);
+        self
+    }
+
+    /// ## With margin top
+    /// Replaces the top margin with the new value.
+    pub fn mar_t(mut self, mar: impl Into<NodeSize<f32>>) -> Self {
+        self.margin.set_y(mar);
+        self
+    }
+
+    /// ## With margin left
+    /// Replaces the left margin with the new value.
+    pub fn mar_l(mut self, mar: impl Into<NodeSize<f32>>) -> Self {
+        self.margin.set_z(mar);
+        self
+    }
+
+    /// ## With margin bottom
+    /// Replaces the bottom margin with the new value.
+    pub fn mar_b(mut self, mar: impl Into<NodeSize<f32>>) -> Self {
+        self.margin.set_w(mar);
         self
     }
 
