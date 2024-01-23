@@ -35,35 +35,24 @@ impl Dimension {
 }
 
 
+
+
+
 #[derive(Bundle, Debug, Default, Clone, PartialEq)]
-pub struct UiTreeBundle <T: Default + Component, M: Component> {
-    pub tree: UiTree<T>,
-    pub marker: M,
+pub struct UiTreeBundle <M: Default + Component, N: Default + Component, T: Component> {
+    pub tree: UiTree<M, N>,
+    pub marker: T,
     pub transform: Transform,
     pub dimension: Dimension,
 
     pub global_transform: GlobalTransform,
     pub inherited_visibility: InheritedVisibility,
 }
-impl <T: Default + Component, M: Default + Component> From<UiTree<T>> for UiTreeBundle<T, M> {
-    fn from(value: UiTree<T>) -> Self {
-        UiTreeBundle::<T, M> {
+impl <M: Default + Component, N: Default + Component, T: Component + Default> From<UiTree<M, N>> for UiTreeBundle<M, N, T> {
+    fn from(value: UiTree<M, N>) -> Self {
+        UiTreeBundle::<M, N, T> {
             tree: value,
             ..default()
-        }
-    }
-}
-impl <T: Default + Component, M: Default + Component> From<Result<UiTree<T>, UiError>> for UiTreeBundle<T, M> {
-    fn from(value: Result<UiTree<T>, UiError>) -> Self {
-        match value {
-            Ok(val) => UiTreeBundle::<T, M> {
-                tree: val,
-                ..default()
-            },
-            Err(e) => {
-                error!("Panicted when constructing UiTreeBundle from Err: {}", e);
-                panic!("Panicted when constructing UiTreeBundle from Err: {}", e);
-            }
         }
     }
 }

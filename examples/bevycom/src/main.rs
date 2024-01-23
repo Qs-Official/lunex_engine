@@ -60,10 +60,10 @@ fn setup(
 
 
     cmd.spawn((
-        UiTreeBundle::<NoData, MyWidget> {
+        UiTreeBundle::<NoData, NoData, MyWidget> {
             transform: Transform::from_xyz(0.0, 300.0, 0.0),
             dimension: Dimension::new((400.0, 400.0)),
-            tree: UiTree::<NoData>::new("MyWidget"),
+            tree: UiTree::new("MyWidget"),
             ..default()
         },
 
@@ -83,67 +83,6 @@ fn setup(
 
     });
 
-    cmd.spawn((
-        UiTreeBundle::<NoData, MyWidget> {
-            transform: Transform::from_xyz(0.0, 300.0, 200.0),
-            dimension: Dimension::new((400.0, 400.0)),
-            tree: UiTree::<NoData>::new("MyWidget"),
-            ..default()
-        },
-
-        msh.add(Mesh::from(shape::Cube { size: 15.0 })),
-        mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
-        Visibility::default(),
-        ViewVisibility::default(),
-
-    )).with_children(|parent| {
-
-        parent.spawn((
-            MyWidget,
-            UiLink::path("Root"),
-            Ui::Window::FULL.pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((818.0, 965.0))).pack(),
-            //UiImage2dBundle::from(assets.load("board.png")),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
-        ));
-
-    });
-
-    cmd.spawn((
-        UiTreeBundle::<NoData, MyWidget> {
-            transform: Transform::from_xyz(0.0, 300.0, 400.0),
-            dimension: Dimension::new((400.0, 400.0)),
-            tree: UiTree::<NoData>::new("MyWidget"),
-            ..default()
-        },
-
-        msh.add(Mesh::from(shape::Cube { size: 15.0 })),
-        mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
-        Visibility::default(),
-        ViewVisibility::default(),
-
-    )).with_children(|parent| {
-
-        parent.spawn((
-            MyWidget,
-            UiLink::path("Root"),
-            Ui::Window::FULL.pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((818.0, 965.0))).pack(),
-            //UiImage2dBundle::from(assets.load("board.png")),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
-        ));
-
-    });
 }
 
 

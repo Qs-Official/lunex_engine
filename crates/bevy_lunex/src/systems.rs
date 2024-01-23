@@ -206,7 +206,10 @@ pub fn reconstruct_element_mesh<T: Component>(
 /// *1. Define the types used*
 /// ```
 ///  #[derive(Component, Default)]
-///  struct NodeData { value: i32 } // What data will each node contain
+///  struct MyMasterData { theme: String } // What data will each tree hold
+/// 
+///  #[derive(Component, Default)]
+///  struct MyNodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
 ///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of Ui
@@ -215,7 +218,7 @@ pub fn reconstruct_element_mesh<T: Component>(
 /// ```
 ///  App::new()
 ///      .add_plugins(DefaultPlugins)
-///      .add_plugins(UiPlugin::<NodeData, MyUiWidget>::new())
+///      .add_plugins(UiPlugin::<MyMasterData, MyNodeData, MyUiWidget>::new())
 ///      .run();
 /// ```
 /// *3. Use the [`UiTree`] freely*
@@ -223,7 +226,7 @@ pub fn reconstruct_element_mesh<T: Component>(
 ///#  fn setup(mut commands: Commands) {
 ///   commands.spawn((
 ///      MyUiWidget,
-///      UiTree::<NodeData>::new("MyWidget")
+///      UiTree::<MyMasterData, MyNodeData>::new("MyWidget")
 ///   ));
 ///#  }
 /// ```
