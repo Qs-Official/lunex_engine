@@ -1,7 +1,5 @@
 use crate::import::*;
-use crate::{NiceDisplay, Align, Cover, Rect2D, NodeSize, NodeSizeEvaluate, Abs};
-
-use super::Layout;
+use crate::{NiceDisplay, Align, Cover, Rect2D, Layout, NodeSize, NodeSizeEvaluate, Abs};
 
 /// ## Window Layout
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -32,41 +30,41 @@ impl Window {
     /// Creates new empty Window layout.
     pub fn new_at(pos: impl Into<NodeSize<Vec2>>, size: impl Into<NodeSize<Vec2>> ) -> Self {
         let s = size.into();
-        Window::new().with_pos(pos.into() - (s.clone() * 0.5)).with_size(s)
+        Window::new().pos(pos.into() - (s.clone() * 0.5)).size(s)
     }
     /// ## With pos
     /// Replaces the position with the new value.
-    pub fn with_pos(mut self, pos: impl Into<NodeSize<Vec2>>) -> Self {
+    pub fn pos(mut self, pos: impl Into<NodeSize<Vec2>>) -> Self {
         self.pos = pos.into();
         self
     }
     /// ## With x
     /// Replaces the x position with the new value.
-    pub fn with_x(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+    pub fn x(mut self, width: impl Into<NodeSize<f32>>) -> Self {
         self.pos.set_x(width);
         self
     }
     /// ## With y
     /// Replaces the y position with the new value.
-    pub fn with_y(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+    pub fn y(mut self, height: impl Into<NodeSize<f32>>) -> Self {
         self.pos.set_y(height);
         self
     }
     /// ## With size
     /// Replaces the size with the new value.
-    pub fn with_size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
+    pub fn size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
         self.size = size.into();
         self
     }
     /// ## With width
     /// Replaces the width with the new value.
-    pub fn with_width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+    pub fn width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_x(width);
         self
     }
     /// ## With height
     /// Replaces the height with the new value.
-    pub fn with_height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+    pub fn height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_y(height);
         self
     }
@@ -125,37 +123,37 @@ impl Solid {
     }
     /// ## With size
     /// Replaces the size with the new value.
-    pub fn with_size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
+    pub fn size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
         self.size = size.into();
         self
     }
     /// ## With width
     /// Replaces the width with the new value.
-    pub fn with_width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+    pub fn width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_x(width);
         self
     }
     /// ## With height
     /// Replaces the height with the new value.
-    pub fn with_height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+    pub fn height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
         self.size.set_y(height);
         self
     }
     /// ## With align x
     /// Replaces the x alignment with the new value.
-    pub fn with_align_x(mut self, align: Align) -> Self {
+    pub fn align_x(mut self, align: Align) -> Self {
         self.align_x = align;
         self
     }
     /// ## With align y
     /// Replaces the y alignment with the new value.
-    pub fn with_align_y(mut self, align: Align) -> Self {
+    pub fn align_y(mut self, align: Align) -> Self {
         self.align_y = align;
         self
     }
     /// ## With cover
     /// Replaces both x & y cover values with the new value.
-    pub fn with_cover(mut self, cover: Cover) -> Self {
+    pub fn cover(mut self, cover: Cover) -> Self {
         self.cover = cover;
         self
     }

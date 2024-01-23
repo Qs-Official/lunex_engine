@@ -796,6 +796,57 @@ impl Into<NodeSize<Vec4>> for Rem<(f32, f32, f32, f32)> {
     }
 }
 
+// # Impl (x) => NodeSize(Vec2)
+impl Into<NodeSize<Vec2>> for Abs<f32> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_abs((self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec2>> for Prc<f32> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_prc((self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec2>> for Rem<f32> {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_rem((self.0, self.0).into())
+    }
+}
+
+// # Impl (x) => NodeSize(Vec3)
+impl Into<NodeSize<Vec3>> for Abs<f32> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_abs((self.0, self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec3>> for Prc<f32> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_prc((self.0, self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec3>> for Rem<f32> {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_rem((self.0, self.0, self.0).into())
+    }
+}
+
+// # Impl (x) => NodeSize(Vec4)
+impl Into<NodeSize<Vec4>> for Abs<f32> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_abs((self.0, self.0, self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec4>> for Prc<f32> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_prc((self.0, self.0, self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec4>> for Rem<f32> {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_rem((self.0, self.0, self.0, self.0).into())
+    }
+}
+
 
 // # Impl `splat2`
 impl Abs<Vec2> {
@@ -893,6 +944,27 @@ impl Rem<Vec4> {
 
 // # Impl `with_x` and `set_x` ...
 impl NodeSize<Vec2> {
+
+    /// ## Get X
+    /// Gets the X value of all units.
+    pub fn get_x(&self) -> NodeSize<f32> {
+        let mut out = NodeSize::<f32>::new();
+        if let Some(v) = self.abs { out += Abs(v.x) }
+        if let Some(v) = self.prc { out += Prc(v.x) }
+        if let Some(v) = self.rem { out += Rem(v.x) }
+        out
+    }
+
+    /// ## Get Y
+    /// Gets the Y value of all units.
+    pub fn get_y(&self) -> NodeSize<f32> {
+        let mut out = NodeSize::<f32>::new();
+        if let Some(v) = self.abs { out += Abs(v.y) }
+        if let Some(v) = self.prc { out += Prc(v.y) }
+        if let Some(v) = self.rem { out += Rem(v.y) }
+        out
+    }
+
     /// ## With X
     /// Replaces the X value of appropriate units with the new value.
     pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {

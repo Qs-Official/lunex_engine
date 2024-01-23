@@ -1,7 +1,7 @@
 #[cfg(feature = "bevy")]
 use bevy::prelude::Component;
 
-use crate::import::*;
+use crate::{import::*, Div};
 use crate::{NiceDisplay, NodeSize, Rect3D};
 
 use super::{Window, Solid};
@@ -74,6 +74,7 @@ impl NiceDisplay for Cover {
 pub enum Layout {
     Window(Window),
     Solid(Solid),
+    Div(Div),
     //Window3D
     //Div
     //Br
@@ -83,6 +84,7 @@ impl Layout {
         match &self {
             Layout::Window(l) => l.compute(parent.into(), abs_scale, font_size).into(),
             Layout::Solid(l) => l.compute(parent.into(), abs_scale, font_size).into(),
+            Layout::Div(_l) => Rect3D::default(),
         }
     }
 }
@@ -96,6 +98,7 @@ impl NiceDisplay for Layout {
         match self {
             Layout::Solid(layout) => format!("{} {}", "Solid".bold().bright_cyan(), layout.to_nicestr()),
             Layout::Window(layout) => format!("{} {}", "Window".bold().bright_cyan(), layout.to_nicestr()),
+            Layout::Div(layout) => format!("{} {}", "Div".bold().bright_cyan(), layout.to_nicestr()),
         }
     }
 }

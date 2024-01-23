@@ -77,7 +77,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             root.clone(),
-            Ui::Window::FULL.with_size(Abs((818.0, 965.0))).pack(),
+            Ui::Window::FULL.size(Abs((818.0, 965.0))).pack(),
             UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
@@ -85,14 +85,14 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.clone(),
-            Ui::Window::new().with_width(Prc::FULL).with_height(Abs(168.0)).pack(),
+            Ui::Window::new().width(Prc::FULL).height(Abs(168.0)).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Huh"),
             //Ui::Window::new().with_width(Abs::SM).with_height(Abs::SM).pack(),
-            //Ui::Div::new().w_padl()
+            Ui::Div::new().pad(Abs(10.0)).pack(),
         ));
 
     });
