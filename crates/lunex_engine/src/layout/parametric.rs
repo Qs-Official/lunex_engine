@@ -1,6 +1,7 @@
 use crate::import::*;
 
-use crate::{NiceDisplay, Align, Layout, NodeSize, DivSize, StackOrientation};
+use crate::{NiceDisplay, Layout, NodeSize};
+//use crate::{Align, DivSize, StackOrientation};
 
 
 

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_lunex::prelude::*;
-use bevy_vector_shapes::prelude::*;
+//use bevy_vector_shapes::prelude::*;
 
 fn main() {
     App::new()
@@ -57,7 +57,7 @@ pub struct MyWidget;
 
 
 
-#[derive(Component)]
+/*#[derive(Component)]
 struct RenderContainer {
     color: Color,
     corner_radii: Vec4
@@ -73,4 +73,4 @@ fn render_update (mut painter: ShapePainter, query: Query<(&Dimension, &RenderCo
         painter.corner_radii = color.corner_radii;
         painter.rect(Vec2::new(dimension.size.x, dimension.size.y));
     }
-}
+}*/
