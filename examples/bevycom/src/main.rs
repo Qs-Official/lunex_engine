@@ -91,8 +91,9 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Huh"),
-            //Ui::Window::new().with_width(Abs::SM).with_height(Abs::SM).pack(),
-            Ui::Div::new().pad(Abs(10.0)).pack(),
+
+            Ui::Div::new().pad( Abs(10.0) ).pad( Abs((10.0, 10.0, 10.0, 10.0)) ).pack(),
+            
         ));
 
     });

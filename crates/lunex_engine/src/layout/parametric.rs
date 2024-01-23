@@ -73,10 +73,11 @@ impl Div {
 
     /// ## With padding vertical
     /// Replaces the vertical padding with the new value.
-    pub fn pad_y(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
-        let pad: NodeSize<f32> = pad.into();
-        self.padding.set_y(pad);
-        self.padding.set_w(pad);
+    pub fn pad_y(mut self, pad: impl Into<NodeSize<Vec2>>) -> Self {
+        let pad: NodeSize<Vec2> = pad.into();
+        let val = pad.get_y();
+        self.padding.set_y(val);
+        self.padding.set_w(val);
         self
     }
 
