@@ -5,9 +5,8 @@ use bevy_lunex::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, NoData, MyWidget>::new())
-        .add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
+        .add_plugins((DefaultPlugins, UiPlugin::<NoData, NoData, MyWidget>::new()))
+        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         .add_systems(Startup, setup)
 
@@ -61,7 +60,6 @@ fn setup(
     cmd.spawn((
         UiTreeBundle::<NoData, NoData, MyWidget> {
             transform: Transform::from_xyz(0.0, 300.0, 0.0),
-            //dimension: Dimension::new((400.0, 400.0)),
             tree: UiTree::new("MyWidget"),
             ..default()
         },
@@ -91,9 +89,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div"),
-
             Ui::Div::new().pad(Abs(10.0)).mar(Abs(5.0)).pack(),
-
         ));
 
     });
