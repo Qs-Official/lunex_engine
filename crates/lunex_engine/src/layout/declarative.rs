@@ -25,7 +25,7 @@ impl Window {
     pub const fn new() -> Self {
         Window {
             pos : NodeSize::new(),
-            size: NodeSize::from_prc(Vec2::splat(100.0)),
+            size: NodeSize::new(),
         }
     }
     /// ## New

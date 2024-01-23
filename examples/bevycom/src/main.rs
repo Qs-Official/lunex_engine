@@ -73,18 +73,25 @@ fn setup(
 
     )).with_children(|parent| {
 
+        let root = UiLink::path("Root");
         parent.spawn((
             MyWidget,
-            UiLink::path("Root"),
+            root.clone(),
             Ui::Window::FULL.with_size(Abs((818.0, 965.0))).pack(),
             UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
+        let head = root.add("Head");
         parent.spawn((
             MyWidget,
-            UiLink::path("Root/Head"),
-            Ui::Window::FULL.with_height(Abs(168.0)).pack(),
-            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
+            head.clone(),
+            Ui::Window::new().with_width(Prc::FULL).with_height(Abs(168.0)).pack(),
+        ));
+
+        parent.spawn((
+            MyWidget,
+            head.add("Huh"),
+            Ui::Window::new().with_width(Abs::SM).with_height(Abs::SM).pack(),
         ));
 
     });
