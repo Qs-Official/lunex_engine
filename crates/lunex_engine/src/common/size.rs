@@ -742,8 +742,8 @@ impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Rem<T> {
 }
 
 
-// #================================#
-// #=== SPECIFIC IMPLEMENTATIONS ===#
+// #===============================#
+// #=== CASTING IMPLEMENTATIONS ===#
 
 // # Impl ((x, x)) => NodeSize(Vec2)
 impl Into<NodeSize<Vec2>> for Abs<(f32, f32)> {
@@ -812,6 +812,14 @@ impl Into<NodeSize<Vec2>> for Rem<f32> {
         NodeSize::from_rem((self.0, self.0).into())
     }
 }
+impl Into<NodeSize<Vec2>> for NodeSize<f32> {
+    fn into(self) -> NodeSize<Vec2> {
+        let mut out = NodeSize::<Vec2>::new();
+        out.set_x(self);
+        out.set_y(self);
+        out
+    }
+}
 
 // # Impl (x) => NodeSize(Vec3)
 impl Into<NodeSize<Vec3>> for Abs<f32> {
@@ -827,6 +835,15 @@ impl Into<NodeSize<Vec3>> for Prc<f32> {
 impl Into<NodeSize<Vec3>> for Rem<f32> {
     fn into(self) -> NodeSize<Vec3> {
         NodeSize::from_rem((self.0, self.0, self.0).into())
+    }
+}
+impl Into<NodeSize<Vec3>> for NodeSize<f32> {
+    fn into(self) -> NodeSize<Vec3> {
+        let mut out = NodeSize::<Vec3>::new();
+        out.set_x(self);
+        out.set_y(self);
+        out.set_z(self);
+        out
     }
 }
 
@@ -846,7 +863,19 @@ impl Into<NodeSize<Vec4>> for Rem<f32> {
         NodeSize::from_rem((self.0, self.0, self.0, self.0).into())
     }
 }
+impl Into<NodeSize<Vec4>> for NodeSize<f32> {
+    fn into(self) -> NodeSize<Vec4> {
+        let mut out = NodeSize::<Vec4>::new();
+        out.set_x(self);
+        out.set_y(self);
+        out.set_z(self);
+        out.set_w(self);
+        out
+    }
+}
 
+// #================================#
+// #=== SPECIFIC IMPLEMENTATIONS ===#
 
 // # Impl `splat2`
 impl Abs<Vec2> {

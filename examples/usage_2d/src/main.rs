@@ -5,8 +5,8 @@ use bevy_vector_shapes::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, MyWidget>::new())
-        .add_plugins(UiDebugPlugin::<NoData, MyWidget>::new())
+        .add_plugins(UiPlugin::<NoData, NoData, MyWidget>::new())
+        .add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         //.add_plugins(Shape2dPlugin::default())
         //.add_systems(Update, render_update)
@@ -26,8 +26,8 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
     ));
 
     cmd.spawn((
-        UiTreeBundle::<NoData, MyWidget> {
-            tree: UiTree::<NoData>::new("MyWidget"),
+        UiTreeBundle::<NoData, NoData, MyWidget> {
+            tree: UiTree::new("MyWidget"),
             dimension: Dimension::new((1000.0, 1000.0)),
             transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
@@ -38,14 +38,14 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.with_pos( Abs::splat2(20.0) ).with_size( Prc::splat2(100.0) - Abs::splat2(40.0) ).pack(),
+            Ui::Window::FULL.pos( Abs(20.0) ).size( Prc(100.0) - Abs(40.0) ).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().with_size(Abs((1920.0, 1080.0))).pack(),
-            UiMaterialBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("background.png")), unlit: true, ..default() }) ),
+            Ui::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
+            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("background.png")), unlit: true, ..default() }) ),
         ));
 
     });
