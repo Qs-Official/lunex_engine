@@ -295,6 +295,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
         let depth = self.get_depth();
         
+        // Check here if computation is required for partial recalculation
         if let Some(container) = &mut self.data {
 
             //container.rect = container.layout.compute(parent, 0.5, 16.0);
@@ -302,15 +303,15 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             let abs_scale = 0.5;
             let font_size = 16.0;
 
-            container.rect = match &container.layout {
-                Layout::Window(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Solid(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Div(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-            };
+            match &container.layout {
+                Layout::Window(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Solid(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Div(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+            }
 
 
 
-            container.rect.pos.z = depth;
+            container.rect.pos.z = depth*2.0;
 
             for (_, node) in &mut self.nodes {
                 node.compute(container.rect);
