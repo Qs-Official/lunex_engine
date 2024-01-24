@@ -3,9 +3,8 @@ use bevy_lunex::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(UiPlugin::<NoData, NoData, MyWidget>::new())
-        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
+        .add_plugins((DefaultPlugins, UiPlugin::<NoData, NoData, MyWidget>::new()))
+        .add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         //.add_plugins(Shape2dPlugin::default())
         //.add_systems(Update, render_update)
@@ -38,15 +37,20 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.pos( Abs(20.0) ).size( Prc(100.0) - Abs(40.0) ).pack(),
+            Ui::Window::FULL.pack(),
         ));
 
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
+            Ui::Solid::new().align_x(Align::START).pack(),
             
-            UiImage2dBundle::from(assets.main_background.clone()),
+            //UiImage2dBundle::from(assets.main_background.clone()),
+            Element,
+            Text2dBundle {
+                text: Text::from_section("Hi bevy", TextStyle::default()),
+                ..default()
+            }
             //UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
         ));
 
