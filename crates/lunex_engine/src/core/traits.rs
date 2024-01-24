@@ -310,7 +310,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 _ => {},
             }
 
-            container.rect.pos.z = depth*2.0;
+            container.rect.pos.z = depth;
 
             let mut leftover_margin = Vec2::ZERO;
 

@@ -88,13 +88,13 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div1"),
-            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar_l(Abs::MD).mar_t(Abs::MD).pack(),
+            Ui::Div::new().size(Abs::XL).mar_l(Abs::ZERO).mar_t(Abs::MD).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Div2"),
-            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar_l(Abs::LG).mar_t(Abs::MD).pack(),
+            Ui::Div::new().size(Abs::MD).mar_l(Abs::ZERO).mar_t(Abs::MD).pack(),
             UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
