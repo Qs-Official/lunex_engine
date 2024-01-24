@@ -34,23 +34,30 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
         MovableByCamera,
     )).with_children(|parent| {
 
+        let root = UiLink::path("Root");
         parent.spawn((
             MyWidget,
-            UiLink::path("Root"),
+            root.clone(),
             Ui::Window::FULL.pack(),
         ));
 
         parent.spawn((
             MyWidget,
+            root.clone(),
+            Ui::Div::new().width(Prc::FULL).height(Abs::XL7).pack(),
+        ));
+
+        parent.spawn((
+            MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().align_x(Align::START).pack(),
+            //Ui::Solid::new().align_x(Align::START).pack(),
             
             //UiImage2dBundle::from(assets.main_background.clone()),
-            Element,
-            Text2dBundle {
+            //Element,
+            /*Text2dBundle {
                 text: Text::from_section("Hi bevy", TextStyle::default()),
                 ..default()
-            }
+            }*/
             //UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
         ));
 
