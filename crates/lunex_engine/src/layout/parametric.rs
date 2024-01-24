@@ -196,7 +196,7 @@ impl Div {
 
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
+    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> (Rect2D, Vec2) {
 
         let size = self.size.evaluate(abs_scale, parent.size, font_size);
         let margin = self.margin.evaluate(abs_scale, parent.size.xyxy(), font_size);
@@ -207,10 +207,13 @@ impl Div {
             y: size.y + padding.y + padding.w,
         };
 
-        Rect2D {
-            pos: parent.pos + margin.zy(),
-            size: bound,
-        }
+        (
+            Rect2D {
+                pos: parent.pos + margin.zy(),
+                size: bound,
+            },
+            margin.xw()
+        )
     }
 
     /// ## Pack

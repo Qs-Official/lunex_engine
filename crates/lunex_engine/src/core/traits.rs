@@ -6,6 +6,7 @@ use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Layout;
 use crate::Rect3D;
+use crate::import::*;
 
 use super::{UiNode, UiTree, NodeData};
 
@@ -298,20 +299,42 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         // Check here if computation is required for partial recalculation
         if let Some(container) = &mut self.data {
 
-            //container.rect = container.layout.compute(parent, 0.5, 16.0);
-
             let abs_scale = 0.5;
             let font_size = 16.0;
+
+            // COUNTE VARIABLES
 
             match &container.layout {
                 Layout::Window(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
                 Layout::Solid(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Div(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                _ => {},
+            }
+
+            container.rect.pos.z = depth*2.0;
+
+            let mut leftover_margin = Vec2::ZERO;
+
+            for (_, node) in &mut self.nodes {
+                if let Some(node_container) = &mut node.data {
+
+                    match &node_container.layout {
+                        Layout::Div(l) => {
+                            let (rect, margin) = l.compute(container.rect.into(), abs_scale, font_size);
+
+                            node_container.rect = rect.into();
+
+                            node_container.rect.pos.x += leftover_margin.x;
+
+                            leftover_margin.x += margin.x + node_container.rect.size.x;
+                        },
+                        _ => {},
+                    }
+
+                }
             }
 
 
 
-            container.rect.pos.z = depth*2.0;
 
             for (_, node) in &mut self.nodes {
                 node.compute(container.rect);
