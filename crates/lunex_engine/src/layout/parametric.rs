@@ -1,4 +1,6 @@
-use crate::import::*;
+use bevy::math::{Vec2Swizzles, Vec4Swizzles};
+
+use crate::{import::*, NodeSizeEvaluate, Rect2D};
 
 use crate::{NiceDisplay, Layout, NodeSize};
 //use crate::{Align, DivSize, StackOrientation};
@@ -190,6 +192,25 @@ impl Div {
     pub fn mar_b(mut self, mar: impl Into<NodeSize<f32>>) -> Self {
         self.margin.set_w(mar);
         self
+    }
+
+    /// ## Compute
+    /// Computes the layout based on given parameters.
+    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
+
+        let size = self.size.evaluate(abs_scale, parent.size, font_size);
+        let margin = self.margin.evaluate(abs_scale, parent.size.xyxy(), font_size);
+        let padding = self.padding.evaluate(abs_scale, parent.size.xyxy(), font_size);
+
+        let bound = Vec2 {
+            x: size.x + padding.x + padding.z,
+            y: size.y + padding.y + padding.w,
+        };
+
+        Rect2D {
+            pos: parent.pos + margin.zy(),
+            size: bound,
+        }
     }
 
     /// ## Pack

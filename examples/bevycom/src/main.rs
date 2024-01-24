@@ -95,7 +95,7 @@ fn setup(
 
     cmd.spawn((
         UiTreeBundle::<NoData, NoData, MyWidget> {
-            transform: Transform::from_xyz(-300.0, 300.0, 200.0),
+            transform: Transform::from_xyz(-400.0, 300.0, 200.0),
             tree: UiTree::new("MyWidget"),
             ..default()
         },
@@ -124,46 +124,11 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div"),
-            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar(Abs(5.0)).pack(),
+            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar(Abs(5.0)).mar_l(Abs::LG).pack(),
         ));
 
     });
 
-    cmd.spawn((
-        UiTreeBundle::<NoData, NoData, MyWidget> {
-            transform: Transform::from_xyz(-600.0, 300.0, 400.0),
-            tree: UiTree::new("MyWidget"),
-            ..default()
-        },
-        msh.add(Mesh::from(shape::Cube { size: 15.0 })),
-        mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
-        Visibility::default(),
-        ViewVisibility::default(),
-
-    )).with_children(|parent| {
-
-        let root = UiLink::path("Root");
-        parent.spawn((
-            MyWidget,
-            root.clone(),
-            Ui::Window::FULL.size(Abs((818.0, 965.0))).pack(),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
-        ));
-
-        let head = root.add("Head");
-        parent.spawn((
-            MyWidget,
-            head.clone(),
-            Ui::Window::new().width(Prc::FULL).height(Abs(168.0)).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            head.add("Div"),
-            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar(Abs(5.0)).pack(),
-        ));
-
-    });
 }
 
 

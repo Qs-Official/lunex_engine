@@ -84,7 +84,7 @@ impl Layout {
         match &self {
             Layout::Window(l) => l.compute(parent.into(), abs_scale, font_size).into(),
             Layout::Solid(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-            Layout::Div(_l) => Rect3D::default(),
+            Layout::Div(l) => l.compute(parent.into(), abs_scale, font_size).into(),
         }
     }
 }
