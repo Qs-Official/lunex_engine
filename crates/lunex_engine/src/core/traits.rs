@@ -316,25 +316,26 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             let mut content_size = Vec2::ZERO;
 
 
-
             let mut leftover_margin = Vec2::ZERO;
 
-            for (_, node) in &mut self.nodes {
-                if let Some(child_node_data) = &mut node.data {
+            
 
-                    match &child_node_data.layout {
-                        Layout::Div(l) => {
-                            let (rect, margin) = l.compute(node_data.rect.into(), abs_scale, font_size);
+            // Loop over subnodes with [Div] layout
+            for (_, subnode) in &mut self.nodes {
+                if let Some(subnode_data) = &mut subnode.data {
+                    if let Layout::Div(layout) = &subnode_data.layout {
 
-                            child_node_data.rect = rect.into();
 
-                            child_node_data.rect.pos.x += leftover_margin.x;
+                        let (rect, margin) = layout.compute(node_data.rect.into(), abs_scale, font_size);
 
-                            leftover_margin.x += margin.x + child_node_data.rect.size.x;
-                        },
-                        _ => {},
+                        subnode_data.rect = rect.into();
+
+                        subnode_data.rect.pos.x += leftover_margin.x;
+
+                        leftover_margin.x += margin.x + subnode_data.rect.size.x;
+
+
                     }
-
                 }
             }
 
