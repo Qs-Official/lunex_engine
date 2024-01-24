@@ -4,6 +4,7 @@ use bevy::ecs::component::Component;
 
 use crate::nodes::prelude::*;
 use crate::layout;
+use crate::Layout;
 use crate::Rect3D;
 
 use super::{UiNode, UiTree, NodeData};
@@ -295,7 +296,19 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let depth = self.get_depth();
         
         if let Some(container) = &mut self.data {
-            container.rect = container.layout.compute(parent, 0.5, 16.0);
+
+            //container.rect = container.layout.compute(parent, 0.5, 16.0);
+
+            let abs_scale = 0.5;
+            let font_size = 16.0;
+
+            container.rect = match &container.layout {
+                Layout::Window(l) => l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Solid(l) => l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Div(l) => l.compute(parent.into(), abs_scale, font_size).into(),
+            };
+
+
 
             container.rect.pos.z = depth;
 

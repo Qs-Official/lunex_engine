@@ -2,7 +2,7 @@
 use bevy::prelude::Component;
 
 use crate::{import::*, Div};
-use crate::{NiceDisplay, NodeSize, Rect3D};
+use crate::{NiceDisplay, NodeSize};
 
 use super::{Window, Solid};
 
@@ -78,15 +78,6 @@ pub enum Layout {
     //Window3D
     //Div
     //Br
-}
-impl Layout {
-    pub fn compute(&self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Rect3D {
-        match &self {
-            Layout::Window(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-            Layout::Solid(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-            Layout::Div(l) => l.compute(parent.into(), abs_scale, font_size).into(),
-        }
-    }
 }
 impl Default for Layout {
     fn default() -> Self {
