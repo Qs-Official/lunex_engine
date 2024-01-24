@@ -96,7 +96,7 @@ pub fn print_debug_tree<M:Default + Component, N:Default + Component, T: Compone
     uis: Query<&UiTree<M, N>, (With<T>, Changed<UiTree<M, N>>)>
 ) {
     for ui in &uis {
-        println!("\n{}\n", ui.tree(""));
+        info!("{}\n{}\n", "UiTree has been changed...", ui.tree(""));
     }
 }
 
@@ -248,7 +248,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiPlugin<M, N,
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, create_layout::<M, N, T>)
+            .add_systems(Update, create_layout::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, sync_linked_transform::<M, N, T>)
             .add_systems(Update, (sync_linked_dimension::<M, N, T>, reconstruct_element_mesh::<T>).chain())
             .add_systems(Update, sync_linked_element_transform::<M, N, T>)
