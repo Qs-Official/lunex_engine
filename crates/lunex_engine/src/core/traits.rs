@@ -343,3 +343,12 @@ pub trait SyncToNode {
     fn load<M: Default + Component, N: Default + Component>(self, ui: &mut UiTree<M, N>, path: impl Borrow<str>);
     fn save<M: Default + Component, N: Default + Component>(self, ui: &mut UiTree<M, N>, path: impl Borrow<str>);
 }
+
+
+
+
+
+pub trait Extract <T> {
+    fn get_extract (&self) -> T;
+    fn set_extract (&mut self, val: T) -> T;
+}
