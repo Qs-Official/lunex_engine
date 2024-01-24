@@ -95,6 +95,9 @@ impl NiceDisplay for Layout {
 }
 
 
+
+
+
 /// ## Div Size
 /// 
 /// * [DivSize::Min]
@@ -114,12 +117,30 @@ pub enum DivSize<T> {
 }
 
 
-/// ## Stack orientation
-/// Dictates which directiou should the stack pile up
+
+
+
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum StackOrientation {
-    /// ## Horizontal
-    #[default] Horizontal,
-    /// ## Vertical
+    #[default]
+    Horizontal,
     Vertical,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum StackPlacement {
+    #[default]
+    Start,
+    Center,
+    End,
+    Between,
+    Around,
+    Evenly,
+}
+
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct StackOptions {
+    orientation: StackOrientation,
+    placement: StackPlacement,
+    item_gap: NodeSize<f32>,
 }

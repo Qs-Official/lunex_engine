@@ -1,4 +1,4 @@
-use crate::{import::*, Rect3D, NiceDisplay};
+use crate::{import::*, NiceDisplay, Rect3D, StackOptions};
 use bevy::ecs::component::Component;
 use colored::Colorize;
 
@@ -21,9 +21,11 @@ pub struct NoData;
 /// Every [`UiTree`] needs to have this to work properly.
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct MasterData<M: Default + Component> {
+    /// Mandatory data the user can uppend which all nodes have shared access to.
     pub data: M,
-
+    /// Scale of the [`Abs`] unit.
     pub abs_scale: f32,
+    /// Default font size for all subnodes to use (Rem unit scaling).
     pub font_size: f32,
 }
 impl <M: Default + Component> Default for MasterData<M> {
@@ -46,11 +48,17 @@ impl <M: Default + Component> NiceDisplay for MasterData<M> {
 /// Every [`UiNode`] needs to have this to work properly.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeData<N: Default + Component> {
+    /// Optional data the user can append.
     pub data: Option<N>,
+    /// Calculated rectangle from layout.
     pub rect: Rect3D,
+    /// Layout of this node.
     pub layout: Layout,
-    
+    /// Layout of subnodes and how to stack them.
+    pub stacking: StackOptions,
+    /// Optional font size to overwrite the inherited master font size.
     pub font_size: Option<f32>,
+    /// Size of the content to wrap around. Affects this node's size only if the layout is parametric (Div).
     pub content_size: Vec2,
 }
 impl <N:Default + Component> NodeData<N> {
