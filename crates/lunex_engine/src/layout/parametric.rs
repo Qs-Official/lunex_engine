@@ -61,6 +61,27 @@ impl Div {
         Default::default()
     }
 
+    /// ## With size
+    /// Replaces the size with the new value.
+    pub fn size(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
+        self.size = size.into();
+        self
+    }
+
+    /// ## With width
+    /// Replaces the width with the new value.
+    pub fn width(mut self, width: impl Into<NodeSize<f32>>) -> Self {
+        self.size.set_x(width);
+        self
+    }
+    
+    /// ## With height
+    /// Replaces the height with the new value.
+    pub fn height(mut self, height: impl Into<NodeSize<f32>>) -> Self {
+        self.size.set_y(height);
+        self
+    }
+
     /// ## With padding
     /// Replaces the padding with the new value.
     pub fn pad(mut self, pad: impl Into<NodeSize<Vec4>>) -> Self {
@@ -184,7 +205,7 @@ impl Into<Layout> for Div {
 }
 impl NiceDisplay for Div {
     fn to_nicestr(&self) -> String {
-        let t = format!("[pad: ({}) mar: ({})]", self.padding.to_nicestr(), self.margin.to_nicestr());
+        let t = format!("[size: ({}) pad: ({}) mar: ({})]", self.size.to_nicestr(), self.padding.to_nicestr(), self.margin.to_nicestr());
         format!("{}", t.black())
     }
 }

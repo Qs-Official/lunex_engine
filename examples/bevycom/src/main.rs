@@ -6,7 +6,7 @@ use bevy_lunex::prelude::*;
 fn main() {
     App::new()
         .add_plugins((DefaultPlugins, UiPlugin::<NoData, NoData, MyWidget>::new()))
-        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
+        .add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
 
         .add_systems(Startup, setup)
 
@@ -63,7 +63,6 @@ fn setup(
             tree: UiTree::new("MyWidget"),
             ..default()
         },
-
         msh.add(Mesh::from(shape::Cube { size: 15.0 })),
         mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
         Visibility::default(),
@@ -89,7 +88,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div"),
-            Ui::Div::new().pad(Abs(10.0)).mar(Abs(5.0)).pack(),
+            Ui::Div::new().size(Abs::MD).pad(Abs(10.0)).mar(Abs(5.0)).pack(),
         ));
 
     });
