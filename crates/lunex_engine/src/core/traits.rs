@@ -297,35 +297,40 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let depth = self.get_depth();
         
         // Check here if computation is required for partial recalculation
-        if let Some(container) = &mut self.data {
+        if let Some(node_data) = &mut self.data {
 
             let abs_scale = 0.5;
             let font_size = 16.0;
 
             // COUNTE VARIABLES
 
-            match &container.layout {
-                Layout::Window(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Solid(l) => container.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+            match &node_data.layout {
+                Layout::Window(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Solid(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
                 _ => {},
             }
 
-            container.rect.pos.z = depth;
+            node_data.rect.pos.z = depth;
+
+
+            let mut content_size = Vec2::ZERO;
+
+
 
             let mut leftover_margin = Vec2::ZERO;
 
             for (_, node) in &mut self.nodes {
-                if let Some(node_container) = &mut node.data {
+                if let Some(child_node_data) = &mut node.data {
 
-                    match &node_container.layout {
+                    match &child_node_data.layout {
                         Layout::Div(l) => {
-                            let (rect, margin) = l.compute(container.rect.into(), abs_scale, font_size);
+                            let (rect, margin) = l.compute(node_data.rect.into(), abs_scale, font_size);
 
-                            node_container.rect = rect.into();
+                            child_node_data.rect = rect.into();
 
-                            node_container.rect.pos.x += leftover_margin.x;
+                            child_node_data.rect.pos.x += leftover_margin.x;
 
-                            leftover_margin.x += margin.x + node_container.rect.size.x;
+                            leftover_margin.x += margin.x + child_node_data.rect.size.x;
                         },
                         _ => {},
                     }
@@ -337,7 +342,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
 
             for (_, node) in &mut self.nodes {
-                node.compute(container.rect);
+                node.compute(node_data.rect);
             }
         }
     }
