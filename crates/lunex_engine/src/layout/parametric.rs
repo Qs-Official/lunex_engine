@@ -35,7 +35,12 @@ impl Div {
     pub fn new() -> Self {
         Default::default()
     }
-    
+    /// ## Sizing
+    /// Sets the sizing to the new value.
+    pub fn sizing(mut self, sizing: Sizing) -> Self {
+        self.sizing = sizing;
+        self
+    }
     /// ## Min size
     /// Sets the minimal size to the new value.
     pub fn min(mut self, size: impl Into<NodeSize<Vec2>>) -> Self {
@@ -48,7 +53,6 @@ impl Div {
         self.max_size = Some(size.into());
         self
     }
-
     /// ## With padding
     /// Replaces the padding with the new value.
     pub fn pad(mut self, pad: impl Into<NodeSize<Vec4>>) -> Self {
@@ -193,7 +197,6 @@ impl Div {
         self.margin.set_w(margin);
         self
     }
-
     /// ## Break
     /// Makes any container after this start at new line
     pub fn br(mut self) -> Self {
@@ -213,32 +216,32 @@ impl Div {
         self
     }
 
+    /// ## Pack
+    /// Packs the struct into Layout
+    pub fn pack(self) -> Layout {
+        self.into()
+    }
+
 
     /// ## Compute
     /// Computes the layout based on given parameters.
     pub(crate) fn compute(&self, content_size: Vec2, parent_size: Vec2, abs_scale: f32, font_size: f32) -> (Vec2, Vec4) {
-        //let size = self.size.evaluate(abs_scale, parent_size, font_size);
+        let border = self.border.evaluate(abs_scale, parent_size.xyxy(), font_size);
         let padding = self.padding.evaluate(abs_scale, parent_size.xyxy(), font_size);
         (
             Vec2 {
-                x: content_size.x + padding.x + padding.z,
-                y: content_size.y + padding.y + padding.w,
+                x: content_size.x + padding.x + padding.z + border.x + border.z,
+                y: content_size.y + padding.y + padding.w + border.y + border.w,
             },
             self.margin.evaluate(abs_scale, parent_size.xyxy(), font_size)
         )
     }
-
     /// This function computes static (solid) margin that doesn't change (Ignores Prc unit).
     /// It is used internally for layouting and proper scaling.
     pub(crate) fn compute_solid_margin(&self, abs_scale: f32, font_size: f32) -> Vec4 {
         self.margin.evaluate_abs_rem(abs_scale, font_size)
     }
 
-    /// ## Pack
-    /// Packs the struct into Layout
-    pub fn pack(self) -> Layout {
-        self.into()
-    }
 }
 impl Into<Layout> for Div {
     fn into(self) -> Layout {

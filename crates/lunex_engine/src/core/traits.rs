@@ -315,7 +315,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             node_data.rect.pos.z = depth;
 
 
-            compute_content_simply_horizontal(self, node_data.rect.size.clone(), abs_scale, font_size);
+            //compute_content_simply_horizontal(self, node_data.rect.size.clone(), abs_scale, font_size);
 
 
 

@@ -44,19 +44,19 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
         parent.spawn((
             MyWidget,
             root.add("Div1"),
-            Ui::Div::new().width(Abs::LG).height(Abs::XL7).pack(),
+            Ui::Div::new().pad(Abs::LG).margin(Abs::XL7).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.add("Div2"),
-            Ui::Div::new().width(Abs::LG).height(Abs::XL2).pack(),
+            Ui::Div::new().pad(Abs::LG).margin(Abs::XL2).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.add("Div3"),
-            Ui::Div::new().width(Abs::LG).height(Abs::XL5).pack(),
+            Ui::Div::new().pad(Abs::LG).margin(Abs::XL5).pack(),
         ));
 
         parent.spawn((
