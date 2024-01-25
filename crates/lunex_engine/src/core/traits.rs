@@ -287,15 +287,21 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeInitTrait for Ui
 
 
 
+/// ## Node tree compute trait
+/// Trait with all node tree layout computation implementations.
+pub trait UiNodeTreeComputeTrait {
+    fn compute(&mut self, parent: Rect3D);
+}
+impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for UiTree<M, N> {
+    fn compute(&mut self, parent: Rect3D) {
+        self.node.compute(parent);
+    }
+}
+
 /// ## Node compute trait
 /// Trait with all node layout computation implementations.
 pub trait UiNodeComputeTrait {
     fn compute(&mut self, parent: Rect3D);
-}
-impl <M: Default + Component, N: Default + Component> UiNodeComputeTrait for UiTree<M, N> {
-    fn compute(&mut self, parent: Rect3D) {
-        self.node.compute(parent);
-    }
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     fn compute(&mut self, parent: Rect3D) {

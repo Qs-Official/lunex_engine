@@ -8,7 +8,7 @@ pub mod prelude {
     pub use super::{UiNode, UiTree};
     pub use super::{MasterData, NodeData, NoData};
 
-    pub use super::{UiNodeCreationTrait, UiNodeDataTrait, UiNodeTreeInitTrait, UiNodeComputeTrait};
+    pub use super::{UiNodeCreationTrait, UiNodeDataTrait, UiNodeTreeInitTrait, UiNodeTreeComputeTrait};
     pub use super::{BuildAsNode, SyncToNode};
 
     //RE-EXPORT FROM NODES                          // NEEDS ABSTRACTION
