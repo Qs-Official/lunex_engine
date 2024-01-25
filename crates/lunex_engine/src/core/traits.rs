@@ -2,6 +2,7 @@ use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
 use bevy::math::Vec3Swizzles;
+use bevy::math::Vec4Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
@@ -352,7 +353,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
-        let mut parent_content_size = Vec2::ZERO;
+        //let mut parent_content_size = Vec2::ZERO;
 
         // Sort mutable pointers into matrix
         let mut i = 0;
@@ -372,7 +373,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
 
         // Get the offset position
-        let offset = parent.pos.xy();
+        let mut offset = parent.pos.xy();
         let mut local_offset = Vec2::ZERO;
 
         // Loop over each line in matrix to calculate position
@@ -380,7 +381,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         for line in &mut matrix {
 
             // Loop over each subnode in line to calculate position
-            //let mut local_offset_x = 0.0;
+            local_offset.x = 0.0;
             let mut previous_margin_x = 0.0;
             let mut previous_y = 0.0;
             for subnode in line {
@@ -416,8 +417,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     // Construct with primary margin
                     subnode_data.rect = Rect2D {
                         pos: Vec2 {
-                            x: offset.x + local_offset.x,
-                            y: offset.y + local_offset.y + margin.y,
+                            x: offset.x + padding.z + local_offset.x,
+                            y: offset.y + padding.y + local_offset.y + margin.y,
                         },
                         size,
                     }.into();
