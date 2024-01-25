@@ -2,7 +2,6 @@ use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
 use bevy::math::Vec3Swizzles;
-use bevy::math::Vec4Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
@@ -371,9 +370,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
         }
 
-
         // Get the offset position
-        let mut offset = parent.pos.xy();
+        let offset = parent.pos.xy();
         let mut local_offset = Vec2::ZERO;
 
         // Loop over each line in matrix to calculate position

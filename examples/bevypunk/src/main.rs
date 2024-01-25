@@ -61,13 +61,13 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.add(".||#:3").new(),
-            Ui::Div::new().pad(Abs::LG).pack(),
+            Ui::Div::new().pad(Abs::LG).br().pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.add(".||#:3").new(),
-            Ui::Div::new().pad(Abs::LG).pack(),
+            Ui::Div::new().pad(Abs::LG).br().pack(),
         ));
 
         parent.spawn((
