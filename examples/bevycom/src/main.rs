@@ -88,19 +88,19 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div1"),
-            Ui::Div::new().pad(Abs::XL).margin(Abs(50.0)).pack(),
+            Ui::Div::new().pad(Abs(25.0)).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Div2"),
-            Ui::Div::new().pad(Abs::XL).margin(Abs(50.0)).pack(),
+            Ui::Div::new().pad(Abs(25.0)).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Div3"),
-            Ui::Div::new().pad(Abs::XL).margin(Abs(50.0)).pack(),
+            Ui::Div::new().pad(Abs(25.0)).pack(),
         ));
 
         parent.spawn((

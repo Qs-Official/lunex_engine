@@ -315,7 +315,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             // Assing depth
             node_data.rect.pos.z = depth;
 
-
+            // Compute subnode divs
             {
                 let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
 
@@ -346,6 +346,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     // Loop over each subnode in line to calculate position
                     let mut local_offset_x = 0.0;
                     let mut previous_x = 0.0;
+                    let mut previous_y = 0.0;
                     for subnode in line {
 
                         // Unwrap guaranteed data
@@ -370,14 +371,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                             // Apply secondary margin
                             local_offset_x += size.x;
-                            local_offset_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
+                            previous_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
                             previous_x = margin.x;
                         }
                     }
+                    local_offset_y = previous_y;
                 }
             }
-
-
 
             // Enter recursion
             for (_, node) in &mut self.nodes {
