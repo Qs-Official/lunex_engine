@@ -305,9 +305,10 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 }
 
 /// ## Node compute trait
-/// Trait with all node layout computation implementations.
-pub trait UiNodeComputeTrait {
+/// Trait with all node layout computation implementations. Includes private methods.
+trait UiNodeComputeTrait {
     fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
+    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     fn compute(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
@@ -331,76 +332,98 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             // Assing depth
             node_data.rect.pos.z = depth;
+        }
 
-            // Compute subnode divs
-            {
-                let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+        if let Some(node_data) = &self.data {
+            
+            // Compute subnodes divs
+            self.compute_content_size(node_data.rect, abs_scale, font_size);
+        }
 
-                // Sort mutable pointers into matrix
-                let mut i = 0;
-                matrix.push(Vec::new());
-                for (_, subnode) in &mut self.nodes {
-                    if let Some(subnode_data) = &subnode.data {
-                        if let Layout::Div(layout) = &subnode_data.layout {
-                            let br = layout.force_break;
-                            matrix[i].push(subnode);
-                            if br {
-                                i += 1;
-                                matrix.push(Vec::new());
-                            }
-                        }
-                    }
-                }
-
-
-                // Get the offset position
-                let offset = node_data.rect.pos.xy();
-
-                // Loop over each line in matrix to calculate position
-                let mut local_offset_y = 0.0;
-                for line in &mut matrix {
-
-                    // Loop over each subnode in line to calculate position
-                    let mut local_offset_x = 0.0;
-                    let mut previous_x = 0.0;
-                    let mut previous_y = 0.0;
-                    for subnode in line {
-
-                        // Unwrap guaranteed data
-                        let subnode_data = subnode.data.as_mut().unwrap();
-                        if let Layout::Div(layout) = &subnode_data.layout {
-                
-                            let subnode_content = subnode_data.content_size;
-                            let (size, margin) = layout.compute(subnode_content, node_data.rect.size, abs_scale, font_size);
-
-
-                            // Apply primary margin
-                            local_offset_x += f32::max(previous_x, margin.z);
-
-                            // Construct with primary margin
-                            subnode_data.rect = Rect2D {
-                                pos: Vec2 {
-                                    x: offset.x + local_offset_x,
-                                    y: offset.y + local_offset_y + margin.y,
-                                },
-                                size,
-                            }.into();
-
-                            // Apply secondary margin
-                            local_offset_x += size.x;
-                            previous_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
-                            previous_x = margin.x;
-                        }
-                    }
-                    local_offset_y = previous_y;
-                }
-            }
+        if let Some(node_data) = &mut self.data {
 
             // Enter recursion
             for (_, node) in &mut self.nodes {
                 node.compute(node_data.rect, abs_scale, font_size);
             }
         }
+
+    }
+    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2 {
+
+        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+        let mut parent_content_size = Vec2::ZERO;
+
+        // Sort mutable pointers into matrix
+        let mut i = 0;
+        matrix.push(Vec::new());
+        for (_, subnode) in &mut self.nodes {
+            if let Some(subnode_data) = &subnode.data {
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    let br = layout.force_break;
+                    matrix[i].push(subnode);
+                    if br {
+                        i += 1;
+                        matrix.push(Vec::new());
+                    }
+                }
+            }
+        }
+
+
+        // Get the offset position
+        let offset = parent.pos.xy();
+
+        // Loop over each line in matrix to calculate position
+        let mut local_offset_y = 0.0;
+        for line in &mut matrix {
+
+            // Loop over each subnode in line to calculate position
+            let mut local_offset_x = 0.0;
+            let mut previous_x = 0.0;
+            let mut previous_y = 0.0;
+            for subnode in line {
+
+                let potential_content = subnode.compute_content_size(parent, abs_scale, font_size);
+
+                // Unwrap guaranteed data
+                let subnode_data = subnode.data.as_mut().unwrap();
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    
+                    // Compare contents
+                    let mut subnode_content = subnode_data.content_size;
+                    if potential_content != Vec2::ZERO {
+                        subnode_content = potential_content;
+                    }
+
+                    let (size, margin) = layout.compute(subnode_content, parent.size, abs_scale, font_size);
+
+
+                    // Apply primary margin
+                    local_offset_x += f32::max(previous_x, margin.z);
+
+                    // Construct with primary margin
+                    subnode_data.rect = Rect2D {
+                        pos: Vec2 {
+                            x: offset.x + local_offset_x,
+                            y: offset.y + local_offset_y + margin.y,
+                        },
+                        size,
+                    }.into();
+
+                    // Apply secondary margin
+                    local_offset_x += size.x;
+                    previous_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
+                    previous_x = margin.x;
+                }
+            }
+            local_offset_y = previous_y;
+            parent_content_size.x = f32::max(parent_content_size.x, local_offset_x);
+        }
+
+        parent_content_size.y = local_offset_y;
+
+        parent_content_size
     }
 }
 
