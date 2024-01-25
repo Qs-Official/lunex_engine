@@ -237,6 +237,10 @@ impl Div {
         )
     }
 
+    pub(crate) fn compute_padding(&self, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec4 {
+        self.padding.evaluate(abs_scale, parent_size.xyxy(), font_size)
+    }
+
 
 }
 impl Into<Layout> for Div {

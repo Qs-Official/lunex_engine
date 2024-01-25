@@ -335,7 +335,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
         if let Some(node_data) = &self.data {
-            
+
             // Compute subnodes divs
             self.compute_content_size(node_data.rect, abs_scale, font_size);
         }
@@ -373,57 +373,69 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
         // Get the offset position
         let offset = parent.pos.xy();
+        let mut local_offset = Vec2::ZERO;
 
         // Loop over each line in matrix to calculate position
-        let mut local_offset_y = 0.0;
+        //let mut local_offset_y = 0.0;
         for line in &mut matrix {
 
             // Loop over each subnode in line to calculate position
-            let mut local_offset_x = 0.0;
-            let mut previous_x = 0.0;
+            //let mut local_offset_x = 0.0;
+            let mut previous_margin_x = 0.0;
             let mut previous_y = 0.0;
             for subnode in line {
 
-                let potential_content = subnode.compute_content_size(parent, abs_scale, font_size);
+                // Reverse recursion
+                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout {
+                    layout.compute_padding(parent.size, abs_scale, font_size)
+                } else {
+                    unreachable!();
+                };
+                let mut rect = parent;
+                rect.pos.x += padding.z;
+                rect.pos.y += padding.y;
+                let potential_content = subnode.compute_content_size(rect, abs_scale, font_size);
+
 
                 // Unwrap guaranteed data
                 let subnode_data = subnode.data.as_mut().unwrap();
                 if let Layout::Div(layout) = &subnode_data.layout {
                     
-                    // Compare contents
+                    // Compute size
                     let mut subnode_content = subnode_data.content_size;
                     if potential_content != Vec2::ZERO {
                         subnode_content = potential_content;
                     }
-
                     let (size, margin) = layout.compute(subnode_content, parent.size, abs_scale, font_size);
 
 
+
                     // Apply primary margin
-                    local_offset_x += f32::max(previous_x, margin.z);
+                    local_offset.x += f32::max(previous_margin_x, margin.z);
 
                     // Construct with primary margin
                     subnode_data.rect = Rect2D {
                         pos: Vec2 {
-                            x: offset.x + local_offset_x,
-                            y: offset.y + local_offset_y + margin.y,
+                            x: offset.x + local_offset.x,
+                            y: offset.y + local_offset.y + margin.y,
                         },
                         size,
                     }.into();
 
                     // Apply secondary margin
-                    local_offset_x += size.x;
-                    previous_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
-                    previous_x = margin.x;
+                    local_offset.x += size.x;
+                    previous_y = f32::max(local_offset.y, margin.y + size.y + margin.w);
+                    previous_margin_x = margin.x;
                 }
             }
-            local_offset_y = previous_y;
-            parent_content_size.x = f32::max(parent_content_size.x, local_offset_x);
+            local_offset.y = previous_y;
+            //parent_content_size.x = local_offset.x;
         }
 
-        parent_content_size.y = local_offset_y;
+        //parent_content_size.y = local_offset_y;
 
-        parent_content_size
+        //parent_content_size
+        local_offset
     }
 }
 
