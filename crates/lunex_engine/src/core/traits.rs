@@ -6,6 +6,7 @@ use bevy::math::Vec3Swizzles;
 use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Layout;
+use crate::MasterData;
 use crate::Rect2D;
 use crate::Rect3D;
 use crate::import::*;
@@ -280,6 +281,7 @@ pub trait UiNodeTreeInitTrait {
 impl <M: Default + Component, N: Default + Component> UiNodeTreeInitTrait for UiTree<M, N> {
     fn new(name: impl Borrow<str>) -> Self {
         let mut tree: UiTree<M, N> = NodeTreeInitTrait::new(name);
+        tree.add_topdata(MasterData::default());
         tree.add_data(NodeData::default());
         tree
     }
@@ -294,26 +296,31 @@ pub trait UiNodeTreeComputeTrait {
 }
 impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for UiTree<M, N> {
     fn compute(&mut self, parent: Rect3D) {
-        self.node.compute(parent);
+        if let Some(data) = self.obtain_topdata() {
+            self.node.compute(parent, data.abs_scale, data.font_size);
+        } else {
+            self.node.compute(parent, 1.0, 16.0);
+        }
     }
 }
 
 /// ## Node compute trait
 /// Trait with all node layout computation implementations.
 pub trait UiNodeComputeTrait {
-    fn compute(&mut self, parent: Rect3D);
+    fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
-    fn compute(&mut self, parent: Rect3D) {
+    fn compute(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         let depth = self.get_depth();
         
         // Check here if computation is required for partial recalculation
         if let Some(node_data) = &mut self.data {
 
-            // This will later be pulled from params
-            let abs_scale = 0.5;
-            let font_size = 16.0;
+            // Overwrite passed style with font size
+            if let Some(fnt) = node_data.font_size {
+                font_size = fnt;
+            }
 
             // Compute node layout
             match &node_data.layout {
@@ -391,7 +398,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             // Enter recursion
             for (_, node) in &mut self.nodes {
-                node.compute(node_data.rect);
+                node.compute(node_data.rect, abs_scale, font_size);
             }
         }
     }
