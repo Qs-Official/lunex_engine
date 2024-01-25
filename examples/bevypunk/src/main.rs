@@ -41,6 +41,15 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
             Ui::Window::FULL.pack(),
         ));
 
+
+
+
+
+
+        
+
+
+
         for _ in 0..10 {
             parent.spawn((
                 MyWidget,
@@ -48,6 +57,17 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
                 Ui::Div::new().pad(Abs::LG).margin(Abs::SM).pack(),
             ));
         }
+
+
+
+
+
+
+
+
+
+
+
 
 
         parent.spawn((
