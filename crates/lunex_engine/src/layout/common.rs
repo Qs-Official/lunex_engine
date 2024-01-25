@@ -98,22 +98,15 @@ impl NiceDisplay for Layout {
 
 
 
-/// ## Div Size
-/// 
-/// * [DivSize::Min]
-/// * [DivSize::Max]
-/// * [DivSize::Exact]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum DivSize<T> {
-    /// ## Min
-    /// Div will be as little as it can be while still encapsulating it's content and following set rules.
-    #[default] Min,
-    /// ## Max
-    /// Div will be as big as it can be while following set rules. If `max_width` is not set then fill `100%` of the parent layout.
-    Max,
-    /// ## Exact
-    /// Div will be sized as specified while still following set rules.
-    Exact(NodeSize<T>),
+pub enum Sizing {
+    /// Minimal with forced wrapping.
+    Minimal,
+    ///Minimal with no wrap unless reached max size.
+    #[default]
+    Normal,
+    /// Stretches until it can't.
+    Maximal,
 }
 
 
@@ -140,7 +133,12 @@ pub enum StackPlacement {
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct StackOptions {
+    /// Dictates on which axis should the nodes be stacked
     orientation: StackOrientation,
+    /// Dictates if the stacking direction should be flipped
+    flipped: bool,
+    /// Dictates how should the nodes be positioned within one line
     placement: StackPlacement,
+    /// Minimal gap between subnodes
     item_gap: NodeSize<f32>,
 }

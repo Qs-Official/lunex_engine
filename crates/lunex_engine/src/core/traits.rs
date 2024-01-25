@@ -1,10 +1,12 @@
 use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
+use bevy::math::Vec3Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Layout;
+use crate::Rect2D;
 use crate::Rect3D;
 use crate::import::*;
 
@@ -313,31 +315,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             node_data.rect.pos.z = depth;
 
 
-            let mut content_size = Vec2::ZERO;
-
-
-            let mut leftover_margin = Vec2::ZERO;
-
-            
-
-            // Loop over subnodes with [Div] layout
-            for (_, subnode) in &mut self.nodes {
-                if let Some(subnode_data) = &mut subnode.data {
-                    if let Layout::Div(layout) = &subnode_data.layout {
-
-
-                        let (rect, margin) = layout.compute(node_data.rect.into(), abs_scale, font_size);
-
-                        subnode_data.rect = rect.into();
-
-                        subnode_data.rect.pos.x += leftover_margin.x;
-
-                        leftover_margin.x += margin.x + subnode_data.rect.size.x;
-
-
-                    }
-                }
-            }
+            compute_content_simply_horizontal(self, node_data.rect.size.clone(), abs_scale, font_size);
 
 
 
@@ -347,6 +325,79 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
         }
     }
+}
+
+fn compute_content_simply_horizontal<N: Default + Component>(node: &mut Node<NodeData<N>>, reference_size: Vec2, abs_scale: f32, font_size: f32) {
+
+    let mut list: Vec<&mut Node<NodeData<N>>> = Vec::new();
+
+    // This code will sort and pool all divs into one mut vec
+    for (_, subnode) in &mut node.nodes {
+        if let Some(subnode_data) = &subnode.data {
+            if let Layout::Div(_) = &subnode_data.layout {
+                list.push(subnode);
+            }
+        }
+    }
+
+    let mut scaling_size = reference_size;
+
+    // This code will subtract solid margin from the scaling size. Only X value
+    let mut previous = 0.0;
+    for subnode in &mut list {
+        if let Layout::Div(layout) = subnode.data.as_ref().unwrap().layout {
+            let solid_margin = layout.compute_solid_margin(abs_scale, font_size);
+            scaling_size.x -= f32::max(previous, solid_margin.z);
+            previous = solid_margin.x;
+        }
+    }
+    scaling_size.x -= previous;
+
+
+    let mut computed_values: Vec<(Vec2, Vec4)> = Vec::new();
+
+    // This code will compute everything with the modified scaling size
+    for subnode in &mut list {
+        let subnode_data = subnode.data.as_mut().unwrap();
+        if let Layout::Div(layout) = &subnode_data.layout {
+
+            let subnode_content = subnode_data.content_size;
+
+            computed_values.push(layout.compute(subnode_content, scaling_size, abs_scale, font_size));
+        }
+    }
+
+
+    // This code will assign the computed values to the nodes
+
+    let mut offset = node.data.as_ref().unwrap().rect.pos.xy();
+    let mut previous_x = 0.0;
+    let mut previous_y = 0.0;
+
+    let mut i = 0;
+    for subnode in &mut list {
+        let subnode_data = subnode.data.as_mut().unwrap();
+
+        // Apply first margin
+        offset.x += f32::max(previous_x, computed_values[i].1.z);
+        offset.y += f32::max(previous_y, computed_values[i].1.y);
+
+        let rectangle = Rect2D {
+            pos: offset,
+            size: computed_values[i].0,
+        };
+
+        subnode_data.rect = rectangle.into();
+
+        // Apply secondary margin
+        offset += computed_values[i].0;
+
+        previous_x = computed_values[i].1.x;
+        previous_y = computed_values[i].1.w;
+
+        i += 1;
+    }
+
 }
 
 
