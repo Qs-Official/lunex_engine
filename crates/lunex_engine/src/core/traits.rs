@@ -97,12 +97,16 @@ impl <N: Default + Component> UiNodeCreationTrait<N> for UiNode<N> {
     }
 
     fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<N>, NodeError> {
-        let _ = self.make_ui_node(name.borrow());
+        if let Ok(n) = self.make_ui_node(name.borrow()) {
+            return self.obtain_node(n)
+        }
         self.obtain_node(name)
     }
 
     fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError> {
-        let _ = self.make_ui_node(name.borrow());
+        if let Ok(n) = self.make_ui_node(name.borrow()) {
+            return self.obtain_node_mut(n)
+        }
         self.obtain_node_mut(name)
     }
 

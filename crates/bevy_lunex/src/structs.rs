@@ -22,6 +22,9 @@ impl UiLink {
     pub fn add( &self, path: impl Borrow<str>) -> Self {
         UiLink { path: format!("{}/{}", self.path, path.borrow()) }
     }
+    pub fn new( &self) -> Self {
+        UiLink { path: format!("{}/", self.path) }
+    }
 }
 
 

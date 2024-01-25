@@ -96,7 +96,7 @@ pub fn print_debug_tree<M:Default + Component, N:Default + Component, T: Compone
     uis: Query<&UiTree<M, N>, (With<T>, Changed<UiTree<M, N>>)>
 ) {
     for ui in &uis {
-        info!("{}\n{}\n", "UiTree has been changed...", ui.tree(""));
+        info!("{}\n{}\n", "UiTree has been changed...", ui.tree("show-hidden"));
     }
 }
 

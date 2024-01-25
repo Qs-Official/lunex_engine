@@ -236,11 +236,7 @@ impl Div {
             self.margin.evaluate(abs_scale, parent_size.xyxy(), font_size)
         )
     }
-    /// This function computes static (solid) margin that doesn't change (Ignores Prc unit).
-    /// It is used internally for layouting and proper scaling.
-    pub(crate) fn compute_solid_margin(&self, abs_scale: f32, font_size: f32) -> Vec4 {
-        self.margin.evaluate_abs_rem(abs_scale, font_size)
-    }
+
 
 }
 impl Into<Layout> for Div {

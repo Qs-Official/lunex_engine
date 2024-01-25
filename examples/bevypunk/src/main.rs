@@ -13,7 +13,7 @@ fn main() {
         .run();
 }
 
-fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMut<Assets<StandardMaterial>>) {
+fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: ResMut<Assets<StandardMaterial>>) {
 
     commands.spawn((
         MyWidget,
@@ -41,23 +41,14 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut materials: ResMu
             Ui::Window::FULL.pack(),
         ));
 
-        parent.spawn((
-            MyWidget,
-            root.add("Div1"),
-            Ui::Div::new().pad(Abs::LG).margin(Abs::XL7).pack(),
-        ));
+        for _ in 0..10 {
+            parent.spawn((
+                MyWidget,
+                root.new(),
+                Ui::Div::new().pad(Abs::LG).margin(Abs::SM).pack(),
+            ));
+        }
 
-        parent.spawn((
-            MyWidget,
-            root.add("Div2"),
-            Ui::Div::new().pad(Abs::LG).margin(Abs::XL2).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.add("Div3"),
-            Ui::Div::new().pad(Abs::LG).margin(Abs::XL5).pack(),
-        ));
 
         parent.spawn((
             MyWidget,
