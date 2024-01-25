@@ -364,7 +364,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                             subnode_data.rect = Rect2D {
                                 pos: Vec2 {
                                     x: offset.x + local_offset_x,
-                                    y: offset.y + local_offset_y,
+                                    y: offset.y + local_offset_y + margin.y,
                                 },
                                 size,
                             }.into();
