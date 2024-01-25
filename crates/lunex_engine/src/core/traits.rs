@@ -301,103 +301,90 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         // Check here if computation is required for partial recalculation
         if let Some(node_data) = &mut self.data {
 
+            // This will later be pulled from params
             let abs_scale = 0.5;
             let font_size = 16.0;
 
-            // COUNTE VARIABLES
-
+            // Compute node layout
             match &node_data.layout {
                 Layout::Window(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
                 Layout::Solid(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
                 _ => {},
             }
 
+            // Assing depth
             node_data.rect.pos.z = depth;
 
 
-            //compute_content_simply_horizontal(self, node_data.rect.size.clone(), abs_scale, font_size);
+            {
+                let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+
+                // Sort mutable pointers into matrix
+                let mut i = 0;
+                matrix.push(Vec::new());
+                for (_, subnode) in &mut self.nodes {
+                    if let Some(subnode_data) = &subnode.data {
+                        if let Layout::Div(layout) = &subnode_data.layout {
+                            let br = layout.force_break;
+                            matrix[i].push(subnode);
+                            if br {
+                                i += 1;
+                                matrix.push(Vec::new());
+                            }
+                        }
+                    }
+                }
+
+
+                // Get the offset position
+                let offset = node_data.rect.pos.xy();
+
+                // Loop over each line in matrix to calculate position
+                let mut local_offset_y = 0.0;
+                for line in &mut matrix {
+
+                    // Loop over each subnode in line to calculate position
+                    let mut local_offset_x = 0.0;
+                    let mut previous_x = 0.0;
+                    for subnode in line {
+
+                        // Unwrap guaranteed data
+                        let subnode_data = subnode.data.as_mut().unwrap();
+                        if let Layout::Div(layout) = &subnode_data.layout {
+                
+                            let subnode_content = subnode_data.content_size;
+                            let (size, margin) = layout.compute(subnode_content, node_data.rect.size, abs_scale, font_size);
+
+
+                            // Apply primary margin
+                            local_offset_x += f32::max(previous_x, margin.z);
+
+                            // Construct with primary margin
+                            subnode_data.rect = Rect2D {
+                                pos: Vec2 {
+                                    x: offset.x + local_offset_x,
+                                    y: offset.y + local_offset_y,
+                                },
+                                size,
+                            }.into();
+
+                            // Apply secondary margin
+                            local_offset_x += size.x;
+                            local_offset_y = f32::max(local_offset_y, margin.y + size.y + margin.w);
+                            previous_x = margin.x;
+                        }
+                    }
+                }
+            }
 
 
 
-
+            // Enter recursion
             for (_, node) in &mut self.nodes {
                 node.compute(node_data.rect);
             }
         }
     }
-}
-
-fn compute_content_simply_horizontal<N: Default + Component>(node: &mut Node<NodeData<N>>, reference_size: Vec2, abs_scale: f32, font_size: f32) {
-
-    let mut list: Vec<&mut Node<NodeData<N>>> = Vec::new();
-
-    // This code will sort and pool all divs into one mut vec
-    for (_, subnode) in &mut node.nodes {
-        if let Some(subnode_data) = &subnode.data {
-            if let Layout::Div(_) = &subnode_data.layout {
-                list.push(subnode);
-            }
-        }
-    }
-
-    let mut scaling_size = reference_size;
-
-    // This code will subtract solid margin from the scaling size. Only X value
-    let mut previous = 0.0;
-    for subnode in &mut list {
-        if let Layout::Div(layout) = subnode.data.as_ref().unwrap().layout {
-            let solid_margin = layout.compute_solid_margin(abs_scale, font_size);
-            scaling_size.x -= f32::max(previous, solid_margin.z);
-            previous = solid_margin.x;
-        }
-    }
-    scaling_size.x -= previous;
-
-
-    let mut computed_values: Vec<(Vec2, Vec4)> = Vec::new();
-
-    // This code will compute everything with the modified scaling size
-    for subnode in &mut list {
-        let subnode_data = subnode.data.as_mut().unwrap();
-        if let Layout::Div(layout) = &subnode_data.layout {
-
-            let subnode_content = subnode_data.content_size;
-
-            computed_values.push(layout.compute(subnode_content, scaling_size, abs_scale, font_size));
-        }
-    }
-
-
-    // This code will assign the computed values to the nodes
-
-    let mut offset = node.data.as_ref().unwrap().rect.pos.xy();
-    let mut previous_x = 0.0;
-    let mut previous_y = 0.0;
-
-    let mut i = 0;
-    for subnode in &mut list {
-        let subnode_data = subnode.data.as_mut().unwrap();
-
-        // Apply first margin
-        offset.x += f32::max(previous_x, computed_values[i].1.z);
-        offset.y += f32::max(previous_y, computed_values[i].1.y);
-
-        let rectangle = Rect2D {
-            pos: offset,
-            size: computed_values[i].0,
-        };
-
-        subnode_data.rect = rectangle.into();
-
-        // Apply secondary margin
-        offset += computed_values[i].0;
-
-        previous_x = computed_values[i].1.x;
-        previous_y = computed_values[i].1.w;
-
-        i += 1;
-    }
-
 }
 
 
