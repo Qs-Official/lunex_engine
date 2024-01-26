@@ -315,11 +315,13 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
     fn compute(&mut self, abs_scale: f32, font_size: f32);
-    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> bool;
+    fn compute_content(&mut self, computed: bool, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
-    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) -> bool {
+
+        let mut computed = false;
 
         // Get depth before mutating self
         let depth = self.get_depth();
@@ -334,12 +336,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             match &node_data.layout {
                 Layout::Window(l) => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
                 Layout::Solid(l)  => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
-                _ => {},
+                _ => { computed = true },
             }
 
             // Assing depth
             node_data.rectangle.pos.z = depth;
         }
+        computed
     }
     fn compute(&mut self, abs_scale: f32, font_size: f32) {
 
@@ -347,10 +350,10 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             // Enter recursion
             for (_, subnode) in &mut self.nodes {
-                subnode.compute_layout(ancestor_data.rectangle, abs_scale, font_size);
+                let computed = subnode.compute_layout(ancestor_data.rectangle, abs_scale, font_size);
 
                 if let Some(node_data) = &subnode.data {
-                    subnode.compute_content(node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
+                    subnode.compute_content(computed, node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
                 }
 
                 subnode.compute(abs_scale, font_size);
@@ -358,7 +361,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
     }
-    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
+    fn compute_content(&mut self, computed: bool, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
+
+        if computed == true { return self.data.as_ref().unwrap().content_size; }
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -394,10 +399,10 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Compute padding
                 let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
-                //let pos = Vec2::new(position.x + padding.x, position.y + padding.y);
+                let pos = Vec2::new(position.x + padding.x, position.y + padding.y);
                 //info!("{}", pos);
-                let pos = Vec2::ZERO;
-                let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
+                //let pos = Vec2::ZERO;
+                let potential_content = subnode.compute_content(false, pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
                 let subnode_data = subnode.data.as_mut().unwrap();
@@ -416,8 +421,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     // Construct with primary margin
                     subnode_data.rectangle = Rect2D {
                         pos: Vec2 {
-                            x: position.x + padding.x + cursor.x,
-                            y: position.y + padding.y + cursor.y + margin.y,
+                            x: position.x + cursor.x,
+                            y: position.y + cursor.y + margin.y,
                         },
                         size,
                     }.into();
