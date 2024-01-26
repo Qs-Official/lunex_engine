@@ -318,8 +318,7 @@ trait UiNodeComputeTrait {
     fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
-impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
-    
+impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
     fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
@@ -342,8 +341,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             node_data.rectangle.pos.z = depth;
         }
     }
-    
-    
     fn compute(&mut self, abs_scale: f32, font_size: f32) {
 
         if let Some(ancestor_data) = &mut self.data {
