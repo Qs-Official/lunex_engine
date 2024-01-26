@@ -40,14 +40,14 @@ impl Window {
     }
     /// ## With x
     /// Replaces the x position with the new value.
-    pub fn x(mut self, width: impl Into<NodeSize<f32>>) -> Self {
-        self.pos.set_x(width);
+    pub fn x(mut self, x: impl Into<NodeSize<f32>>) -> Self {
+        self.pos.set_x(x);
         self
     }
     /// ## With y
     /// Replaces the y position with the new value.
-    pub fn y(mut self, height: impl Into<NodeSize<f32>>) -> Self {
-        self.pos.set_y(height);
+    pub fn y(mut self, y: impl Into<NodeSize<f32>>) -> Self {
+        self.pos.set_y(y);
         self
     }
     /// ## With size

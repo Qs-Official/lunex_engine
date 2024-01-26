@@ -38,7 +38,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.clone(),
-            Ui::Window::FULL.pack(),
+            Ui::Window::FULL.pos(Abs::MD).pack(),
         ));
 
 
@@ -50,30 +50,36 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
 
 
 
-        for _ in 0..1 {
+        for _ in 0..10 {
             parent.spawn((
                 MyWidget,
                 root.new(),
-                Ui::Div::new().pad(Abs::LG).margin(Abs::SM).pack(),
+                Ui::Div::new().pad(Abs::MD).pack(),
             ));
         }
 
         parent.spawn((
             MyWidget,
             root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::LG).br().pack(),
+            Ui::Div::new().pad(Abs::MD).br().pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::LG).br().margin_l(Abs::XL2).pack(),
+            Ui::Div::new().pad(Abs::MD).br().margin(Abs::SM).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::LG).pack(),
+            Ui::Div::new().pad(Abs::MD).pack(),
+        ));
+
+        parent.spawn((
+            MyWidget,
+            root.add(".||#:0").add(".||#:2").new(),
+            Ui::Div::new().pad(Abs::MD).pack(),
         ));
 
 
