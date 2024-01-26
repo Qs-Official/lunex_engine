@@ -394,7 +394,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Compute padding
                 let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
-                let pos = Vec2::new(position.x + padding.z, position.y + padding.y);
+                let pos = Vec2::new(position.x + padding.x, position.y + padding.y);
                 let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
@@ -409,12 +409,12 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
 
                     // Apply primary margin
-                    cursor.x += f32::max(previous_margin_x, margin.z);
+                    cursor.x += f32::max(previous_margin_x, margin.x);
 
                     // Construct with primary margin
                     subnode_data.rectangle = Rect2D {
                         pos: Vec2 {
-                            x: position.x + padding.z + cursor.x,
+                            x: position.x + padding.x + cursor.x,
                             y: position.y + padding.y + cursor.y + margin.y,
                         },
                         size,
@@ -424,7 +424,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     cursor.x += size.x;
 
                     line_height = f32::max(line_height, margin.y + size.y + margin.w);
-                    previous_margin_x = margin.x;
+                    previous_margin_x = margin.z;
                 }
             }
             cursor.y += line_height;

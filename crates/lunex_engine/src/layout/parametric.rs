@@ -77,9 +77,9 @@ impl Div {
         self.padding.set_w(val);
         self
     }
-    /// ## With padding right
-    /// Replaces the right padding with the new value.
-    pub fn pad_r(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With padding left
+    /// Replaces the left padding with the new value.
+    pub fn pad_l(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
         self.padding.set_x(pad);
         self
     }
@@ -89,9 +89,9 @@ impl Div {
         self.padding.set_y(pad);
         self
     }
-    /// ## With padding left
-    /// Replaces the left padding with the new value.
-    pub fn pad_l(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With padding right
+    /// Replaces the right padding with the new value.
+    pub fn pad_r(mut self, pad: impl Into<NodeSize<f32>>) -> Self {
         self.padding.set_z(pad);
         self
     }
@@ -125,9 +125,9 @@ impl Div {
         self.border.set_w(val);
         self
     }
-    /// ## With border right
-    /// Replaces the right border with the new value.
-    pub fn border_r(mut self, border: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With border left
+    /// Replaces the left border with the new value.
+    pub fn border_l(mut self, border: impl Into<NodeSize<f32>>) -> Self {
         self.border.set_x(border);
         self
     }
@@ -137,9 +137,9 @@ impl Div {
         self.border.set_y(border);
         self
     }
-    /// ## With border left
-    /// Replaces the left border with the new value.
-    pub fn border_l(mut self, border: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With border right
+    /// Replaces the right border with the new value.
+    pub fn border_r(mut self, border: impl Into<NodeSize<f32>>) -> Self {
         self.border.set_z(border);
         self
     }
@@ -173,9 +173,9 @@ impl Div {
         self.margin.set_w(val);
         self
     }
-    /// ## With margin right
-    /// Replaces the right margin with the new value.
-    pub fn margin_r(mut self, margin: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With margin left
+    /// Replaces the left margin with the new value.
+    pub fn margin_l(mut self, margin: impl Into<NodeSize<f32>>) -> Self {
         self.margin.set_x(margin);
         self
     }
@@ -185,9 +185,9 @@ impl Div {
         self.margin.set_y(margin);
         self
     }
-    /// ## With margin left
-    /// Replaces the left margin with the new value.
-    pub fn margin_l(mut self, margin: impl Into<NodeSize<f32>>) -> Self {
+    /// ## With margin right
+    /// Replaces the right margin with the new value.
+    pub fn margin_r(mut self, margin: impl Into<NodeSize<f32>>) -> Self {
         self.margin.set_z(margin);
         self
     }
