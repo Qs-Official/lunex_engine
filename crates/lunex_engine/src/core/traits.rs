@@ -309,36 +309,43 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
     fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
+    fn compute_self(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
-    fn compute(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+    
+    fn compute_self(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
+        // Get depth before mutating self
         let depth = self.get_depth();
         
         // Check here if computation is required for partial recalculation
         if let Some(node_data) = &mut self.data {
 
             // Overwrite passed style with font size
-            if let Some(fnt) = node_data.font_size {
-                font_size = fnt;
-            }
+            if let Some(fnt) = node_data.font_size { font_size = fnt }
 
             // Compute node layout
             match &node_data.layout {
                 Layout::Window(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Solid(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Solid(l)  => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
                 _ => {},
             }
 
             // Assing depth
             node_data.rect.pos.z = depth;
         }
+    }
+    
+    
+    fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) {
+
+        self.compute_self(parent, abs_scale, font_size);
 
         if let Some(node_data) = &self.data {
 
             // Compute subnodes divs
-            self.compute_content_size(node_data.rect, abs_scale, font_size);
+            //self.compute_content_size(node_data.rect, abs_scale, font_size);
         }
 
         if let Some(node_data) = &mut self.data {
@@ -350,7 +357,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
     }
-    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2 {
+    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         //let mut parent_content_size = Vec2::ZERO;
@@ -395,7 +402,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 };
 
                 info!("NEW SUBNODE");
-                
+
                 let mut rect = parent;
                 rect.pos.x += padding.z;
                 rect.pos.y += padding.y;
