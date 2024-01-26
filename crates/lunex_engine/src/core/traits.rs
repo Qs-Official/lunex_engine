@@ -297,24 +297,30 @@ pub trait UiNodeTreeComputeTrait {
 }
 impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for UiTree<M, N> {
     fn compute(&mut self, parent: Rect3D) {
-        if let Some(data) = self.obtain_topdata() {
-            self.node.compute(parent, data.abs_scale, data.font_size);
-        } else {
-            self.node.compute(parent, 1.0, 16.0);
+
+        let mut abs_scale = 1.0;
+        let mut font_size = 16.0;
+
+        if let Some(master_data) = self.obtain_topdata() {
+            abs_scale = master_data.abs_scale;
+            font_size = master_data.font_size;
         }
+
+        self.node.compute_layout(parent, abs_scale, font_size);
+        self.node.compute(abs_scale, font_size);
     }
 }
 
 /// ## Node compute trait
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
-    fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    fn compute_self(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute(&mut self, abs_scale: f32, font_size: f32);
+    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
+    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     
-    fn compute_self(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
         let depth = self.get_depth();
@@ -338,29 +344,27 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     }
     
     
-    fn compute(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) {
+    fn compute(&mut self, abs_scale: f32, font_size: f32) {
 
-        self.compute_self(parent, abs_scale, font_size);
-
-        if let Some(node_data) = &self.data {
-
-            // Compute subnodes divs
-            //self.compute_content_size(node_data.rectangle, abs_scale, font_size);
-        }
-
-        if let Some(node_data) = &mut self.data {
+        if let Some(ancestor_data) = &mut self.data {
 
             // Enter recursion
-            for (_, node) in &mut self.nodes {
-                node.compute(node_data.rectangle, abs_scale, font_size);
+            for (_, subnode) in &mut self.nodes {
+                subnode.compute_layout(ancestor_data.rectangle, abs_scale, font_size);
+
+                if let Some(node_data) = &subnode.data {
+                    subnode.compute_content(node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
+                }
+
+                subnode.compute(abs_scale, font_size);
             }
         }
 
     }
-    fn compute_content_size(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) -> Vec2 {
+    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
-        //let mut parent_content_size = Vec2::ZERO;
+        let mut content_size = Vec2::ZERO;
 
         // Sort mutable pointers into matrix
         let mut i = 0;
@@ -379,35 +383,22 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
         // Get the offset position
-        let offset = parent.pos.xy();
-        let mut local_offset = Vec2::ZERO;
+        //let mut line_offset = 0.0;
+        let mut cursor = Vec2::ZERO;
 
         // Loop over each line in matrix to calculate position
-        //let mut local_offset_y = 0.0;
         for line in &mut matrix {
 
-            info!("NEW LINE");
-
             // Loop over each subnode in line to calculate position
-            local_offset.x = 0.0;
+            cursor.x = 0.0;
             let mut previous_margin_x = 0.0;
-            let mut previous_y = 0.0;
+            let mut line_height = 0.0;
             for subnode in line {
 
-                // Reverse recursion
-                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout {
-                    layout.compute_padding(parent.size, abs_scale, font_size)
-                } else {
-                    unreachable!();
-                };
-
-                info!("NEW SUBNODE");
-
-                let mut rectangle = parent;
-                rectangle.pos.x += padding.z;
-                rectangle.pos.y += padding.y;
-                let potential_content = subnode.compute_content_size(rectangle, abs_scale, font_size);
-
+                // Compute padding
+                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
+                let pos = Vec2::new(position.x + padding.z, position.y + padding.y);
+                let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
                 let subnode_data = subnode.data.as_mut().unwrap();
@@ -415,39 +406,35 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     
                     // Compute size
                     let mut subnode_content = subnode_data.content_size;
-                    if potential_content != Vec2::ZERO {
-                        subnode_content = potential_content;
-                    }
-                    let (size, margin) = layout.compute(subnode_content, parent.size, abs_scale, font_size);
+                    if potential_content != Vec2::ZERO { subnode_content = potential_content }
+                    let (size, margin) = layout.compute(subnode_content, size, abs_scale, font_size);
 
 
 
                     // Apply primary margin
-                    local_offset.x += f32::max(previous_margin_x, margin.z);
+                    cursor.x += f32::max(previous_margin_x, margin.z);
 
                     // Construct with primary margin
                     subnode_data.rectangle = Rect2D {
                         pos: Vec2 {
-                            x: offset.x + padding.z + local_offset.x,
-                            y: offset.y + padding.y + local_offset.y + margin.y,
+                            x: position.x + padding.z + cursor.x,
+                            y: position.y + padding.y + cursor.y + margin.y,
                         },
                         size,
                     }.into();
 
                     // Apply secondary margin
-                    local_offset.x += size.x;
-                    previous_y = f32::max(local_offset.y, margin.y + size.y + margin.w);
+                    cursor.x += size.x;
+
+                    line_height = f32::max(line_height, margin.y + size.y + margin.w);
                     previous_margin_x = margin.x;
                 }
             }
-            local_offset.y = previous_y;
-            //parent_content_size.x = local_offset.x;
+            cursor.y += line_height;
+            content_size.x = f32::max(content_size.x, cursor.x);
         }
-
-        //parent_content_size.y = local_offset_y;
-
-        //parent_content_size
-        local_offset
+        content_size.y = cursor.y;
+        content_size
     }
 }
 
