@@ -51,7 +51,7 @@ pub struct NodeData<N: Default + Component> {
     /// Optional data the user can append.
     pub data: Option<N>,
     /// Calculated rectangle from layout.
-    pub rect: Rect3D,
+    pub rectangle: Rect3D,
     /// Layout of this node.
     pub layout: Layout,
     /// Layout of subnodes and how to stack them.
@@ -68,6 +68,6 @@ impl <N:Default + Component> NodeData<N> {
 }
 impl <N: Default + Component> NiceDisplay for NodeData<N> {
     fn to_nicestr(&self) -> String {
-        format!("{} {} {}", self.layout.to_nicestr(), "|||".black(), self.rect.to_nicestr())
+        format!("{} {} {}", self.layout.to_nicestr(), "|||".black(), self.rectangle.to_nicestr())
     }
 }

@@ -71,6 +71,6 @@ fn render_update (mut painter: ShapePainter, query: Query<(&Dimension, &RenderCo
         painter.color = color.color;
         painter.thickness = 1.0;
         painter.corner_radii = color.corner_radii;
-        painter.rect(Vec2::new(dimension.size.x, dimension.size.y));
+        painter.rectangle(Vec2::new(dimension.size.x, dimension.size.y));
     }
 }*/

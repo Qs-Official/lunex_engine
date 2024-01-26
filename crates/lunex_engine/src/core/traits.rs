@@ -327,13 +327,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             // Compute node layout
             match &node_data.layout {
-                Layout::Window(l) => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Solid(l)  => node_data.rect = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Window(l) => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
+                Layout::Solid(l)  => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
                 _ => {},
             }
 
             // Assing depth
-            node_data.rect.pos.z = depth;
+            node_data.rectangle.pos.z = depth;
         }
     }
     
@@ -345,14 +345,14 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         if let Some(node_data) = &self.data {
 
             // Compute subnodes divs
-            //self.compute_content_size(node_data.rect, abs_scale, font_size);
+            //self.compute_content_size(node_data.rectangle, abs_scale, font_size);
         }
 
         if let Some(node_data) = &mut self.data {
 
             // Enter recursion
             for (_, node) in &mut self.nodes {
-                node.compute(node_data.rect, abs_scale, font_size);
+                node.compute(node_data.rectangle, abs_scale, font_size);
             }
         }
 
@@ -403,10 +403,10 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 info!("NEW SUBNODE");
 
-                let mut rect = parent;
-                rect.pos.x += padding.z;
-                rect.pos.y += padding.y;
-                let potential_content = subnode.compute_content_size(rect, abs_scale, font_size);
+                let mut rectangle = parent;
+                rectangle.pos.x += padding.z;
+                rectangle.pos.y += padding.y;
+                let potential_content = subnode.compute_content_size(rectangle, abs_scale, font_size);
 
 
                 // Unwrap guaranteed data
@@ -426,7 +426,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     local_offset.x += f32::max(previous_margin_x, margin.z);
 
                     // Construct with primary margin
-                    subnode_data.rect = Rect2D {
+                    subnode_data.rectangle = Rect2D {
                         pos: Vec2 {
                             x: offset.x + padding.z + local_offset.x,
                             y: offset.y + padding.y + local_offset.y + margin.y,

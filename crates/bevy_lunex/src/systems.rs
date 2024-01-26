@@ -76,14 +76,14 @@ pub fn draw_debug_gizmo<M:Default + Component, N:Default + Component, T: Compone
 
                 if let Layout::Solid(_) = container.layout { color = Color::YELLOW }
 
-                let mut pos = container.rect.pos.invert_y() + transform.translation;
-                pos.x += container.rect.size.x / 2.0;
-                pos.y += container.rect.size.y / -2.0;
+                let mut pos = container.rectangle.pos.invert_y() + transform.translation;
+                pos.x += container.rectangle.size.x / 2.0;
+                pos.y += container.rectangle.size.y / -2.0;
 
                 gizmos.rect(
                     pos,
                     Quat::from_rotation_y(0.0),
-                    container.rect.size,
+                    container.rectangle.size,
                     color,
                 );
             }
@@ -135,7 +135,7 @@ pub fn sync_linked_transform<M:Default + Component, N:Default + Component, T: Co
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
-                        transform.translation = container.rect.pos.invert_y();
+                        transform.translation = container.rectangle.pos.invert_y();
                     }
                 }
             }
@@ -155,9 +155,9 @@ pub fn sync_linked_dimension<M:Default + Component, N:Default + Component, T: Co
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
-                        if dimension.as_ref().size != container.rect.size {
-                            //info!("Updated dimension: {}", container.rect.size);
-                            dimension.size = container.rect.size;
+                        if dimension.as_ref().size != container.rectangle.size {
+                            //info!("Updated dimension: {}", container.rectangle.size);
+                            dimension.size = container.rectangle.size;
                         }
                     }
                 }
@@ -179,9 +179,9 @@ pub fn sync_linked_element_transform<M:Default + Component, N:Default + Componen
                 if let Ok(node) = ui.borrow_node(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
-                        transform.translation = container.rect.pos.invert_y();
-                        transform.translation.x += container.rect.size.x / 2.0;
-                        transform.translation.y += container.rect.size.y / -2.0;
+                        transform.translation = container.rectangle.pos.invert_y();
+                        transform.translation.x += container.rectangle.size.x / 2.0;
+                        transform.translation.y += container.rectangle.size.y / -2.0;
                     }
                 }
             }
