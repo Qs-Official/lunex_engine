@@ -1,6 +1,7 @@
 use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
+use bevy::log::info;
 use bevy::math::Vec3Swizzles;
 
 use crate::nodes::prelude::*;
@@ -378,6 +379,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         //let mut local_offset_y = 0.0;
         for line in &mut matrix {
 
+            info!("NEW LINE");
+
             // Loop over each subnode in line to calculate position
             local_offset.x = 0.0;
             let mut previous_margin_x = 0.0;
@@ -390,6 +393,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 } else {
                     unreachable!();
                 };
+
+                info!("NEW SUBNODE");
+                
                 let mut rect = parent;
                 rect.pos.x += padding.z;
                 rect.pos.y += padding.y;
