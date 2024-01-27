@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb};
 use lunex_engine::*;
 
-use crate::{Dimension, MovableByCamera, UiLink, Element};
+use crate::{Dimension, Element, MovableByCamera, UiLink, UiStack};
 
 
 /// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
@@ -115,6 +115,28 @@ pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>
                     if let Some(container) = node.obtain_data_mut() {
                         //println!("Changed layout");
                         container.layout = *layout;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+pub fn sync_stack<M:Default + Component, N:Default + Component, T: Component>(
+    mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
+    query: Query<(&UiLink, &UiStack), (With<T>, Changed<Layout>)>,
+) {
+    for (mut ui, children) in &mut uis {
+        for child in children {
+            // If child matches
+            if let Ok((link, stack)) = query.get(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data_mut() {
+                        //println!("Changed stack");
+                        container.stack = *stack;
                     }
                 }
             }
@@ -248,6 +270,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiPlugin<M, N,
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
+            .add_systems(Update, sync_stack::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, create_layout::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, sync_linked_transform::<M, N, T>)
             .add_systems(Update, (sync_linked_dimension::<M, N, T>, reconstruct_element_mesh::<T>).chain())
