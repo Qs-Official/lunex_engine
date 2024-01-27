@@ -420,6 +420,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let padding = layout.compute_padding(size, abs_scale, font_size);
                 let margin = layout.compute_margin(size, abs_scale, font_size);
 
+                // Apply primary offset
                 cursor += Vec2::max(previous_padmargin, margin.xy());
                 let position = Vec2::new(position.x + cursor.x, position.y + cursor.y);
 
@@ -442,11 +443,11 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     size,
                 }.into();
 
-                // Apply secondary margin
+                // Apply secondary offset
                 previous_padmargin = margin.zw();
                 cursor += size;
 
-                line_height = f32::max(line_height, margin.y + size.y + margin.w);
+                line_height = f32::max(line_height, cursor.y - content_size.y - padding.y);
                 cursor.y = content_size.y;
 
                 // END OF INSIDE SUBNODE
