@@ -415,8 +415,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             let mut previous_padmargin = _padding.xy();
             let mut line_size = 0.0;
-            cursor.x = 0.0;
-            cursor.y = content_size.y;
+            cursor.y = 0.0;                 // x -> y
+            cursor.x = content_size.x;      // x -> y
             
             for subnode in line {
 
@@ -459,15 +459,15 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 previous_padmargin = margin.zw();
                 cursor += size;
 
-                line_size = f32::max(line_size, cursor.y - content_size.y + f32::max(0.0, margin.w - _padding.y) - _padding.y);
-                cursor.y = content_size.y;
+                line_size = f32::max(line_size, cursor.x - content_size.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);     // y -> x
+                cursor.x = content_size.x;                                                                                                      // y -> x
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
             }
 
-            content_size.y += line_size;
-            content_size.x = f32::max(content_size.x, cursor.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+            content_size.x += line_size;                                                                                            // y -> x
+            content_size.y = f32::max(content_size.y, cursor.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);    // x -> y
 
             // END OF INSIDE LINE
             // =================================================================
@@ -556,7 +556,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 previous_padmargin = margin.zw();
                 cursor += size;
 
-                line_size = f32::max(line_size, cursor.y - content_size.y + f32::max(0.0, margin.w - _padding.y) - _padding.y);
+                line_size = f32::max(line_size, cursor.y - content_size.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
                 cursor.y = content_size.y;
 
                 // END OF INSIDE SUBNODE

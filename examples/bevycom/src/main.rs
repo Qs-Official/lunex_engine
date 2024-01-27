@@ -89,7 +89,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div1"),
-            Ui::Div::new().pad(Abs(64.0)).margin(Abs(25.0)).pack(),
+            Ui::Div::new().pad(Abs(64.0)).margin(Abs(25.0)).br().pack(),
         ));
 
         parent.spawn((
