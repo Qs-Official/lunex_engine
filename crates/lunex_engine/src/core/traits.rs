@@ -441,7 +441,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Apply primary offset
                 cursor += Vec2::max( Vec2::max(previous_padmargin, previous_line_padmargin), margin.xy());
-                //println!("previous: {:?} and current: {:?}", previous_padmargin, margin.xy());
                 let position = _position + cursor;
 
                 // Enter recursion to get the right content size
@@ -468,22 +467,18 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 cursor += size;
 
                 if horizontal {
-                    if cursor.y - content_size.y > line_size {
-                        line_padmargin = f32::max(line_padmargin, previous_padmargin.y);
-                    }
+                    if cursor.y - content_size.y > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.y) }
 
-                    line_size = f32::max(line_size, cursor.y - content_size.y);// + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
+                    line_size = f32::max(line_size, cursor.y - content_size.y);// - _padding.y);
                     cursor.y = content_size.y;
                 } else {
-                    if cursor.x - content_size.x > line_size {
-                        line_padmargin = f32::max(line_padmargin, previous_padmargin.x);
-                    }
+                    if cursor.x - content_size.x > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.x) }
 
-                    line_size = f32::max(line_size, cursor.x - content_size.x);// + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+                    line_size = f32::max(line_size, cursor.x - content_size.x);// - _padding.x);
                     cursor.x = content_size.x;
                 }
                 println!("CONTENT SIZE: {:?} ", content_size);
-                println!("LINE SIZE: {:?} for CURSOR: {:?} and LOCPOS: {:?} with POS: {:?}", line_size, cursor, position, _position);
+                println!("LINE SIZE: {:?} for CURSOR: {:?} and LOCPOS: {:?}", line_size, cursor, position);
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
@@ -492,11 +487,11 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             if horizontal {
                 previous_line_padmargin.y = line_padmargin;
                 content_size.y += line_size;
-                content_size.x = f32::max(content_size.x, cursor.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+                content_size.x = f32::max(content_size.x, cursor.x);// - _padding.x);
             } else {
                 previous_line_padmargin.x = line_padmargin;
                 content_size.x += line_size;
-                content_size.y = f32::max(content_size.y, cursor.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
+                content_size.y = f32::max(content_size.y, cursor.y);// - _padding.y);
             }
 
             // END OF INSIDE LINE
@@ -505,7 +500,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
         // END OF INSIDE MATRIX
         // =================================================================
-
         content_size
     }
 }
