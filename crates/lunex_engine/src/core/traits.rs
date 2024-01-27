@@ -434,7 +434,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Apply primary offset
                 cursor += Vec2::max(previous_padmargin, margin.xy());
-                let position = Vec2::new(position.x + cursor.x, position.y + cursor.y);
+                let position = position + cursor;
 
                 // Enter recursion to get the right content size
                 let potential_content = subnode.compute_content(position, size, padding, abs_scale, font_size);
@@ -531,7 +531,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Apply primary offset
                 cursor += Vec2::max(previous_padmargin, margin.xy());
-                let position = Vec2::new(position.x + cursor.x, position.y + cursor.y);
+                let position = position + cursor;
 
                 // Enter recursion to get the right content size
                 let potential_content = subnode.compute_content(position, size, padding, abs_scale, font_size);
