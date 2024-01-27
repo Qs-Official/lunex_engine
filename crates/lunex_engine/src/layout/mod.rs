@@ -11,7 +11,7 @@ pub mod prelude {
     pub use super::Div;
     pub use super::Layout;
     pub use super::{Align, Cover};
-    pub use super::{StackOptions, StackOrientation, StackPlacement};
+    pub use super::{StackOptions, StackDirection, LinePlacement};
 
     #[allow(non_snake_case)]
     pub mod Ui {

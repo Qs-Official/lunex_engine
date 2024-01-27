@@ -114,14 +114,14 @@ pub enum Sizing {
 
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum StackOrientation {
+pub enum StackDirection {
     #[default]
     Horizontal,
     Vertical,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum StackPlacement {
+pub enum LinePlacement {
     #[default]
     Start,
     Center,
@@ -134,11 +134,13 @@ pub enum StackPlacement {
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct StackOptions {
     /// Dictates on which axis should the nodes be stacked
-    orientation: StackOrientation,
-    /// Dictates if the stacking direction should be flipped
-    flipped: bool,
+    pub direction: StackDirection,
+    /// Dictates if the stacking direction should be flipped (flip around Y axis)
+    pub flipped: bool,
+    /// Dictates if the stacking direction should be inverted (flip around X axis)
+    pub inverted: bool,
     /// Dictates how should the nodes be positioned within one line
-    placement: StackPlacement,
+    pub placement: LinePlacement,
     /// Minimal gap between subnodes
-    item_gap: NodeSize<f32>,
+    pub item_gap: NodeSize<f32>,
 }
