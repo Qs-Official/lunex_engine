@@ -304,9 +304,8 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
             abs_scale = master_data.abs_scale;
             font_size = master_data.font_size;
         }
+
         self.node.compute_all(parent, abs_scale, font_size);
-        //self.node.compute_layout(parent, abs_scale, font_size);
-        //self.node.compute(abs_scale, font_size);
     }
 }
 
@@ -392,8 +391,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
         }
 
+
         // Get the offset position
-        //let mut line_offset = 0.0;
         let mut cursor = Vec2::ZERO;
 
         // Loop over each line in matrix to calculate position
@@ -407,8 +406,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 // Compute padding
                 let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
-                let pos = Vec2::new(position.x + padding.x, position.y + padding.y);
-                //info!("{}", pos);
+                let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
                 //let pos = Vec2::ZERO;
                 let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
