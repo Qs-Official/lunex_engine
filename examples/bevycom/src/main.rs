@@ -96,13 +96,13 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Rank"),
-            Ui::Div::new().pad(Abs(20.0)).pack(),
+            Ui::Div::new().pad(Abs::SM * 0.5).margin(Abs(20.0)).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Name"),
-            Ui::Div::new().pad(Abs(20.0)).pack(),
+            Ui::Div::new().pad(Abs::SM * 0.5).margin(Abs(20.0)).pack(),
         ));
 
     });
