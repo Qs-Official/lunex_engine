@@ -314,6 +314,7 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 trait UiNodeComputeTrait {
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
@@ -406,6 +407,79 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
                 let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
                 let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
+
+                // Unwrap guaranteed data
+                let subnode_data = subnode.data.as_mut().unwrap();
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    
+                    // Compute size
+                    let mut subnode_content = subnode_data.content_size;
+                    if potential_content != Vec2::ZERO { subnode_content = potential_content }
+                    let (size, margin) = layout.compute(subnode_content, size, abs_scale, font_size);
+
+                    // Apply primary margin
+                    cursor.x += f32::max(previous_margin_x, margin.x);
+
+                    // Construct with primary margin
+                    subnode_data.rectangle = Rect2D {
+                        pos: Vec2 {
+                            x: position.x + cursor.x,
+                            y: position.y + cursor.y + margin.y,
+                        },
+                        size,
+                    }.into();
+
+                    // Apply secondary margin
+                    cursor.x += size.x;
+
+                    line_height = f32::max(line_height, margin.y + size.y + margin.w);
+                    previous_margin_x = margin.z;
+                }
+            }
+            cursor.y += line_height;
+            content_size.x = f32::max(content_size.x, cursor.x + previous_margin_x);
+        }
+        content_size.y = cursor.y;
+        content_size
+    }
+    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
+
+        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+        let mut content_size = Vec2::ZERO;
+
+        // Sort mutable pointers into matrix
+        let mut i = 0;
+        matrix.push(Vec::new());
+        for (_, subnode) in &mut self.nodes {
+            if let Some(subnode_data) = &subnode.data {
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    let br = layout.force_break;
+                    matrix[i].push(subnode);
+                    if br {
+                        i += 1;
+                        matrix.push(Vec::new());
+                    }
+                }
+            }
+        }
+
+
+        // Get the offset position
+        let mut cursor = Vec2::ZERO;
+
+        // Loop over each line in matrix to calculate position
+        for line in &mut matrix {
+
+            // Loop over each subnode in line to calculate position
+            cursor.x = 0.0;
+            let mut previous_margin_x = 0.0;
+            let mut line_height = 0.0;
+            for subnode in line {
+
+                // Compute padding
+                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
+                let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
+                let potential_content = subnode.compute_content_flipped(pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
                 let subnode_data = subnode.data.as_mut().unwrap();

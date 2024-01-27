@@ -95,7 +95,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Div2"),
-            Ui::Div::new().pad(Abs(25.0)).pack(),
+            Ui::Div::new().pad(Abs(25.0)).br().pack(),
         ));
 
         parent.spawn((
