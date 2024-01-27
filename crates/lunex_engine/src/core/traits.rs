@@ -316,7 +316,7 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 trait UiNodeComputeTrait {
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
-    fn compute_stack_horizontal(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_stack_horizontal(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
     fn compute_stack_vertical(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
@@ -377,11 +377,11 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let stack_options = self.data.as_ref().unwrap().stack;
 
         match stack_options.direction {
-            StackDirection::Horizontal => self.compute_stack_horizontal(position, size, padding, abs_scale, font_size),
-            StackDirection::Vertical => self.compute_stack_vertical(position, size, padding, abs_scale, font_size),
+            StackDirection::Horizontal => self.compute_stack_horizontal(position, size, padding, abs_scale, font_size, true),
+            StackDirection::Vertical => self.compute_stack_horizontal(position, size, padding, abs_scale, font_size, false),
         }
     }
-    fn compute_stack_horizontal(&mut self, position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
+    fn compute_stack_horizontal(&mut self, position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -415,8 +415,14 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             let mut previous_padmargin = _padding.xy();
             let mut line_size = 0.0;
-            cursor.y = 0.0;                 // x -> y
-            cursor.x = content_size.x;      // x -> y
+            if horizontal {
+                cursor.x = 0.0;
+                cursor.y = content_size.y;
+            } else {
+                cursor.y = 0.0;
+                cursor.x = content_size.x;
+            }
+            
             
             for subnode in line {
 
@@ -459,15 +465,25 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 previous_padmargin = margin.zw();
                 cursor += size;
 
-                line_size = f32::max(line_size, cursor.x - content_size.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);     // y -> x
-                cursor.x = content_size.x;                                                                                                      // y -> x
+                if horizontal {
+                    line_size = f32::max(line_size, cursor.y - content_size.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
+                    cursor.y = content_size.y;
+                } else {
+                    line_size = f32::max(line_size, cursor.x - content_size.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+                    cursor.x = content_size.x;
+                }
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
             }
 
-            content_size.x += line_size;                                                                                            // y -> x
-            content_size.y = f32::max(content_size.y, cursor.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);    // x -> y
+            if horizontal {
+                content_size.y += line_size;
+                content_size.x = f32::max(content_size.x, cursor.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+            } else {
+                content_size.x += line_size;
+                content_size.y = f32::max(content_size.y, cursor.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
+            }
 
             // END OF INSIDE LINE
             // =================================================================
