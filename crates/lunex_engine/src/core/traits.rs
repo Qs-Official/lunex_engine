@@ -478,7 +478,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     cursor.x = content_size.x;
                 }
                 println!("CONTENT SIZE: {:?} ", content_size);
-                println!("LINE SIZE: {:?} for CURSOR: {:?} and LOCPOS: {:?}", line_size, cursor, position);
+                println!("LINE SIZE: {:?} for CURSOR: {:?}", line_size, cursor);
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
