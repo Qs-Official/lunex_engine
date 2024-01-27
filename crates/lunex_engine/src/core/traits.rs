@@ -438,7 +438,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 }
             }
             cursor.y += line_height;
-            content_size.x = f32::max(content_size.x, cursor.x);
+            content_size.x = f32::max(content_size.x, cursor.x + previous_margin_x);
         }
         content_size.y = cursor.y;
         content_size

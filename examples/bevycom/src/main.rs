@@ -82,13 +82,14 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.clone(),
-            Ui::Window::new().width(Prc::FULL).height(Abs(168.0)).pack(),
+            //Ui::Window::new().width(Prc::FULL).height(Abs(168.0)).pack(),
+            Ui::Div::new().pack(),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Div1"),
-            Ui::Div::new().pad(Abs(25.0)).margin(Abs(25.0)).br().pack(),
+            Ui::Div::new().pad(Abs(64.0)).margin(Abs(25.0)).pack(),
         ));
 
         parent.spawn((

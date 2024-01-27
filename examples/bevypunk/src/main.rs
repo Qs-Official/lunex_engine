@@ -50,7 +50,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
 
 
 
-        for _ in 0..1 {
+        for _ in 0..3 {
             parent.spawn((
                 MyWidget,
                 root.new(),
@@ -79,7 +79,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.add(".||#:0").add(".||#:1").new(),
-            Ui::Div::new().pad(Abs::MD).pack(),
+            Ui::Div::new().pad(Abs::XL).pad_y(Abs::MD).pack(),
         ));
 
         parent.spawn((
