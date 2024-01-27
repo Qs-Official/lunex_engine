@@ -447,7 +447,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 previous_padmargin = margin.zw();
                 cursor += size;
 
-                line_height = f32::max(line_height, cursor.y - content_size.y + f32::max(0.0, margin.w - _padding.y) - padding.y);
+                line_height = f32::max(line_height, cursor.y - content_size.y + f32::max(0.0, margin.w - _padding.y) - _padding.y);
                 cursor.y = content_size.y;
 
                 // END OF INSIDE SUBNODE
