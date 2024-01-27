@@ -6,6 +6,17 @@ use lunex_engine::prelude::*;
 pub type UiStack = StackOptions;
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
+pub struct UiContent {
+    pub size: Vec2,
+}
+impl UiContent {
+    pub fn new(size: impl Into<Vec2>) -> Self {
+        UiContent { size: size.into() }
+    }
+}
+
+
+#[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct MovableByCamera;
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]

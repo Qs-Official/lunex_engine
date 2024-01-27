@@ -2,7 +2,7 @@ use std::marker::PhantomData;
 use bevy::{math::Vec3A, prelude::*, render::primitives::Aabb};
 use lunex_engine::*;
 
-use crate::{Dimension, Element, MovableByCamera, UiLink, UiStack};
+use crate::{Dimension, Element, MovableByCamera, UiContent, UiLink, UiStack};
 
 
 /// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
@@ -143,6 +143,27 @@ pub fn sync_stack<M:Default + Component, N:Default + Component, T: Component>(
         }
     }
 }
+pub fn sync_content_size<M:Default + Component, N:Default + Component, T: Component>(
+    mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
+    query: Query<(&UiLink, &UiContent), (With<T>, Changed<Layout>)>,
+) {
+    for (mut ui, children) in &mut uis {
+        for child in children {
+            // If child matches
+            if let Ok((link, content)) = query.get(*child) {
+                // If node exists
+                if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
+                    //Should always be Some but just in case
+                    if let Some(container) = node.obtain_data_mut() {
+                        //println!("Changed content size");
+                        container.content_size = content.size;
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 
 pub fn sync_linked_transform<M:Default + Component, N:Default + Component, T: Component>(
@@ -270,6 +291,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiPlugin<M, N,
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
+            .add_systems(Update, sync_content_size::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, sync_stack::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, create_layout::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, sync_linked_transform::<M, N, T>)

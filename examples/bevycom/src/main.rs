@@ -89,21 +89,54 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Icon"),
-            Ui::Div::new().pad(Abs(60.0)).margin(Abs(20.0)).br().pack(),
+            Ui::Div::new().pad(Abs(64.0)).margin(Abs(20.0)).br().pack(),
             //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Rank"),
-            Ui::Div::new().pad(Abs::SM * 0.5).margin(Abs(20.0)).pack(),
+            Ui::Div::new().margin(Abs(10.0)).pack(),
+            UiContent::new((100.0, 20.0))
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Name"),
-            Ui::Div::new().pad(Abs::SM * 0.5).margin(Abs(20.0)).pack(),
+            Ui::Div::new().margin(Abs(10.0)).margin_b(Abs(20.0)).pack(),
+            UiContent::new((350.0, 40.0))
         ));
+
+        let list = head.add("List");
+        parent.spawn((
+            MyWidget,
+            list.clone(),
+            Ui::Div::new().pad_y(Abs(10.0)).margin(Abs(10.0)).pack(),
+            UiStack::new().gap_x(Abs(10.0))
+        ));
+
+        {
+            parent.spawn((
+                MyWidget,
+                list.add("Missions"),
+                Ui::Div::new().pack(),
+                UiContent::new((200.0, 20.0))
+            ));
+
+            parent.spawn((
+                MyWidget,
+                list.add("Kills"),
+                Ui::Div::new().pack(),
+                UiContent::new((200.0, 20.0))
+            ));
+
+            parent.spawn((
+                MyWidget,
+                list.add("Status"),
+                Ui::Div::new().pack(),
+                UiContent::new((200.0, 20.0))
+            ));
+        }
 
     });
 
