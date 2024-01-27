@@ -89,7 +89,8 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Icon"),
-            Ui::Div::new().pad(Abs(60.0)).margin(Abs(25.0)).br().pack(),
+            Ui::Div::new().pad(Abs(64.0)).br().pack(),
+            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
         parent.spawn((
@@ -102,13 +103,6 @@ fn setup(
             MyWidget,
             head.add("Name"),
             Ui::Div::new().pad(Abs(25.0)).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            head.add("Div4"),
-            //Ui::Div::new().size(Abs::XL).mar_l(Abs::ZERO).mar_t(Abs::MD).pack(),
-            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
     });

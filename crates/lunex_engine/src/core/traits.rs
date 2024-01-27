@@ -469,12 +469,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                 if horizontal {
                     if cursor.y - content_size.y > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.y) }
-
+                    previous_padmargin.y = 0.0;
                     line_size = f32::max(line_size, cursor.y - content_size.y);
                     debt.y = _padding.y;
                     cursor.y = content_size.y;
                 } else {
                     if cursor.x - content_size.x > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.x) }
+                    previous_padmargin.x = 0.0;
                     debt.x = _padding.x;
                     line_size = f32::max(line_size, cursor.x - content_size.x);
                     cursor.x = content_size.x;
@@ -497,7 +498,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             // END OF INSIDE LINE
             // =================================================================
         }
-        
+
         content_size -= debt;
         
         // END OF INSIDE MATRIX
