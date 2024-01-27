@@ -3,6 +3,7 @@ use std::borrow::Borrow;
 use bevy::{prelude::*, render::primitives::Aabb};
 use lunex_engine::prelude::*;
 
+pub type UiStack = StackOptions;
 
 #[derive(Component, Debug, Default, Clone, Copy, PartialEq)]
 pub struct MovableByCamera;

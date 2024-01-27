@@ -131,6 +131,7 @@ pub enum LinePlacement {
     Evenly,
 }
 
+#[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct StackOptions {
     /// Dictates on which axis should the nodes be stacked
@@ -141,6 +142,53 @@ pub struct StackOptions {
     pub inverted: bool,
     /// Dictates how should the nodes be positioned within one line
     pub placement: LinePlacement,
-    /// Minimal gap between subnodes
-    pub item_gap: NodeSize<f32>,
+    /// Minimal gap between subnodes and lines
+    pub gap: NodeSize<Vec2>,
+}
+impl StackOptions {
+    pub fn new() -> Self {
+        Default::default()
+    }
+    /// ## With direction
+    /// Replaces the direction with the new value.
+    pub fn direction(mut self, direction: StackDirection) -> Self {
+        self.direction = direction;
+        self
+    }
+    /// ## As flipped
+    /// Replaces the flipped value with the new value.
+    pub fn flipped(mut self, value: bool) -> Self {
+        self.flipped = value;
+        self
+    }
+    /// ## As inverted
+    /// Replaces the inversion value with the new value.
+    pub fn inverted(mut self, value: bool) -> Self {
+        self.inverted = value;
+        self
+    }
+    /// ## With placement
+    /// Replaces the placement with the new value.
+    pub fn placement(mut self, placement: LinePlacement) -> Self {
+        self.placement = placement;
+        self
+    }
+    /// ## With gap
+    /// Replaces the gap with the new value.
+    pub fn gap(mut self, gap: impl Into<NodeSize<Vec2>>) -> Self {
+        self.gap = gap.into();
+        self
+    }
+    /// ## With gap horizontal
+    /// Replaces the horizontal gap with the new value.
+    pub fn gap_x(mut self, gap: impl Into<NodeSize<f32>>) -> Self {
+        self.gap.set_x(gap);
+        self
+    }
+    /// ## With gap vertical
+    /// Replaces the vertical gap with the new value.
+    pub fn gap_y(mut self, gap: impl Into<NodeSize<f32>>) -> Self {
+        self.gap.set_y(gap);
+        self
+    }
 }

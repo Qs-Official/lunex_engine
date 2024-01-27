@@ -82,8 +82,8 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.clone(),
-            //Ui::Window::new().width(Prc::FULL).height(Abs(168.0)).pack(),
             Ui::Div::new().pack(),
+            UiStack::new().direction(StackDirection::Vertical),
         ));
 
         parent.spawn((
