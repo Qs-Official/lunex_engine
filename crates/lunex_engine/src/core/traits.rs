@@ -316,7 +316,6 @@ trait UiNodeComputeTrait {
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
-    
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
@@ -368,8 +367,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         for (_, subnode) in &mut self.nodes {
             subnode.compute_all(my_rectangle, abs_scale, font_size);
         }
-    }
-    
+    } 
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
