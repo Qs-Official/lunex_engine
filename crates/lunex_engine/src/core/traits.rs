@@ -407,7 +407,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // Compute padding
                 let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
                 let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
-                //let pos = Vec2::ZERO;
                 let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
@@ -418,8 +417,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     let mut subnode_content = subnode_data.content_size;
                     if potential_content != Vec2::ZERO { subnode_content = potential_content }
                     let (size, margin) = layout.compute(subnode_content, size, abs_scale, font_size);
-
-
 
                     // Apply primary margin
                     cursor.x += f32::max(previous_margin_x, margin.x);
