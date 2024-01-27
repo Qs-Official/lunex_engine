@@ -90,7 +90,7 @@ fn setup(
             MyWidget,
             head.add("Icon"),
             Ui::Div::new().pad(Abs(60.0)).margin(Abs(20.0)).br().pack(),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
+            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
         parent.spawn((
