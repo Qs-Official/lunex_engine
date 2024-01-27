@@ -380,7 +380,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             StackDirection::Vertical => self.compute_stack(position, size, padding, abs_scale, font_size, false),
         }
     }
-    fn compute_stack(&mut self, position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
+    fn compute_stack(&mut self, _position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -407,6 +407,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
         // Get the offset position
         let mut cursor = Vec2::ZERO;
+        let mut previous_line_padmargin = Vec2::ZERO;
 
         for line in &mut matrix {
             // =================================================================
@@ -414,6 +415,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             let mut previous_padmargin = _padding.xy();
             let mut line_size = 0.0;
+            let mut line_padmargin = 0.0;
             if horizontal {
                 cursor.x = 0.0;
                 cursor.y = content_size.y;
@@ -438,8 +440,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let margin = layout.compute_margin(size, abs_scale, font_size);
 
                 // Apply primary offset
-                cursor += Vec2::max(previous_padmargin, margin.xy());
-                let position = position + cursor;
+                cursor += Vec2::max( Vec2::max(previous_padmargin, previous_line_padmargin), margin.xy());
+                //println!("previous: {:?} and current: {:?}", previous_padmargin, margin.xy());
+                let position = _position + cursor;
 
                 // Enter recursion to get the right content size
                 let potential_content = subnode.compute_content(position, size, padding, abs_scale, font_size);
@@ -465,21 +468,33 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 cursor += size;
 
                 if horizontal {
-                    line_size = f32::max(line_size, cursor.y - content_size.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
+                    if cursor.y - content_size.y > line_size {
+                        line_padmargin = f32::max(line_padmargin, previous_padmargin.y);
+                    }
+
+                    line_size = f32::max(line_size, cursor.y - content_size.y);// + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
                     cursor.y = content_size.y;
                 } else {
-                    line_size = f32::max(line_size, cursor.x - content_size.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
+                    if cursor.x - content_size.x > line_size {
+                        line_padmargin = f32::max(line_padmargin, previous_padmargin.x);
+                    }
+
+                    line_size = f32::max(line_size, cursor.x - content_size.x);// + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
                     cursor.x = content_size.x;
                 }
+                println!("CONTENT SIZE: {:?} ", content_size);
+                println!("LINE SIZE: {:?} for CURSOR: {:?} and LOCPOS: {:?} with POS: {:?}", line_size, cursor, position, _position);
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
             }
 
             if horizontal {
+                previous_line_padmargin.y = line_padmargin;
                 content_size.y += line_size;
                 content_size.x = f32::max(content_size.x, cursor.x + f32::max(0.0, previous_padmargin.x - _padding.x) - _padding.x);
             } else {
+                previous_line_padmargin.x = line_padmargin;
                 content_size.x += line_size;
                 content_size.y = f32::max(content_size.y, cursor.y + f32::max(0.0, previous_padmargin.y - _padding.y) - _padding.y);
             }

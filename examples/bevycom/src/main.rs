@@ -82,25 +82,25 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.clone(),
-            Ui::Div::new().pack(),
+            Ui::Div::new().pad(Abs(25.0)).pack(),
             UiStack::new().direction(StackDirection::Vertical),
         ));
 
         parent.spawn((
             MyWidget,
-            head.add("Div1"),
-            Ui::Div::new().pad(Abs(64.0)).margin(Abs(25.0)).br().pack(),
+            head.add("Icon"),
+            Ui::Div::new().pad(Abs(60.0)).margin(Abs(25.0)).br().pack(),
         ));
 
         parent.spawn((
             MyWidget,
-            head.add("Div2"),
-            Ui::Div::new().pad(Abs(25.0)).br().pack(),
+            head.add("Rank"),
+            Ui::Div::new().pad(Abs(25.0)).pack(),
         ));
 
         parent.spawn((
             MyWidget,
-            head.add("Div3"),
+            head.add("Name"),
             Ui::Div::new().pad(Abs(25.0)).pack(),
         ));
 
