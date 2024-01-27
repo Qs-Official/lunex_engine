@@ -410,6 +410,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let mut previous_line_padmargin = Vec2::ZERO;
         let mut debt = Vec2::ZERO;
 
+        let mut _i = 0;
         for line in &mut matrix {
             // =================================================================
             // INSIDE LINE
@@ -420,12 +421,14 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             if horizontal {
                 cursor.x = 0.0;
                 cursor.y = content_size.y;
+                if _i != 0 { previous_padmargin.y = 0.0 }
             } else {
                 cursor.y = 0.0;
                 cursor.x = content_size.x;
+                if _i != 0 { previous_padmargin.x = 0.0 }
             }
             
-            
+            let mut _ii = 0;
             for subnode in line {
 
                 // =================================================================
@@ -440,8 +443,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let padding = layout.compute_padding(size, abs_scale, font_size);
                 let margin = layout.compute_margin(size, abs_scale, font_size);
 
+                println!("Before vursor1: {}, {}, {}", previous_padmargin, previous_line_padmargin, margin.xy());
                 // Apply primary offset
-                cursor += Vec2::max( Vec2::max(previous_padmargin, previous_line_padmargin), margin.xy());  //25
+                cursor += Vec2::max( Vec2::max(previous_padmargin, previous_line_padmargin), margin.xy());
                 let position = _position + cursor;
 
                 // Enter recursion to get the right content size
@@ -463,26 +467,29 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     size,
                 }.into();
 
+                println!("Cursor1: {}", cursor);
+
                 // Apply secondary offset
                 previous_padmargin = margin.zw();
                 cursor += size;
 
                 if horizontal {
                     if cursor.y - content_size.y > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.y) }
-                    previous_padmargin.y = 0.0;
                     line_size = f32::max(line_size, cursor.y - content_size.y);
                     debt.y = _padding.y;
                     cursor.y = content_size.y;
                 } else {
                     if cursor.x - content_size.x > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.x) }
-                    previous_padmargin.x = 0.0;
                     debt.x = _padding.x;
                     line_size = f32::max(line_size, cursor.x - content_size.x);
                     cursor.x = content_size.x;
                 }
 
+                println!("Cursor2: {}", cursor);
+
                 // END OF INSIDE SUBNODE
                 // =================================================================
+                _ii += 1;
             }
 
             if horizontal {
@@ -497,6 +504,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             // END OF INSIDE LINE
             // =================================================================
+            _i += 1;
         }
 
         content_size -= debt;
