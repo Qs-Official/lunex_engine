@@ -305,20 +305,76 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
             abs_scale = master_data.abs_scale;
             font_size = master_data.font_size;
         }
-
-        self.node.compute_layout(parent, abs_scale, font_size);
-        self.node.compute(abs_scale, font_size);
+        self.node.compute_all(parent, abs_scale, font_size);
+        //self.node.compute_layout(parent, abs_scale, font_size);
+        //self.node.compute(abs_scale, font_size);
     }
 }
 
 /// ## Node compute trait
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
+    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute(&mut self, abs_scale: f32, font_size: f32);
     fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> bool;
-    fn compute_content(&mut self, computed: bool, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
+    
+    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+
+        // Get depth before mutating self
+        let depth = self.get_depth();
+        
+        let mut skip = true;
+        let mut is_parametric = false;
+
+        // Check here if computation is required for partial recalculation
+
+        // Compute my layout and return computed rectangle for recursion
+        let my_rectangle = if let Some(node_data) = &mut self.data {
+
+            // Overwrite passed style with font size
+            if let Some(fnt) = node_data.font_size { font_size = fnt }
+
+            // Compute node layout
+            match &node_data.layout {
+                Layout::Div(_) => {
+                    is_parametric = true;
+                },
+                Layout::Window(l) => {
+                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
+                    skip = false;
+                },
+                Layout::Solid(l)  => {
+                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
+                    skip = false;
+                },
+            }
+
+            // Adding depth
+            node_data.rectangle.pos.z = depth;
+            node_data.rectangle
+
+        } else { return; };
+
+        if skip == false {
+            if is_parametric {
+                //compute divs with inherited scale
+                self.compute_content(parent.pos.xy(), parent.size, abs_scale, font_size);
+            } else {
+                //compute divs with my rectangle scale
+                self.compute_content(my_rectangle.pos.xy(), my_rectangle.size, abs_scale, font_size);
+            }
+        }
+
+        // Enter recursion
+        for (_, subnode) in &mut self.nodes {
+            subnode.compute_all(my_rectangle, abs_scale, font_size);
+        }
+    }
+    
+    
     fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) -> bool {
 
         let mut computed = false;
@@ -353,7 +409,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let computed = subnode.compute_layout(ancestor_data.rectangle, abs_scale, font_size);
 
                 if let Some(node_data) = &subnode.data {
-                    subnode.compute_content(computed, node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
+                    //subnode.compute_content(computed, node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
                 }
 
                 subnode.compute(abs_scale, font_size);
@@ -361,9 +417,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
     }
-    fn compute_content(&mut self, computed: bool, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
-
-        if computed == true { return self.data.as_ref().unwrap().content_size; }
+    fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -402,7 +456,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let pos = Vec2::new(position.x + padding.x, position.y + padding.y);
                 //info!("{}", pos);
                 //let pos = Vec2::ZERO;
-                let potential_content = subnode.compute_content(false, pos, size, abs_scale, font_size);
+                let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
                 // Unwrap guaranteed data
                 let subnode_data = subnode.data.as_mut().unwrap();
