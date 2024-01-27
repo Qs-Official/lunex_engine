@@ -2,6 +2,7 @@ use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
 use bevy::math::Vec3Swizzles;
+use bevy::math::Vec4Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
@@ -314,7 +315,7 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 trait UiNodeComputeTrait {
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
-    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
@@ -357,10 +358,10 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         if skip == false {
             if is_parametric {
                 //compute divs with inherited scale
-                self.compute_content(parent.pos.xy(), parent.size, abs_scale, font_size);
+                self.compute_content_flipped(parent.pos.xy(), parent.size, Vec4::ZERO, abs_scale, font_size);
             } else {
                 //compute divs with my rectangle scale
-                self.compute_content(my_rectangle.pos.xy(), my_rectangle.size, abs_scale, font_size);
+                self.compute_content_flipped(my_rectangle.pos.xy(), my_rectangle.size, Vec4::ZERO, abs_scale, font_size);
             }
         }
 
@@ -404,7 +405,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             for subnode in line {
 
                 // Compute padding
-                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
+                /* let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
                 let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
                 let potential_content = subnode.compute_content(pos, size, abs_scale, font_size);
 
@@ -434,7 +435,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
                     line_height = f32::max(line_height, margin.y + size.y + margin.w);
                     previous_margin_x = margin.z;
-                }
+                } */
             }
             cursor.y += line_height;
             content_size.x = f32::max(content_size.x, cursor.x + previous_margin_x);
@@ -442,7 +443,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         content_size.y = cursor.y;
         content_size
     }
-    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
+    fn compute_content_flipped(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -464,55 +465,78 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
 
+        // =================================================================
+        // INSIDE MATRIX
+
         // Get the offset position
         let mut cursor = Vec2::ZERO;
 
-        // Loop over each line in matrix to calculate position
         for line in &mut matrix {
+            // =================================================================
+            // INSIDE LINE
 
-            // Loop over each subnode in line to calculate position
-            cursor.x = 0.0;
-            let mut previous_margin_x = 0.0;
+            let mut previous_padmargin = padding.xy();
             let mut line_height = 0.0;
+            cursor.x = 0.0;
+            cursor.y = content_size.y;
+            
             for subnode in line {
 
-                // Compute padding
-                let padding = if let Layout::Div(layout) = &subnode.data.as_ref().unwrap().layout { layout.compute_padding(size, abs_scale, font_size) } else { unreachable!(); };
-                let pos = Vec2::new(position.x + padding.x + cursor.x, position.y + padding.y + cursor.y);
-                let potential_content = subnode.compute_content_flipped(pos, size, abs_scale, font_size);
+                // =================================================================
+                // INSIDE SUBNODE
 
-                // Unwrap guaranteed data
+                // Fetch data
                 let subnode_data = subnode.data.as_mut().unwrap();
-                if let Layout::Div(layout) = &subnode_data.layout {
-                    
-                    // Compute size
-                    let mut subnode_content = subnode_data.content_size;
-                    if potential_content != Vec2::ZERO { subnode_content = potential_content }
-                    let (size, margin) = layout.compute(subnode_content, size, abs_scale, font_size);
+                let layout = if let Layout::Div(layout) = subnode_data.layout { layout } else { unreachable!() };
 
-                    // Apply primary margin
-                    cursor.x += f32::max(previous_margin_x, margin.x);
 
-                    // Construct with primary margin
-                    subnode_data.rectangle = Rect2D {
-                        pos: Vec2 {
-                            x: position.x + cursor.x,
-                            y: position.y + cursor.y + margin.y,
-                        },
-                        size,
-                    }.into();
+                // Get padding & margin => compute right position
+                let padding = layout.compute_padding(size, abs_scale, font_size);
+                let margin = layout.compute_margin(size, abs_scale, font_size);
 
-                    // Apply secondary margin
-                    cursor.x += size.x;
+                cursor += Vec2::max(previous_padmargin, margin.xy());
+                let position = Vec2::new(position.x + cursor.x, position.y + cursor.y);
 
-                    line_height = f32::max(line_height, margin.y + size.y + margin.w);
-                    previous_margin_x = margin.z;
-                }
+                // Enter recursion to get the right content size
+                let potential_content = subnode.compute_content_flipped(position, size, padding, abs_scale, font_size);
+
+
+                // Fetch data again, because they were modified
+                let subnode_data = subnode.data.as_mut().unwrap();
+
+
+                // Compute size with the right content size
+                let mut subnode_content = subnode_data.content_size;
+                if potential_content != Vec2::ZERO { subnode_content = potential_content }
+                let size = layout.compute(subnode_content, size, abs_scale, font_size);
+
+                // Update computed subnode rectangle
+                subnode_data.rectangle = Rect2D {
+                    pos: position,
+                    size,
+                }.into();
+
+                // Apply secondary margin
+                previous_padmargin = margin.zw();
+                cursor += size;
+
+                line_height = f32::max(line_height, margin.y + size.y + margin.w);
+                cursor.y = content_size.y;
+
+                // END OF INSIDE SUBNODE
+                // =================================================================
             }
-            cursor.y += line_height;
-            content_size.x = f32::max(content_size.x, cursor.x + previous_margin_x);
+
+            content_size.y += line_height;
+            content_size.x = f32::max(content_size.x, cursor.x - padding.x);
+
+            // END OF INSIDE LINE
+            // =================================================================
         }
-        content_size.y = cursor.y;
+
+        // END OF INSIDE MATRIX
+        // =================================================================
+
         content_size
     }
 }

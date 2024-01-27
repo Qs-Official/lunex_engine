@@ -225,20 +225,22 @@ impl Div {
 
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub(crate) fn compute(&self, content_size: Vec2, parent_size: Vec2, abs_scale: f32, font_size: f32) -> (Vec2, Vec4) {
+    pub(crate) fn compute(&self, content_size: Vec2, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
         let border = self.border.evaluate(abs_scale, parent_size.xyxy(), font_size);
         let padding = self.padding.evaluate(abs_scale, parent_size.xyxy(), font_size);
-        (
-            Vec2 {
-                x: content_size.x + padding.x + padding.z + border.x + border.z,
-                y: content_size.y + padding.y + padding.w + border.y + border.w,
-            },
-            self.margin.evaluate(abs_scale, parent_size.xyxy(), font_size)
-        )
+        
+        Vec2 {
+            x: content_size.x + padding.x + padding.z + border.x + border.z,
+            y: content_size.y + padding.y + padding.w + border.y + border.w,
+        }
+        
     }
 
     pub(crate) fn compute_padding(&self, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec4 {
         self.padding.evaluate(abs_scale, parent_size.xyxy(), font_size)
+    }
+    pub(crate) fn compute_margin(&self, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec4 {
+        self.margin.evaluate(abs_scale, parent_size.xyxy(), font_size)
     }
 
 
