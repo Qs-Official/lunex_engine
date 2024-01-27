@@ -369,7 +369,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             subnode.compute_all(my_rectangle, abs_scale, font_size);
         }
     }
-    fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
+    fn compute_content(&mut self, position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -401,7 +401,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             // =================================================================
             // INSIDE LINE
 
-            let mut previous_padmargin = padding.xy();
+            let mut previous_padmargin = _padding.xy();
             let mut line_height = 0.0;
             cursor.x = 0.0;
             cursor.y = content_size.y;
@@ -455,7 +455,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             content_size.y += line_height;
-            content_size.x = f32::max(content_size.x, cursor.x - padding.x);
+            content_size.x = f32::max(content_size.x, cursor.x - _padding.x);
 
             // END OF INSIDE LINE
             // =================================================================
