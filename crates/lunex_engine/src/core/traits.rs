@@ -1,7 +1,6 @@
 use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
-use bevy::log::info;
 use bevy::math::Vec3Swizzles;
 
 use crate::nodes::prelude::*;
@@ -315,8 +314,6 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    fn compute(&mut self, abs_scale: f32, font_size: f32);
-    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32) -> bool;
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
@@ -374,49 +371,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
     }
     
-    
-    fn compute_layout(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) -> bool {
-
-        let mut computed = false;
-
-        // Get depth before mutating self
-        let depth = self.get_depth();
-        
-        // Check here if computation is required for partial recalculation
-        if let Some(node_data) = &mut self.data {
-
-            // Overwrite passed style with font size
-            if let Some(fnt) = node_data.font_size { font_size = fnt }
-
-            // Compute node layout
-            match &node_data.layout {
-                Layout::Window(l) => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
-                Layout::Solid(l)  => node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into(),
-                _ => { computed = true },
-            }
-
-            // Assing depth
-            node_data.rectangle.pos.z = depth;
-        }
-        computed
-    }
-    fn compute(&mut self, abs_scale: f32, font_size: f32) {
-
-        if let Some(ancestor_data) = &mut self.data {
-
-            // Enter recursion
-            for (_, subnode) in &mut self.nodes {
-                let computed = subnode.compute_layout(ancestor_data.rectangle, abs_scale, font_size);
-
-                if let Some(node_data) = &subnode.data {
-                    //subnode.compute_content(computed, node_data.rectangle.pos.xy(), node_data.rectangle.size, abs_scale, font_size);
-                }
-
-                subnode.compute(abs_scale, font_size);
-            }
-        }
-
-    }
     fn compute_content(&mut self, position: Vec2, size: Vec2, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();

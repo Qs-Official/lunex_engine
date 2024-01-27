@@ -61,7 +61,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.add(".||#:0").new(),
-            Ui::Div::new().pad_y(Abs::MD).pad_x(Prc(15.0)).br().pack(),
+            Ui::Div::new().pad(Abs::MD).br().pack(),
         ));
 
         parent.spawn((
@@ -79,7 +79,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.add(".||#:0").add(".||#:2").new(),
-            Ui::Div::new().pad(Abs::MD).pack(),
+            Ui::Div::new().pad_y(Abs::MD).pad_x(Prc(15.0)).pack(),
         ));
 
 
