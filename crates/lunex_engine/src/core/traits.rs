@@ -1,6 +1,7 @@
 use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
+use bevy::math::Vec3Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
@@ -319,7 +320,7 @@ trait UiNodeComputeTrait {
     //fn compute_stack(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
     fn compute_content(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
     fn compute_stack(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
-    //fn align_stack(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
+    fn align_stack(&mut self, ancestor_position: Vec2);
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
     /* fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
@@ -667,9 +668,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // Compute size with the right content size
                 let mut subnode_content = subnode_data.content_size;
                 if potential_content != Vec2::ZERO { subnode_content = potential_content }
-                //let size = layout.compute(subnode_content, ancestor_size, abs_scale, font_size);
-
-                // !!!! LEAVE OUT PADDING BECAUSE CONTENT SIZE HAS PADDING ALREADY EMBEDDED!
                 let size = layout.compute_size(subnode_content, padding, border);
 
 
@@ -691,6 +689,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
 
             let mut cursor = 0.0;
+            //let mut cursor_debt = 0.0;
 
             let mut biggest_line_padreach = 0.0;
             let mut biggest_line_boundary = 0.0;
@@ -748,6 +747,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     size,
                 }.into();
 
+                let subnode_data = subnode.data.as_ref().unwrap();
+                subnode.align_stack(subnode_data.rectangle.pos.xy());
+
                 biggest_line_padreach = f32::max(biggest_line_padreach, if horizontal { my_offset.y + size.y + forced_margin.w } else { my_offset.x + size.x + forced_margin.z });
                 biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
 
@@ -757,11 +759,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             if horizontal {
+                content_size.x = f32::max(content_size.x, cursor - ancestor_padding.x);
                 context_padding.y = comline.line_padding;
-                content_size.y = f32::max(content_size.y, cursor)
+
             } else {
+                content_size.y = f32::max(content_size.y, cursor - ancestor_padding.y);
                 context_padding.x = comline.line_padding;
-                content_size.x = f32::max(content_size.x, cursor)
+
             }
 
             comline.line_padding = biggest_line_padreach - biggest_line_boundary;
@@ -773,14 +777,77 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
         if horizontal {
-            content_size.x = f32::max(content_size.x, line_cursor)
+            content_size.y = f32::max(content_size.y, line_cursor - ancestor_padding.y - ancestor_padding.w)
         } else {
-            content_size.y = f32::max(content_size.y, line_cursor)
+            content_size.x = f32::max(content_size.x, line_cursor - ancestor_padding.x)
         }
         
         // END OF INSIDE MATRIX
         // =================================================================
         content_size
+    }
+    fn align_stack(&mut self, ancestor_position: Vec2) {
+        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+
+        // Sort mutable pointers into matrix
+        let mut i = 0;
+        matrix.push(Vec::new());
+        for (_, subnode) in &mut self.nodes {
+            if let Some(subnode_data) = &subnode.data {
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    let br = layout.force_break;
+                    matrix[i].push(subnode);
+                    if br {
+                        i += 1;
+                        matrix.push(Vec::new());
+                    }
+                }
+            }
+        }
+
+
+        // =================================================================
+        // INSIDE MATRIX
+
+
+        // Line loop
+        //-----------------------------//
+        let mut _i = 0;               //
+        let _i_max = matrix.len();   //
+        for line in &mut matrix {   //
+            // =================================================================
+            // INSIDE LINE
+
+
+            // Subnode loop
+            //---------------------------------//
+            let mut _ii = 0;                  //
+            let _ii_max = line.len();        //
+            for subnode in &mut *line {     //
+                // =================================================================
+                // INSIDE SUBNODE
+
+                let subnode_data = subnode.data.as_mut().unwrap();
+                subnode_data.rectangle.pos.x += ancestor_position.x;
+                subnode_data.rectangle.pos.y += ancestor_position.y;
+
+                let subnode_data = subnode.data.as_ref().unwrap();
+                subnode.align_stack(subnode_data.rectangle.pos.xy());
+
+                // END OF INSIDE SUBNODE
+                // =================================================================
+                _ii += 1;
+            }
+
+
+            // END OF INSIDE LINE
+            // =================================================================
+            _i += 1;
+        }
+
+        
+        // END OF INSIDE MATRIX
+        // =================================================================
     }
 }
 
