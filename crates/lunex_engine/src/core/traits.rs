@@ -695,6 +695,9 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             let mut cursor = 0.0;
 
+            let mut biggest_line_padreach = 0.0;
+            let mut biggest_line_boundary = 0.0;
+
             // Second pass to align them
             //---------------------------------//
             let mut _ii = 0;                  //
@@ -748,8 +751,12 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     size,
                 }.into();
 
-                comline.line_padding = f32::max(comline.line_padding, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
-            
+                //println!("{} {}", forced_margin.z, forced_margin.w);
+                //println!("b {}", biggest_line_padreach);
+                biggest_line_padreach = f32::max(biggest_line_padreach, if horizontal { my_offset.y + size.y + forced_margin.w } else { my_offset.x + size.x + forced_margin.z });
+                //println!("a {}", biggest_line_padreach);
+                
+                biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });            
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
@@ -763,8 +770,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 context_padding.x = comline.line_padding;
                 content_size.x = f32::max(content_size.x, cursor)
             }
-
-            line_cursor += comline.line_length - comline.line_padding;
+            comline.line_padding = biggest_line_padreach - biggest_line_boundary;
+            line_cursor += comline.line_length;
 
 
             // END OF INSIDE LINE
@@ -792,6 +799,7 @@ struct ComputedDiv {
 
 struct ComputedLine {
     divs: Vec<ComputedDiv>,
+    /// MARGIN1 + SIZE + MARGIN2
     line_length: f32,
     line_padding: f32,
 }
