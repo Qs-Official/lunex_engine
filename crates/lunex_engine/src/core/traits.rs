@@ -776,7 +776,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             comline.line_padding = biggest_line_padreach - biggest_line_boundary;
             //println!("{}", comline.line_padding);
-            line_cursor += comline.line_length - comline.line_padding;  //HERE IS THE PROBLEM
+            line_cursor += comline.line_length;  //HERE IS THE PROBLEM
 
             // END OF INSIDE LINE
             // =================================================================
