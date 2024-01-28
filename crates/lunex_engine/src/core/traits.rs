@@ -777,7 +777,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
         if horizontal {
-            content_size.y = f32::max(content_size.y, line_cursor - ancestor_padding.y - ancestor_padding.w)
+            content_size.y = f32::max(content_size.y, line_cursor - ancestor_padding.y)
         } else {
             content_size.x = f32::max(content_size.x, line_cursor - ancestor_padding.x)
         }
