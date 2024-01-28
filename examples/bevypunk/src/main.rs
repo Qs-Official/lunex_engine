@@ -39,7 +39,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
             MyWidget,
             root.clone(),
             Ui::Window::FULL.pack(),
-            UiStack::new().direction(StackDirection::Vertical).gap(Abs::SM),
+            UiStack::new().direction(StackDirection::Vertical)//.gap(Abs::SM),
         ));
 
 
@@ -51,13 +51,11 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
 
 
 
-        for _ in 0..1 {
-            parent.spawn((
-                MyWidget,
-                root.new(),
-                Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
-            ));
-        }
+        parent.spawn((
+            MyWidget,
+            root.new(),
+            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
+        ));
         parent.spawn((
             MyWidget,
             root.new(),
@@ -66,18 +64,18 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
+            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).pad_x(Abs::MD).margin(Abs::SM).br().pack(),
+            Ui::Div::new().pad(Abs::MD).pad_x(Abs::XL).margin(Abs::SM).br().pack(),
         ));
 
 
 
-        for _ in 0..5 {
+        for _ in 0..2 {
             parent.spawn((
                 MyWidget,
                 root.new(),
@@ -91,7 +89,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
             Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).br().pack(),
         ));
 
-        for _ in 0..6 {
+        for _ in 0..3 {
             parent.spawn((
                 MyWidget,
                 root.new(),
