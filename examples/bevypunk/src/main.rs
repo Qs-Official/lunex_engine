@@ -39,6 +39,7 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
             MyWidget,
             root.clone(),
             Ui::Window::FULL.pack(),
+            UiStack::new().direction(StackDirection::Vertical),
         ));
 
 
@@ -50,18 +51,28 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
 
 
 
-        for _ in 0..3 {
+        for _ in 0..1 {
             parent.spawn((
                 MyWidget,
                 root.new(),
-                Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).pack(),
+                Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
             ));
         }
+        parent.spawn((
+            MyWidget,
+            root.new(),
+            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::CENTER).pack(),
+        ));
+        parent.spawn((
+            MyWidget,
+            root.new(),
+            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
+        ));
 
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
+            Ui::Div::new().pad(Abs::MD).pad_x(Abs::MD).margin(Abs::SM).br().pack(),
         ));
 
 
