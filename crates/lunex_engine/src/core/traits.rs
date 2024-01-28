@@ -615,17 +615,17 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let mut context_padding = Vec4::ZERO;
         let mut line_cursor = 0.0;
 
-        //------------------------------//
-        let mut _i = 0;                 //
-        let _i_max = matrix.len()-1;    //
-        for line in &mut matrix {       //
+        //-----------------------------//
+        let mut _i = 0;               //
+        let _i_max = matrix.len();   //
+        for line in &mut matrix {   //
             // =================================================================
             // INSIDE LINE
 
             // APPLY PROPER CONTEXT PADDING
             match _i {
                 0 => if horizontal { context_padding.y = ancestor_padding.y } else { context_padding.x = ancestor_padding.x },
-                x if x ==_i_max => if horizontal { context_padding.w = ancestor_padding.w } else { context_padding.z = ancestor_padding.z },
+                x if x+1 ==_i_max => if horizontal { context_padding.w = ancestor_padding.w } else { context_padding.z = ancestor_padding.z },
                 _ => if horizontal { context_padding.y = f32::max(context_padding.y, gap.y) } else { context_padding.x = f32::max(context_padding.x, gap.x) },
             }
 
@@ -636,17 +636,17 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             };
 
             // First pass to compute sizes
-            //----------------------------------//
-            let mut _ii = 0;                    //
-            let _ii_max = line.len()-1;   //
-            for subnode in &mut *line {               //
+            //---------------------------------//
+            let mut _ii = 0;                  //
+            let _ii_max = line.len();        //
+            for subnode in &mut *line {     //
                 // =================================================================
                 // INSIDE SUBNODE
 
                 // APPLY PROPER CONTEXT PADDING
                 match _ii {
                     0 => if horizontal { context_padding.x = ancestor_padding.x } else { context_padding.y = ancestor_padding.y },
-                    x if x ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
+                    x if x+1 ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
                     _ => if horizontal { context_padding.x = f32::max(context_padding.x, gap.x) } else { context_padding.y = f32::max(context_padding.y, gap.y) },
                 }
 
@@ -696,17 +696,17 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             let mut cursor = 0.0;
 
             // Second pass to align them
-            //----------------------------------//
-            let mut _ii = 0;                    //
-            let _ii_max = line.len()-1;   //
-            for subnode in &mut *line {               //
+            //---------------------------------//
+            let mut _ii = 0;                  //
+            let _ii_max = line.len();        //
+            for subnode in &mut *line {     //
                 // =================================================================
                 // INSIDE SUBNODE
 
                 // APPLY PROPER CONTEXT PADDING
                 match _ii {
                     0 => if horizontal { context_padding.x = ancestor_padding.x } else { context_padding.y = ancestor_padding.y },
-                    x if x ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
+                    x if x+1 ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
                     _ => if horizontal { context_padding.x = f32::max(ancestor_padding.x, gap.x) } else { context_padding.y = f32::max(ancestor_padding.y, gap.y) },
                 }
 
