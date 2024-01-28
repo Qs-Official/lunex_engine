@@ -8,6 +8,7 @@ use crate::nodes::prelude::*;
 use crate::layout;
 use crate::Layout;
 use crate::MasterData;
+use crate::NodeSizeEvaluate;
 use crate::Rect2D;
 use crate::Rect3D;
 use crate::import::*;
@@ -315,11 +316,15 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
-    fn compute_stack(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
+    //fn position_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
+    //fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
+    //fn compute_stack(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
+    fn compute_content(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
+    fn compute_stack(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
+    //fn align_stack(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
-    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+    /* fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
         let depth = self.get_depth();
@@ -370,8 +375,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         for (_, subnode) in &mut self.nodes {
             subnode.compute_all(my_rectangle, abs_scale, font_size);
         }
-    }
-    fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
+    } */
+    /* fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let stack_options = self.data.as_ref().unwrap().stack;
 
@@ -379,8 +384,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             StackDirection::Horizontal => self.compute_stack(position, size, padding, abs_scale, font_size, true),
             StackDirection::Vertical => self.compute_stack(position, size, padding, abs_scale, font_size, false),
         }
-    }
-    fn compute_stack(&mut self, _position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
+    } */
+    /* fn compute_stack(&mut self, _position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
 
         let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
         let mut content_size = Vec2::ZERO;
@@ -512,8 +517,291 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         // END OF INSIDE MATRIX
         // =================================================================
         content_size
+    } */
+    
+
+    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+
+        // Get depth before mutating self
+        let depth = self.get_depth();
+        
+        let mut skip = true;
+        let mut is_parametric = false;
+
+        // Check here if computation is required for partial recalculation
+
+        // Compute my layout and return computed rectangle for recursion
+        let my_rectangle = if let Some(node_data) = &mut self.data {
+
+            // Overwrite passed style with font size
+            if let Some(fnt) = node_data.font_size { font_size = fnt }
+
+            // Compute node layout
+            match &node_data.layout {
+                Layout::Div(_) => {
+                    is_parametric = true;
+                },
+                Layout::Window(l) => {
+                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
+                    skip = false;
+                },
+                Layout::Solid(l)  => {
+                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
+                    skip = false;
+                },
+            }
+
+            // Adding depth
+            node_data.rectangle.pos.z = depth;
+            node_data.rectangle
+
+        } else { return; };
+
+        if skip == false {
+            if is_parametric {
+                //compute divs with inherited scale
+                self.compute_content(parent.size, Vec4::ZERO, abs_scale, font_size);
+            } else {
+                //compute divs with my rectangle scale
+                self.compute_content(my_rectangle.size, Vec4::ZERO, abs_scale, font_size);
+            }
+        }
+
+        // Enter recursion
+        for (_, subnode) in &mut self.nodes {
+            subnode.compute_all(my_rectangle, abs_scale, font_size);
+        }
+    }
+
+    fn compute_content(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
+
+        let stack_options = self.data.as_ref().unwrap().stack;
+
+        match stack_options.direction {
+            StackDirection::Horizontal => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, true),
+            StackDirection::Vertical => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, false),
+        }
+    }
+    /// This will compute the stack and position nodes ONLY locally as if every matrix starts at 0,0.
+    /// Secondary pass after alignment of parent nodes is required.
+    fn compute_stack(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
+
+        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+        let mut content_size = Vec2::ZERO;
+
+        // Sort mutable pointers into matrix
+        let mut i = 0;
+        matrix.push(Vec::new());
+        for (_, subnode) in &mut self.nodes {
+            if let Some(subnode_data) = &subnode.data {
+                if let Layout::Div(layout) = &subnode_data.layout {
+                    let br = layout.force_break;
+                    matrix[i].push(subnode);
+                    if br {
+                        i += 1;
+                        matrix.push(Vec::new());
+                    }
+                }
+            }
+        }
+
+
+        // =================================================================
+        // INSIDE MATRIX
+
+        let gap = self.data.as_ref().unwrap().stack.gap.evaluate(abs_scale, ancestor_size, font_size);
+        let align = self.data.as_ref().unwrap().stack.node_alignment.0;
+
+        let mut context_padding = Vec4::ZERO;
+        let mut line_cursor = 0.0;
+
+        //------------------------------//
+        let mut _i = 0;                 //
+        let _i_max = matrix.len()-1;    //
+        for line in &mut matrix {       //
+            // =================================================================
+            // INSIDE LINE
+
+            // APPLY PROPER CONTEXT PADDING
+            match _i {
+                0 => if horizontal { context_padding.y = ancestor_padding.y } else { context_padding.x = ancestor_padding.x },
+                x if x ==_i_max => if horizontal { context_padding.w = ancestor_padding.w } else { context_padding.z = ancestor_padding.z },
+                _ => if horizontal { context_padding.y = f32::max(context_padding.y, gap.y) } else { context_padding.x = f32::max(context_padding.x, gap.x) },
+            }
+
+            let mut comline = ComputedLine {
+                divs: Vec::new(),
+                line_length: 0.0,
+                line_padding: 0.0,
+            };
+
+            // First pass to compute sizes
+            //----------------------------------//
+            let mut _ii = 0;                    //
+            let _ii_max = line.len()-1;   //
+            for subnode in &mut *line {               //
+                // =================================================================
+                // INSIDE SUBNODE
+
+                // APPLY PROPER CONTEXT PADDING
+                match _ii {
+                    0 => if horizontal { context_padding.x = ancestor_padding.x } else { context_padding.y = ancestor_padding.y },
+                    x if x ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
+                    _ => if horizontal { context_padding.x = f32::max(context_padding.x, gap.x) } else { context_padding.y = f32::max(context_padding.y, gap.y) },
+                }
+
+                // Fetch data
+                let subnode_data = subnode.data.as_ref().unwrap();
+                let layout = if let Layout::Div(layout) = subnode_data.layout { layout } else { unreachable!() };
+
+                // Get padding & margin => compute range of motion
+                let padding = layout.compute_padding(ancestor_size, abs_scale, font_size);
+                let margin = layout.compute_margin(ancestor_size, abs_scale, font_size);
+                let border = layout.compute_border(ancestor_size, abs_scale, font_size);
+
+                // Enter recursion to get the right content size
+                //let potential_content = subnode.compute_content(ancestor_size, padding, abs_scale, font_size);
+
+                // Fetch data again, because they were modified
+                let subnode_data = subnode.data.as_mut().unwrap();
+
+
+                // Compute size with the right content size
+                //let mut subnode_content = subnode_data.content_size;
+                //if potential_content != Vec2::ZERO { subnode_content = potential_content }
+                //let size = layout.compute(subnode_content, ancestor_size, abs_scale, font_size);
+
+                // !!!! LEAVE OUT PADDING BECAUSE CONTENT SIZE HAS PADDING ALREADY EMBEDDED!
+                let size = layout.compute_size(Vec2::ZERO, padding, border);
+
+
+                let forced_margin = Vec4::max(context_padding, margin);
+                let line_length = if horizontal { forced_margin.y + size.y + forced_margin.w } else { forced_margin.x + size.x + forced_margin.z };
+
+                comline.line_length = f32::max(comline.line_length, line_length);
+                comline.divs.push(ComputedDiv {
+                    size,
+                    margin,
+                    forced_margin,
+                });
+
+                if horizontal { context_padding.x = margin.z; } else { context_padding.y = margin.w; }
+
+                // END OF INSIDE SUBNODE
+                // =================================================================
+                _ii += 1;
+            }
+
+
+            let mut cursor = 0.0;
+
+            // Second pass to align them
+            //----------------------------------//
+            let mut _ii = 0;                    //
+            let _ii_max = line.len()-1;   //
+            for subnode in &mut *line {               //
+                // =================================================================
+                // INSIDE SUBNODE
+
+                // APPLY PROPER CONTEXT PADDING
+                match _ii {
+                    0 => if horizontal { context_padding.x = ancestor_padding.x } else { context_padding.y = ancestor_padding.y },
+                    x if x ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
+                    _ => if horizontal { context_padding.x = f32::max(ancestor_padding.x, gap.x) } else { context_padding.y = f32::max(ancestor_padding.y, gap.y) },
+                }
+
+                // Fetch data
+                let subnode_data = subnode.data.as_ref().unwrap();
+                let layout = if let Layout::Div(layout) = subnode_data.layout { layout } else { unreachable!() };
+                let forced_margin = comline.divs[_ii].forced_margin;
+                let size = comline.divs[_ii].size;
+
+
+                let position_range = if horizontal {comline.line_length - forced_margin.y - size.y } else {comline.line_length - forced_margin.x - size.x };
+
+                let mut my_align = align;
+                let mut my_offset = Vec2::ZERO;
+                
+                if horizontal {
+                    if let Some(align) = layout.align_y { my_align = align.0 }
+
+                    cursor += forced_margin.x;
+                    my_offset = Vec2::new(cursor, forced_margin.y + (position_range/2.0) * my_align);
+                    cursor += size.x;
+
+                } else {
+                    if let Some(align) = layout.align_x { my_align = align.0 }
+
+                    cursor += forced_margin.y;
+                    my_offset = Vec2::new(forced_margin.x + (position_range/2.0) * my_align, cursor);
+                    cursor += size.y;
+
+                };
+                
+
+                // Fetch data again, because they were modified
+                let subnode_data = subnode.data.as_mut().unwrap();
+
+
+                subnode_data.rectangle = Rect2D {
+                    pos: my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) },
+                    size,
+                }.into();
+
+                comline.line_padding = f32::max(comline.line_padding, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
+            
+
+                // END OF INSIDE SUBNODE
+                // =================================================================
+                _ii += 1;
+            }
+
+            if horizontal {
+                context_padding.y = comline.line_padding;
+                content_size.y = f32::max(content_size.y, cursor)
+            } else {
+                context_padding.x = comline.line_padding;
+                content_size.x = f32::max(content_size.x, cursor)
+            }
+
+            line_cursor += comline.line_length - comline.line_padding;
+
+
+            // END OF INSIDE LINE
+            // =================================================================
+            _i += 1;
+        }
+
+        if horizontal {
+            content_size.x = f32::max(content_size.x, line_cursor)
+        } else {
+            content_size.y = f32::max(content_size.y, line_cursor)
+        }
+        
+        // END OF INSIDE MATRIX
+        // =================================================================
+        content_size
     }
 }
+
+struct ComputedDiv {
+    size: Vec2,
+    margin: Vec4,
+    forced_margin: Vec4,
+}
+
+struct ComputedLine {
+    divs: Vec<ComputedDiv>,
+    line_length: f32,
+    line_padding: f32,
+}
+
+struct ComputedStack {
+    lines: Vec<ComputedLine>
+}
+
+
+
 
 
 // #========================================#

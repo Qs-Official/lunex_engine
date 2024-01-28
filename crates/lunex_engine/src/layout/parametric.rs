@@ -242,7 +242,24 @@ impl Div {
     pub(crate) fn compute_margin(&self, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec4 {
         self.margin.evaluate(abs_scale, parent_size.xyxy(), font_size)
     }
+    pub(crate) fn compute_border(&self, parent_size: Vec2, abs_scale: f32, font_size: f32) -> Vec4 {
+        self.border.evaluate(abs_scale, parent_size.xyxy(), font_size)
+    }
 
+
+    pub(crate) fn compute_size(&self, content_size: Vec2, padding: Vec4, border: Vec4) -> Vec2 {
+        Vec2 {
+            x: border.x + padding.x + content_size.x + padding.z + border.z,
+            y: border.y + padding.y + content_size.y + padding.w + border.w,
+        }
+        
+    }
+    pub(crate) fn compute_safe_zone(&self, size: Vec2, margin: Vec4) -> Vec2 {
+        Vec2 {
+            x: margin.x + size.x + margin.z,
+            y: margin.y + size.y + margin.w,
+        }
+    }
 
 }
 impl Into<Layout> for Div {

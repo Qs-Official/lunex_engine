@@ -134,16 +134,18 @@ pub enum LinePlacement {
 #[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct StackOptions {
-    /// Dictates on which axis should the nodes be stacked
+    /// Dictates on which axis should the nodes be stacked.
     pub direction: StackDirection,
-    /// Dictates if the stacking direction should be flipped (flip around Y axis)
+    /// Dictates if the stacking direction should be flipped (flip around Y axis).
     pub flipped: bool,
-    /// Dictates if the stacking direction should be inverted (flip around X axis)
+    /// Dictates if the stacking direction should be inverted (flip around X axis).
     pub inverted: bool,
-    /// Dictates how should the nodes be positioned within one line
+    /// Dictates how should the nodes be positioned within one line.
     pub placement: LinePlacement,
-    /// Minimal gap between subnodes and lines
+    /// Minimal gap between subnodes and lines.
     pub gap: NodeSize<Vec2>,
+    /// Default alignment of nodes within lines.
+    pub node_alignment: Align,
 }
 impl StackOptions {
     pub fn new() -> Self {
