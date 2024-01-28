@@ -720,7 +720,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let position_range = if horizontal {comline.line_length - forced_margin.y - size.y } else {comline.line_length - forced_margin.x - size.x };
 
                 let mut my_align = align;
-                let mut my_offset = Vec2::ZERO;
+                let my_offset;
                 
                 if horizontal {
                     if let Some(align) = layout.align_y { my_align = align.0 }
