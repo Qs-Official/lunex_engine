@@ -132,7 +132,7 @@ pub enum LinePlacement {
 }
 
 #[cfg_attr(feature = "bevy", derive(Component))]
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct StackOptions {
     /// Dictates on which axis should the nodes be stacked.
     pub direction: StackDirection,
@@ -146,6 +146,18 @@ pub struct StackOptions {
     pub gap: NodeSize<Vec2>,
     /// Default alignment of nodes within lines.
     pub node_alignment: Align,
+}
+impl Default for StackOptions {
+    fn default() -> Self {
+        StackOptions {
+            direction: Default::default(),
+            flipped: Default::default(),
+            inverted: Default::default(),
+            placement: Default::default(),
+            gap: Default::default(),
+            node_alignment: Align::START,
+        }
+    }
 }
 impl StackOptions {
     pub fn new() -> Self {
