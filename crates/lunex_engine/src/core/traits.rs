@@ -1,8 +1,6 @@
 use std::borrow::Borrow;
 
 use bevy::ecs::component::Component;
-use bevy::math::Vec3Swizzles;
-use bevy::math::Vec4Swizzles;
 
 use crate::nodes::prelude::*;
 use crate::layout;
@@ -660,19 +658,19 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let border = layout.compute_border(ancestor_size, abs_scale, font_size);
 
                 // Enter recursion to get the right content size
-                //let potential_content = subnode.compute_content(ancestor_size, padding, abs_scale, font_size);
+                let potential_content = subnode.compute_content(ancestor_size, padding, abs_scale, font_size);
 
                 // Fetch data again, because they were modified
                 let subnode_data = subnode.data.as_mut().unwrap();
 
 
                 // Compute size with the right content size
-                //let mut subnode_content = subnode_data.content_size;
-                //if potential_content != Vec2::ZERO { subnode_content = potential_content }
+                let mut subnode_content = subnode_data.content_size;
+                if potential_content != Vec2::ZERO { subnode_content = potential_content }
                 //let size = layout.compute(subnode_content, ancestor_size, abs_scale, font_size);
 
                 // !!!! LEAVE OUT PADDING BECAUSE CONTENT SIZE HAS PADDING ALREADY EMBEDDED!
-                let size = layout.compute_size(Vec2::ZERO, padding, border);
+                let size = layout.compute_size(subnode_content, padding, border);
 
 
                 let forced_margin = Vec4::max(context_padding, margin);
@@ -681,7 +679,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 comline.line_length = f32::max(comline.line_length, line_length);
                 comline.divs.push(ComputedDiv {
                     size,
-                    margin,
                     forced_margin,
                 });
 
@@ -719,8 +716,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let forced_margin = comline.divs[_ii].forced_margin;
                 let size = comline.divs[_ii].size;
 
-
-                //let position_range = if horizontal {comline.line_length - forced_margin.y - size.y*0.0 - forced_margin.w*0.0 } else {comline.line_length - forced_margin.x - size.x*0.0 - forced_margin.z*0.0 };
                 let possible_size = if horizontal {comline.line_length - forced_margin.y - forced_margin.w } else {comline.line_length - forced_margin.x - forced_margin.z };
 
                 let mut my_align = align;
@@ -748,18 +743,13 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // Fetch data again, because they were modified
                 let subnode_data = subnode.data.as_mut().unwrap();
 
-
                 subnode_data.rectangle = Rect2D {
                     pos: my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) },
                     size,
                 }.into();
 
-                //println!("{} {}", forced_margin.z, forced_margin.w);
-                //println!("b {}", biggest_line_padreach);
                 biggest_line_padreach = f32::max(biggest_line_padreach, if horizontal { my_offset.y + size.y + forced_margin.w } else { my_offset.x + size.x + forced_margin.z });
-                //println!("a {}", biggest_line_padreach);
-                
-                biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });            
+                biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
@@ -775,8 +765,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             comline.line_padding = biggest_line_padreach - biggest_line_boundary;
-            //println!("{}", comline.line_padding);
-            line_cursor += comline.line_length;  //HERE IS THE PROBLEM
+            line_cursor += comline.line_length;
 
             // END OF INSIDE LINE
             // =================================================================
@@ -796,20 +785,18 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 }
 
 struct ComputedDiv {
+    /// Size of the div
     size: Vec2,
-    margin: Vec4,
+    /// Merged context and own margin
     forced_margin: Vec4,
 }
 
 struct ComputedLine {
     divs: Vec<ComputedDiv>,
-    /// MARGIN1 + SIZE + MARGIN2
+    /// Margin1 + SIZE + Margin2
     line_length: f32,
+    /// Future Margin1
     line_padding: f32,
-}
-
-struct ComputedStack {
-    lines: Vec<ComputedLine>
 }
 
 
