@@ -730,16 +730,16 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     if let Some(align) = layout.align_y { my_align = align.0 }
 
                     cursor += forced_margin.x;
-                    //my_offset = Vec2::new(cursor, forced_margin.y + position_range/2.0 - size.y/2.0 + (position_range/2.0) * my_align);
-                    my_offset = Vec2::new(cursor, forced_margin.y + possible_size/2.0 - size.y/2.0 + (possible_size/2.0) * my_align);
+                    let off = forced_margin.y + possible_size/2.0 - size.y/2.0;
+                    my_offset = Vec2::new(cursor, off + (off - forced_margin.x) * my_align);
                     cursor += size.x;
 
                 } else {
                     if let Some(align) = layout.align_x { my_align = align.0 }
 
                     cursor += forced_margin.y;
-                    //my_offset = Vec2::new(forced_margin.x + position_range/2.0 - size.x/2.0 + (position_range/2.0) * my_align, cursor);
-                    my_offset = Vec2::new(forced_margin.x + possible_size/2.0 - size.x/2.0, cursor);
+                    let off = forced_margin.x + possible_size/2.0 - size.x/2.0;
+                    my_offset = Vec2::new(off + (off - forced_margin.x) * my_align, cursor);
                     cursor += size.y;
 
                 };
