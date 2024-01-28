@@ -773,9 +773,10 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 context_padding.x = comline.line_padding;
                 content_size.x = f32::max(content_size.x, cursor)
             }
-            comline.line_padding = biggest_line_padreach - biggest_line_boundary;
-            line_cursor += comline.line_length;
 
+            comline.line_padding = biggest_line_padreach - biggest_line_boundary;
+            //println!("{}", comline.line_padding);
+            line_cursor += comline.line_length - comline.line_padding;  //HERE IS THE PROBLEM
 
             // END OF INSIDE LINE
             // =================================================================
