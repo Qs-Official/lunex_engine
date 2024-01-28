@@ -720,7 +720,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let size = comline.divs[_ii].size;
 
 
-                let position_range = if horizontal {comline.line_length - forced_margin.y - size.y } else {comline.line_length - forced_margin.x - size.x };
+                //let position_range = if horizontal {comline.line_length - forced_margin.y - size.y*0.0 - forced_margin.w*0.0 } else {comline.line_length - forced_margin.x - size.x*0.0 - forced_margin.z*0.0 };
+                let possible_size = if horizontal {comline.line_length - forced_margin.y - forced_margin.w } else {comline.line_length - forced_margin.x - forced_margin.z };
 
                 let mut my_align = align;
                 let my_offset;
@@ -729,14 +730,16 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     if let Some(align) = layout.align_y { my_align = align.0 }
 
                     cursor += forced_margin.x;
-                    my_offset = Vec2::new(cursor, forced_margin.y + (position_range/2.0) * my_align);
+                    //my_offset = Vec2::new(cursor, forced_margin.y + position_range/2.0 - size.y/2.0 + (position_range/2.0) * my_align);
+                    my_offset = Vec2::new(cursor, forced_margin.y + possible_size/2.0 - size.y/2.0 + (possible_size/2.0) * my_align);
                     cursor += size.x;
 
                 } else {
                     if let Some(align) = layout.align_x { my_align = align.0 }
 
                     cursor += forced_margin.y;
-                    my_offset = Vec2::new(forced_margin.x + (position_range/2.0) * my_align, cursor);
+                    //my_offset = Vec2::new(forced_margin.x + position_range/2.0 - size.x/2.0 + (position_range/2.0) * my_align, cursor);
+                    my_offset = Vec2::new(forced_margin.x + possible_size/2.0 - size.x/2.0, cursor);
                     cursor += size.y;
 
                 };
