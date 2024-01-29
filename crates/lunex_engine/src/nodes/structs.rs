@@ -236,7 +236,6 @@ impl <D, T> Into<Node<T>> for NodeTree<D, T>{
 // #============#
 // #=== NODE ===#
 
-/// ## Node
 /// A struct representing organized data in [`NodeTree`].
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct Node<T> {

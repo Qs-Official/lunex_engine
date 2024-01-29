@@ -5,8 +5,44 @@ use colored::Colorize;
 use crate::nodes::prelude::*;
 use crate::layout::Layout;
 
-
+/// A struct, `"Document"` / `"DOM"` in web-terms, that contains all layout data. If you want any entity to have it's own ui layout,
+/// add this component to it. The subjects of this layout structure are the entity's children.
+/// 
+/// This type wraps around [`NodeTree`] with generics set to [`MasterData`] & [`NodeData`]. [`NodeTree`] is used as the primitive and
+/// ui logic is implemented on top of this type.
+/// ## 📏 Structure
+/// All data is stored inside inner tree-like hierarchy. Each node can store `custom user data` together with `layout` and multiple `subnodes`.
+/// ```text
+/// > UiTree
+///  |-> Node_1
+///  |    |-> Node_2
+///  |    |-> Node_3
+///  |    |    |-> Node_4
+///  |-> Node_5
+///  |    |-> Node_6
+/// ```
+/// ## ⚙️ Paths
+/// Paths are strings that are passed to the methods to retrive and mutate data.
+/// For example `"foo/bar/bar"` is a valid path syntax. You need to construct paths always
+/// from the point of view of the struct we pass them to. For example on the previous hierarchy:
+/// 
+/// If you want to access `Node_4`, you use path `"Node_1/Node_3/Node_4"` on `UiTree` struct.
+/// You can also use `"Node_3/Node_4"` on `Node_1` struct to get the same result.
+/// 
+/// Whitespaces are allowed in paths, but are not encouraged.
+/// Putting a dot as first symbol like this `".name"` will hide the node from the tree.
+/// Just `"."` will refer to the same node. `".."` is not supported and is actually a valid name.
+/// 
+/// You can also not specify the name when creating a node. That means the name will be generated.
+/// The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes` hashmap.
+/// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what surface data can be stored in [`NodeTree`] for all nodes to share.
+/// * Generic `(N)` - Node data schema struct defining what node-specific data can be stored in [`Node`]
+/// ## ⚠️ Warning
+/// Please refrain from manually using `".||#:0"`, `".||#:1"`, `".||#:2"`, _and so on.._ as names or [`NodeGeneralTrait::add_node`] will return errors.
 pub type UiTree<M = NoData, N = NoData> = NodeTree<MasterData<M>, NodeData<N>>;
+
+/// A struct representing organized data in [`UiTree`].
 pub type UiNode<N = NoData> = Node<NodeData<N>>;
 
 
