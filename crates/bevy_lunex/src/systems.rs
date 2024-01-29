@@ -5,12 +5,14 @@ use lunex_engine::*;
 use crate::{Dimension, Element, MovableByCamera, UiContent, UiLink, UiStack};
 
 
+// #===================#
+// #=== CORE SYSTEM ===#
 
-
-/// This function triggers computation method on marked [`UiTree`] with data from appended [`Dimension`] component.
+/// This system computes [`UiTree`] with data from querried [`Dimension`] component if there is a change.
 /// ## 📦 Types
-/// * Generic `(T)` - Schema struct defining what data can be stored on a single [`UiNode`]
-/// * Generic `(M)` - Marker component scoping logic and data into one iterable group
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
+/// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn compute_ui<M:Default + Component, N:Default + Component, T: Component>(
     mut query: Query<(&Dimension, &mut UiTree<M, N>), (With<T>, Or<(Changed<Dimension>, Changed<UiTree<M, N>>)>)>
 ) {
@@ -27,6 +29,8 @@ pub fn compute_ui<M:Default + Component, N:Default + Component, T: Component>(
 
 /// This system draws the outlines of [`UiTree`] nodes as gizmos.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn debug_draw_gizmo<M:Default + Component, N:Default + Component, T: Component>(mut query: Query<(&UiTree<M, N>, &Transform), With<T>>, mut gizmos: Gizmos) {
     for (tree, transform) in &mut query {
@@ -55,6 +59,8 @@ pub fn debug_draw_gizmo<M:Default + Component, N:Default + Component, T: Compone
 
 /// This system prints [`UiTree`] if there is a change.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn debug_print_tree<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<&UiTree<M, N>, (With<T>, Changed<UiTree<M, N>>)>
@@ -71,6 +77,8 @@ pub fn debug_print_tree<M:Default + Component, N:Default + Component, T: Compone
 /// This system takes [`Camera`] data and overwrites querried [`Dimension`] data.
 /// It is mainly used to pipe [`Camera`] data into [`UiTree`] for root node computation.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 /// ## ⚠️ Warning
 /// * Developer should ensure that source query returns only one camera.
@@ -94,6 +102,8 @@ pub fn fetch_dimension_from_camera<M:Default + Component, N:Default + Component,
 /// This system takes [`Camera`] data and overwrites querried [`Transform`] + [`MovableByCamera`].
 /// It is mainly used to pipe [`Camera`] data into [`UiTree`] for positioning.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 /// ## ⚠️ Warning
 /// * Developer should ensure that source query returns only one camera.
@@ -120,6 +130,8 @@ pub fn fetch_transform_from_camera<T: Component>(
 
 /// This system takes [`Layout`] data and overwrites coresponding [`UiTree`] data. If node is not found, it creates new ones along the path.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn send_layout_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
@@ -143,6 +155,8 @@ pub fn send_layout_to_node<M:Default + Component, N:Default + Component, T: Comp
 
 /// This system takes [`UiStack`] data and overwrites coresponding [`UiTree`] data.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn send_stack_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
@@ -166,6 +180,8 @@ pub fn send_stack_to_node<M:Default + Component, N:Default + Component, T: Compo
 
 /// This system takes [`UiContent`] data and overwrites coresponding [`UiTree`] data.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn send_content_size_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
@@ -189,6 +205,8 @@ pub fn send_content_size_to_node<M:Default + Component, N:Default + Component, T
 
 /// This system fetches [`UiTree`] data and overwrites querried [`Transform`] data.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn fetch_transform_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
@@ -212,6 +230,8 @@ pub fn fetch_transform_from_node<M:Default + Component, N:Default + Component, T
 
 /// This system fetches [`UiTree`] data and overwrites querried [`Dimension`] data.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn fetch_dimension_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
@@ -237,6 +257,8 @@ pub fn fetch_dimension_from_node<M:Default + Component, N:Default + Component, T
 
 /// This system fetches [`UiTree`] data and overwrites querried [`Transform`] + [`Element`] data in specific way.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn element_fetch_transform_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
@@ -262,6 +284,8 @@ pub fn element_fetch_transform_from_node<M:Default + Component, N:Default + Comp
 
 /// This system reconstructs the mesh on [`UiTree`] change.
 /// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
 /// * Generic `(T)` - Marker component grouping entities into one widget type
 pub fn element_reconstruct_mesh<T: Component>(
     mut msh: ResMut<Assets<Mesh>>,
@@ -287,9 +311,11 @@ pub fn element_reconstruct_mesh<T: Component>(
 // #===============#
 // #=== PLUGINS ===#
 
-/// Plugin implementing all Ui logic for the specified generic types.
-/// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
-/// * generic `(M)` - Marker component scoping logic and data into one iterable group
+/// Plugin implementing all ui logic for the specified generic types.
+/// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
+/// * Generic `(T)` - Marker component grouping entities into one widget type
 /// 
 /// ## 🛠️ Example
 /// *1. Define the types used*
@@ -301,7 +327,7 @@ pub fn element_reconstruct_mesh<T: Component>(
 ///  struct MyNodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of Ui
+///  struct MyUiWidget; // Empty marker, used for selecting entities
 /// ```
 /// *2. Add the plugin to your app*
 /// ```
@@ -340,24 +366,29 @@ impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiP
     }
 }
 
-/// Plugin implementing all debug Ui logic for the specified generic types.
-/// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
-/// * generic `(M)` - Marker component scoping logic and data into one iterable group
+/// Plugin implementing all debug ui logic for the specified generic types.
+/// ## 📦 Types
+/// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
+/// * Generic `(N)` - Node data schema struct defining what can be stored in [`UiNode`]
+/// * Generic `(T)` - Marker component grouping entities into one widget type
 /// 
 /// ## 🛠️ Example
 /// *1. Define the types used*
 /// ```
 ///  #[derive(Component, Default)]
-///  struct NodeData { value: i32 } // What data will each node contain
+///  struct MyMasterData { theme: String } // What data will each tree hold
+/// 
+///  #[derive(Component, Default)]
+///  struct MyNodeData { value: i32 } // What data will each node contain
 /// 
 ///  #[derive(Component)]
-///  struct MyUiWidget; // Empty marker, used for selecting between multiple types of Ui
+///  struct MyUiWidget; // Empty marker, used for selecting entities
 /// ```
 /// *2. Add the plugin to your app*
 /// ```
 ///  App::new()
 ///      .add_plugins(DefaultPlugins)
-///      .add_plugins(UiDebugPlugin::<NodeData, MyUiWidget>::new())
+///      .add_plugins(UiPlugin::<MyMasterData, MyNodeData, MyUiWidget>::new())
 ///      .run();
 /// ```
 /// *3. Use the [`UiTree`] freely*
@@ -365,7 +396,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiP
 ///#  fn setup(mut commands: Commands) {
 ///   commands.spawn((
 ///      MyUiWidget,
-///      UiTree::<NodeData>::new("MyWidget")
+///      UiTree::<MyMasterData, MyNodeData>::new("MyWidget")
 ///   ));
 ///#  }
 /// ```
