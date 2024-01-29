@@ -7,8 +7,7 @@ use crate::{NiceDisplay, NodeSize};
 use super::{Window, Solid};
 
 
-/// ## Align
-/// Type used for aligning Ui items inside containers.
+/// Type used for aligning subnodes inside nodes.
 /// 
 /// _Range_ : `-1.0 for START to 1.0 for END`
 /// * [`Align::START`]
@@ -30,9 +29,8 @@ impl NiceDisplay for Align {
     }
 }
 
-/// ## Cover
 /// Defines how a container is scaled relative to it's parent container
-/// * [`Cover::Horizonal`]
+/// * [`Cover::Horizontal`]
 /// * [`Cover::Vertical`]
 /// * [`Cover::Contain`]
 /// * [`Cover::Full`]
@@ -66,9 +64,7 @@ impl NiceDisplay for Cover {
 
 
 
-
-
-/// ## Layout
+/// Enum holding the node layout
 #[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Layout {

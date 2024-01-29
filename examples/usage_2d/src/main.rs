@@ -38,13 +38,13 @@ fn setup(mut cmd: Commands, mut _mat: ResMut<Assets<StandardMaterial>>, assets: 
         parent.spawn((
             MyWidget,
             UiLink::path("Root"),
-            Ui::Window::FULL.pos( Abs(20.0) ).size( Prc(100.0) - Abs(40.0) ).pack(),
+            UiLayout::Window::FULL.pos( Abs(20.0) ).size( Prc(100.0) - Abs(40.0) ).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
+            UiLayout::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
             UiImage2dBundle::from(assets.load("background.png")),
             //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("background.png")), unlit: true, ..default() }) ),
         ));

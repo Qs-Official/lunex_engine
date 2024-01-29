@@ -38,7 +38,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             root.clone(),
-            Ui::Window::FULL.pack(),
+            UiLayout::Window::FULL.pack(),
             UiStack::new().direction(StackDirection::Vertical)//.gap(Abs::SM),
         ));
 
@@ -54,23 +54,23 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
+            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
         ));
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::CENTER).pack(),
+            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::CENTER).pack(),
         ));
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
+            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
         ));
 
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).pad_x(Prc(10.0)).margin(Abs::SM).br().pack(),
+            UiLayout::Div::new().pad(Abs::MD).pad_x(Prc(10.0)).margin(Abs::SM).br().pack(),
         ));
 
 
@@ -79,14 +79,14 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             parent.spawn((
                 MyWidget,
                 root.new(),
-                Ui::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
+                UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
             ));
         }
 
         parent.spawn((
             MyWidget,
             root.new(),
-            Ui::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
+            UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
             /*UiText2dBundle {
                 text: Text::from_section("hello world!",
                     TextStyle {
@@ -103,7 +103,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             parent.spawn((
                 MyWidget,
                 root.new(),
-                Ui::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
+                UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
             ));
         }
 
@@ -111,7 +111,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             root.add(".||#:2").new(),
-            Ui::Div::new().pad(Abs::MD).br().pack(),
+            UiLayout::Div::new().pad(Abs::MD).br().pack(),
         ));
 
 
@@ -120,7 +120,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            Ui::Solid::new().align_x(Align::CENTER).pack(),
+            UiLayout::Solid::new().align_x(Align::CENTER).pack(),
             UiImage2dBundle::from(assets.main_background.clone())
         ));
 

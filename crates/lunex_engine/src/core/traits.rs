@@ -251,7 +251,7 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeInitTrait for Ui
 // #=======================#
 // #=== TAILORED TRAITS ===#
 
-/// Trait with [`UiTree`] layout computation methods
+/// Trait with [`UiTree`] layout computation methods.
 pub trait UiNodeTreeComputeTrait {
     /// Compute the layout of the [`UiTree`].
     fn compute(&mut self, parent: Rectangle3D);
@@ -271,9 +271,9 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
     }
 }
 
-
 /// Trait that [Layout] types implement so they can be build as new node.
 pub trait BuildAsNode {
+    /// Build the widget inside the [`UiTree`] at the given path.
     fn build<M: Default + Component, N: Default + Component>(self, ui: &mut UiTree<M, N>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized;
 }
 impl BuildAsNode for layout::Window {
@@ -294,8 +294,15 @@ impl BuildAsNode for layout::Solid {
         Ok(String::new())
     }
 }
-
-
+impl BuildAsNode for layout::Div {
+    fn build<M: Default + Component, N: Default + Component>(self, ui: &mut UiTree<M, N>, path: impl Borrow<str>) -> Result<String, NodeError> where Self: Sized {
+        ui.create_node(path.borrow())?;
+        let mut container: NodeData<N> = NodeData::new();
+        container.layout = self.into();
+        ui.insert_data(path, container)?;
+        Ok(String::new())
+    }
+}
 
 
 // #============================#
@@ -588,9 +595,6 @@ struct ComputedLine {
     divs: Vec<ComputedDiv>,
     line_length: f32,
 }
-
-
-
 
 
 // #========================#

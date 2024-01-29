@@ -74,7 +74,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             root.clone(),
-            Ui::Window::FULL.size(Abs((818.0, 965.0))).pack(),
+            UiLayout::Window::FULL.size(Abs((818.0, 965.0))).pack(),
             UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom.png")),
         ));
 
@@ -82,7 +82,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.clone(),
-            Ui::Div::new().pad(Abs(20.0)).pack(),
+            UiLayout::Div::new().pad(Abs(20.0)).pack(),
             UiStack::new().direction(StackDirection::Vertical),
             UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom_base_head.png")),
         ));
@@ -90,14 +90,14 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Icon"),
-            Ui::Div::new().margin_r(Abs(20.0)).br().pack(),
+            UiLayout::Div::new().margin_r(Abs(20.0)).br().pack(),
             UiContent::new((115.0, 155.0)),
         ));
 
         parent.spawn((
             MyWidget,
             head.add("Rank"),
-            Ui::Div::new().margin_b(Abs(10.0)).pack(),
+            UiLayout::Div::new().margin_b(Abs(10.0)).pack(),
             UiContent::new((100.0, 30.0)),
             UiText2dBundle {
                 text: Text::from_section("hello world!",
@@ -113,7 +113,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             head.add("Name"),
-            Ui::Div::new().margin_b(Abs(20.0)).pack(),
+            UiLayout::Div::new().margin_b(Abs(20.0)).pack(),
             UiContent::new((350.0, 45.0))
         ));
 
@@ -121,7 +121,7 @@ fn setup(
         parent.spawn((
             MyWidget,
             list.clone(),
-            Ui::Div::new().pad_y(Abs(10.0)).pack(),
+            UiLayout::Div::new().pad_y(Abs(10.0)).pack(),
             UiStack::new().gap_x(Abs(10.0))
         ));
 
@@ -129,21 +129,21 @@ fn setup(
             parent.spawn((
                 MyWidget,
                 list.add("Missions"),
-                Ui::Div::new().pack(),
+                UiLayout::Div::new().pack(),
                 UiContent::new((200.0, 30.0))
             ));
 
             parent.spawn((
                 MyWidget,
                 list.add("Kills"),
-                Ui::Div::new().pack(),
+                UiLayout::Div::new().pack(),
                 UiContent::new((150.0, 30.0))
             ));
 
             parent.spawn((
                 MyWidget,
                 list.add("Status"),
-                Ui::Div::new().pack(),
+                UiLayout::Div::new().pack(),
                 UiContent::new((250.0, 30.0))
             ));
         }
