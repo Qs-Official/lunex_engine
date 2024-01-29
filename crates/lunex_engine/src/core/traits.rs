@@ -21,67 +21,53 @@ use super::{UiNode, UiTree, NodeData};
 // #============================#
 // #=== DIRECT UINODE TRAITS ===#
 
-/// ## UiNodetree init trait
-/// Trait that abstracts over [`NodeTreeInitTrait`] to provide tailored
-/// implementations for [`UiTree`] initialization.
+/// Trait that abstracts over [`NodeCreationTrait`] to provide tailored
+/// implementations for the primitive in layouting context.
 pub trait UiNodeCreationTrait<N:Default + Component> {
-    /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::create_node`] for hierarchy creation
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::create_ui_node`] for hierarchy creation `(supports path recursion)`
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError>;
-
-    /// ## Create node
+    /// ## ⚠️ Recursive
     /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::make_node`] for direct creation
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::make_ui_node`] for direct creation on this node `(no recursion)`
     fn create_ui_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeError>;
-
-    /// ## Obtain or create node
     /// Borrows subnode from this node. If the node doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::borrow_or_create_node`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::borrow_or_create_ui_node`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<N>, NodeError>;
-
-    /// ## Obtain or create node mut
     /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::borrow_or_create_node_mut`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::borrow_or_create_ui_node_mut`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError>;
-
-    /// ## Borrow or create node
+    /// ## ⚠️ Recursive
     /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::obtain_or_create_node`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::obtain_or_create_ui_node`] for direct retrieval on this node `(no recursion)`
     fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<N>, NodeError>;
-
-    /// ## Borrow or create node mut
+    /// ## ⚠️ Recursive
     /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`UiNodeCreationTrait::obtain_or_create_ui_node_mut`] for direct retrieval on this node `(no recursion)`
     fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError>;  
 }
 impl <M: Default + Component, N: Default + Component> UiNodeCreationTrait<N> for UiTree<M, N> {
     fn make_ui_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError>{
         self.node.make_ui_node(name)
     }
-
     fn create_ui_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeError>{
         self.node.create_ui_node(path)
     }
-
     fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<N>, NodeError> {
         self.node.obtain_or_create_ui_node(name)
     }
-
     fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError> {
         self.node.obtain_or_create_ui_node_mut(name)
     }
-
     fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<N>, NodeError> {
         self.node.borrow_or_create_ui_node(path)
     }
-
     fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError> {
         self.node.borrow_or_create_ui_node_mut(path)
     }
@@ -92,34 +78,29 @@ impl <N: Default + Component> UiNodeCreationTrait<N> for UiNode<N> {
         self.insert_data(n.clone(), NodeData::default())?;
         Ok(n)
     }
-
     fn create_ui_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeError> {
         let mut node: UiNode<N> = Node::new();
         node.add_data(NodeData::default());
         self.insert_node(path, Node::new())
     }
-
     fn obtain_or_create_ui_node(&mut self, name: impl Borrow<str>) -> Result<&UiNode<N>, NodeError> {
         if let Ok(n) = self.make_ui_node(name.borrow()) {
             return self.obtain_node(n)
         }
         self.obtain_node(name)
     }
-
     fn obtain_or_create_ui_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError> {
         if let Ok(n) = self.make_ui_node(name.borrow()) {
             return self.obtain_node_mut(n)
         }
         self.obtain_node_mut(name)
     }
-
     fn borrow_or_create_ui_node(&mut self, path: impl Borrow<str>) -> Result<&UiNode<N>, NodeError> {
         match path.borrow().split_once('/') {
             None => self.obtain_or_create_ui_node(path),
             Some((name, rempath)) => self.obtain_or_create_ui_node_mut(name)?.borrow_or_create_ui_node(rempath),
         }
     }
-
     fn borrow_or_create_ui_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut UiNode<N>, NodeError> {
         match path.borrow().split_once('/') {
             None => self.obtain_or_create_ui_node_mut(path),
@@ -128,11 +109,9 @@ impl <N: Default + Component> UiNodeCreationTrait<N> for UiNode<N> {
     }
 }
 
-/// ## UiNode data trait
 /// Trait that abstracts over [`NodeDataTrait`] to provide tailored
-/// implementations for [`UiTree`] data management.
+/// implementations for the primitive in layouting context.
 pub trait UiNodeDataTrait<N> {
-    /// ## Add ui data
     /// Adds new data to this node and returns the previous data.
     /// ### 📌 Note
     /// * Use [`UiNodeDataTrait::insert_ui_data`] for hierarchy insert
