@@ -96,7 +96,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
                     }),
                 ..default()
             }*/
-            UiImage2dBundle::from(assets.main_background.clone())
+            //UiImage2dBundle::from(assets.main_background.clone())
         ));
 
         for _ in 0..3 {
@@ -120,15 +120,8 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            //Ui::Solid::new().align_x(Align::START).pack(),
-            
-            //UiImage2dBundle::from(assets.main_background.clone()),
-            //Element,
-            /*Text2dBundle {
-                text: Text::from_section("Hi bevy", TextStyle::default()),
-                ..default()
-            }*/
-            //UiMaterial3dBundle::from( materials.add(StandardMaterial { base_color_texture: Some(assets.main_background.clone()), unlit: true, ..default() }) ),
+            Ui::Solid::new().align_x(Align::CENTER).pack(),
+            UiImage2dBundle::from(assets.main_background.clone())
         ));
 
     });

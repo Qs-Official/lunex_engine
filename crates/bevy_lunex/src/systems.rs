@@ -5,49 +5,7 @@ use lunex_engine::*;
 use crate::{Dimension, Element, MovableByCamera, UiContent, UiLink, UiStack};
 
 
-/// This function pulls data from marked [`Camera`] and inserts it into marked [`Dimension`].
-/// ## 📦 Types
-/// * Generic `(M)` - Marker component scoping logic and data into one iterable group
-/// ## ⚠️ Warning
-/// * Developer should ensure that source query returns only one camera.
-///   Otherwise, it will lead to value overwriting. Just make sure only one camera
-///   is marked with `(M)` component at the same time.
-pub fn fetch_dimension_from_camera<M:Default + Component, N:Default + Component, T: Component>(
-    source: Query<&Camera, (With<T>, Changed<Camera>)>,
-    mut destination: Query<&mut Dimension, (With<T>, With<UiTree<M, N>>)>
-) {
-    // Undesired behaviour if source.len() > 1
-    for cam in &source {
-        for mut dimension in &mut destination {
-            // Extract camera size
-            if let Some(size) = cam.physical_viewport_size() {
-                dimension.size = Vec2::from((size.x as f32, size.y as f32));
-            }
-        }
-    }
-}
 
-/// This function pulls data from marked [`Camera`] and inserts it into marked [`Transform`] that has [`MovableByCamera`].
-/// ## 📦 Types
-/// * Generic `(M)` - Marker component scoping logic and data into one iterable group
-/// ## ⚠️ Warning
-/// * Developer should ensure that source query returns only one camera.
-///   Otherwise, it will lead to value overwriting. Just make sure only one camera
-///   is marked with `(M)` component at the same time.
-pub fn fetch_transform_from_camera<T: Component>(
-    source: Query<&Camera, (With<T>, Changed<Camera>)>,
-    mut destination: Query<&mut Transform, (With<T>, With<MovableByCamera>)>
-) {
-    // Undesired behaviour if source.len() > 1
-    for cam in &source {
-        for mut transform in &mut destination {
-            // Extract camera size
-            if let Some(size) = cam.physical_viewport_size() {
-                transform.translation = Vec3::from((size.x as f32 /-2.0, size.y as f32 /2.0, 0.0));
-            }
-        }
-    }
-}
 
 /// This function triggers computation method on marked [`UiTree`] with data from appended [`Dimension`] component.
 /// ## 📦 Types
@@ -63,10 +21,14 @@ pub fn compute_ui<M:Default + Component, N:Default + Component, T: Component>(
     }
 }
 
-/// This function renders the outlines of the [`UiTree`] in the world
+
+// #===================#
+// #=== DEBUG NODES ===#
+
+/// This system draws the outlines of [`UiTree`] nodes as gizmos.
 /// ## 📦 Types
-/// * Generic `(T)` - Schema struct defining what data can be stored on a single [`UiNode`]
-pub fn draw_debug_gizmo<M:Default + Component, N:Default + Component, T: Component>(mut query: Query<(&UiTree<M, N>, &Transform), With<T>>, mut gizmos: Gizmos) {
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn debug_draw_gizmo<M:Default + Component, N:Default + Component, T: Component>(mut query: Query<(&UiTree<M, N>, &Transform), With<T>>, mut gizmos: Gizmos) {
     for (tree, transform) in &mut query {
         let list = tree.crawl();
         for node in list {
@@ -91,8 +53,10 @@ pub fn draw_debug_gizmo<M:Default + Component, N:Default + Component, T: Compone
     }
 }
 
-/// This function prints all changed [`UiTree`]s.
-pub fn print_debug_tree<M:Default + Component, N:Default + Component, T: Component>(
+/// This system prints [`UiTree`] if there is a change.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn debug_print_tree<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<&UiTree<M, N>, (With<T>, Changed<UiTree<M, N>>)>
 ) {
     for ui in &uis {
@@ -101,7 +65,63 @@ pub fn print_debug_tree<M:Default + Component, N:Default + Component, T: Compone
 }
 
 
-pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>(
+// #=========================#
+// #=== PIPING FOR UITREE ===#
+
+/// This system takes [`Camera`] data and overwrites querried [`Dimension`] data.
+/// It is mainly used to pipe [`Camera`] data into [`UiTree`] for root node computation.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+/// ## ⚠️ Warning
+/// * Developer should ensure that source query returns only one camera.
+///   Otherwise, it will lead to value overwriting. Just make sure only one camera
+///   is marked with `(T)` component at the same time.
+pub fn fetch_dimension_from_camera<M:Default + Component, N:Default + Component, T: Component>(
+    source: Query<&Camera, (With<T>, Changed<Camera>)>,
+    mut destination: Query<&mut Dimension, (With<T>, With<UiTree<M, N>>)>
+) {
+    // Undesired behaviour if source.len() > 1
+    for cam in &source {
+        for mut dimension in &mut destination {
+            // Extract camera size
+            if let Some(size) = cam.physical_viewport_size() {
+                dimension.size = Vec2::from((size.x as f32, size.y as f32));
+            }
+        }
+    }
+}
+
+/// This system takes [`Camera`] data and overwrites querried [`Transform`] + [`MovableByCamera`].
+/// It is mainly used to pipe [`Camera`] data into [`UiTree`] for positioning.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+/// ## ⚠️ Warning
+/// * Developer should ensure that source query returns only one camera.
+///   Otherwise, it will lead to value overwriting. Just make sure only one camera
+///   is marked with `(T)` component at the same time.
+pub fn fetch_transform_from_camera<T: Component>(
+    source: Query<&Camera, (With<T>, Changed<Camera>)>,
+    mut destination: Query<&mut Transform, (With<T>, With<MovableByCamera>)>
+) {
+    // Undesired behaviour if source.len() > 1
+    for cam in &source {
+        for mut transform in &mut destination {
+            // Extract camera size
+            if let Some(size) = cam.physical_viewport_size() {
+                transform.translation = Vec3::from((size.x as f32 /-2.0, size.y as f32 /2.0, 0.0));
+            }
+        }
+    }
+}
+
+
+// #========================#
+// #=== PIPING FOR NODES ===#
+
+/// This system takes [`Layout`] data and overwrites coresponding [`UiTree`] data. If node is not found, it creates new ones along the path.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn send_layout_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
     query: Query<(&UiLink, &Layout), (With<T>, Changed<Layout>)>,
 ) {
@@ -113,7 +133,6 @@ pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>
                 if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data_mut() {
-                        //println!("Changed layout");
                         container.layout = *layout;
                     }
                 }
@@ -122,8 +141,10 @@ pub fn create_layout<M:Default + Component, N:Default + Component, T: Component>
     }
 }
 
-
-pub fn sync_stack<M:Default + Component, N:Default + Component, T: Component>(
+/// This system takes [`UiStack`] data and overwrites coresponding [`UiTree`] data.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn send_stack_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
     query: Query<(&UiLink, &UiStack), (With<T>, Changed<Layout>)>,
 ) {
@@ -132,10 +153,9 @@ pub fn sync_stack<M:Default + Component, N:Default + Component, T: Component>(
             // If child matches
             if let Ok((link, stack)) = query.get(*child) {
                 // If node exists
-                if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
+                if let Ok(node) = ui.borrow_node_mut(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data_mut() {
-                        //println!("Changed stack");
                         container.stack = *stack;
                     }
                 }
@@ -143,7 +163,11 @@ pub fn sync_stack<M:Default + Component, N:Default + Component, T: Component>(
         }
     }
 }
-pub fn sync_content_size<M:Default + Component, N:Default + Component, T: Component>(
+
+/// This system takes [`UiContent`] data and overwrites coresponding [`UiTree`] data.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn send_content_size_to_node<M:Default + Component, N:Default + Component, T: Component>(
     mut uis: Query<(&mut UiTree<M, N>, &Children), With<T>>,
     query: Query<(&UiLink, &UiContent), (With<T>, Changed<Layout>)>,
 ) {
@@ -152,10 +176,9 @@ pub fn sync_content_size<M:Default + Component, N:Default + Component, T: Compon
             // If child matches
             if let Ok((link, content)) = query.get(*child) {
                 // If node exists
-                if let Ok(node) = ui.borrow_or_create_ui_node_mut(link.path.clone()) {
+                if let Ok(node) = ui.borrow_node_mut(link.path.clone()) {
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data_mut() {
-                        //println!("Changed content size");
                         container.content_size = content.size;
                     }
                 }
@@ -164,9 +187,10 @@ pub fn sync_content_size<M:Default + Component, N:Default + Component, T: Compon
     }
 }
 
-
-
-pub fn sync_linked_transform<M:Default + Component, N:Default + Component, T: Component>(
+/// This system fetches [`UiTree`] data and overwrites querried [`Transform`] data.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn fetch_transform_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
     mut query: Query<(&UiLink, &mut Transform), (With<T>, Without<Element>)>,
 ) {
@@ -186,7 +210,10 @@ pub fn sync_linked_transform<M:Default + Component, N:Default + Component, T: Co
     }
 }
 
-pub fn sync_linked_dimension<M:Default + Component, N:Default + Component, T: Component>(
+/// This system fetches [`UiTree`] data and overwrites querried [`Dimension`] data.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn fetch_dimension_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
     mut query: Query<(&UiLink, &mut Dimension), With<T>>,
 ) {
@@ -199,7 +226,6 @@ pub fn sync_linked_dimension<M:Default + Component, N:Default + Component, T: Co
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
                         if dimension.as_ref().size != container.rectangle.size {
-                            //info!("Updated dimension: {}", container.rectangle.size);
                             dimension.size = container.rectangle.size;
                         }
                     }
@@ -209,8 +235,10 @@ pub fn sync_linked_dimension<M:Default + Component, N:Default + Component, T: Co
     }
 }
 
-
-pub fn sync_linked_element_transform<M:Default + Component, N:Default + Component, T: Component>(
+/// This system fetches [`UiTree`] data and overwrites querried [`Transform`] + [`Element`] data in specific way.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn element_fetch_transform_from_node<M:Default + Component, N:Default + Component, T: Component>(
     uis: Query<(&UiTree<M, N>, &Children), (With<T>, Changed<UiTree<M, N>>)>,
     mut query: Query<(&UiLink, &mut Transform), (With<T>, With<Element>)>,
 ) {
@@ -223,7 +251,7 @@ pub fn sync_linked_element_transform<M:Default + Component, N:Default + Componen
                     //Should always be Some but just in case
                     if let Some(container) = node.obtain_data() {
                         transform.translation = container.rectangle.pos.invert_y();
-                        transform.translation.x += container.rectangle.size.x / 2.0;
+                        transform.translation.x += container.rectangle.size.x /  2.0;
                         transform.translation.y += container.rectangle.size.y / -2.0;
                     }
                 }
@@ -232,22 +260,32 @@ pub fn sync_linked_element_transform<M:Default + Component, N:Default + Componen
     }
 }
 
-pub fn reconstruct_element_mesh<T: Component>(
+/// This system reconstructs the mesh on [`UiTree`] change.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn element_reconstruct_mesh<T: Component>(
     mut msh: ResMut<Assets<Mesh>>,
     mut query: Query<(&Dimension, &mut Handle<Mesh>, &mut Aabb), (With<T>, With<Element>, Changed<Dimension>)>,
 ) {
     for (dimension, mut mesh, mut aabb) in &mut query {
-        //info!("Recreating mesh: {:?}", aabb);
+
+        // Unload old mesh
         let _ = msh.remove(mesh.id());
 
+        // Create new culling boundary
         *aabb = Aabb {
             center: Vec3A::ZERO,
             half_extents: Vec3A::new(dimension.size.x/2.0, dimension.size.y/2.0, 1.0),
         };
+
+        // Create new mesh
         *mesh = msh.add(shape::Quad { size: dimension.size, flip: false }.into());
     }
 }
 
+
+// #===============#
+// #=== PLUGINS ===#
 
 /// Plugin implementing all Ui logic for the specified generic types.
 /// * generic `(T)` - Schema struct defining what data can be stored on [`UiNode`]
@@ -291,12 +329,12 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiPlugin<M, N,
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, sync_content_size::<M, N, T>.before(compute_ui::<M, N, T>))
-            .add_systems(Update, sync_stack::<M, N, T>.before(compute_ui::<M, N, T>))
-            .add_systems(Update, create_layout::<M, N, T>.before(compute_ui::<M, N, T>))
-            .add_systems(Update, sync_linked_transform::<M, N, T>)
-            .add_systems(Update, (sync_linked_dimension::<M, N, T>, reconstruct_element_mesh::<T>).chain())
-            .add_systems(Update, sync_linked_element_transform::<M, N, T>)
+            .add_systems(Update, send_content_size_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
+            .add_systems(Update, send_stack_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
+            .add_systems(Update, send_layout_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
+            .add_systems(Update, fetch_transform_from_node::<M, N, T>)
+            .add_systems(Update, (fetch_dimension_from_node::<M, N, T>, element_reconstruct_mesh::<T>).chain())
+            .add_systems(Update, element_fetch_transform_from_node::<M, N, T>)
             .add_systems(Update, (fetch_dimension_from_camera::<M, N, T>, fetch_transform_from_camera::<T>).before(compute_ui::<M, N, T>))
             .add_systems(Update, compute_ui::<M, N, T>);
     }
@@ -341,7 +379,7 @@ impl <M:Default + Component, N:Default + Component, T: Component> UiDebugPlugin<
 impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiDebugPlugin<M, N, T> {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Update, draw_debug_gizmo::<M, N, T>)
-            .add_systems(Update, print_debug_tree::<M, N, T>);
+            .add_systems(Update, debug_draw_gizmo::<M, N, T>)
+            .add_systems(Update, debug_print_tree::<M, N, T>);
     }
 }
