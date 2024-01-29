@@ -622,20 +622,19 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             // INSIDE LINE
 
             // APPLY PROPER CONTEXT PADDING
-            match _i {
+            /* match _i {
                 0 => if horizontal { context_padding.y = ancestor_padding.y } else { context_padding.x = ancestor_padding.x },
                 x if x+1 ==_i_max => if horizontal { context_padding.w = ancestor_padding.w } else { context_padding.z = ancestor_padding.z },
                 _ => if horizontal { context_padding.y = f32::max(context_padding.y, gap.y) } else { context_padding.x = f32::max(context_padding.x, gap.x) },
-            }
+            } */
 
             let mut comline = ComputedLine {
                 divs: Vec::new(),
                 line_length: 0.0,
-                line_padding: 0.0,
+                //line_padding: 0.0,
             };
 
-            // First pass to compute sizes
-            //---------------------------------//
+            // First pass to compute sizes-----//
             let mut _ii = 0;                  //
             let _ii_max = line.len();        //
             for subnode in &mut *line {     //
@@ -680,7 +679,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     forced_margin,
                 });
 
-                if horizontal { context_padding.x = margin.z; } else { context_padding.y = margin.w; }
+                //if horizontal { context_padding.x = margin.z; } else { context_padding.y = margin.w; }
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
@@ -688,14 +687,12 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
 
-            let mut cursor = 0.0;
-            //let mut cursor_debt = 0.0;
+            let mut cursor = if horizontal { ancestor_padding.x } else { ancestor_padding.y };
 
-            let mut biggest_line_padreach = 0.0;
-            let mut biggest_line_boundary = 0.0;
+            //let mut biggest_line_padreach = 0.0;
+            //let mut biggest_line_boundary = 0.0;
 
-            // Second pass to align them
-            //---------------------------------//
+            // Second pass to align them-------//
             let mut _ii = 0;                  //
             let _ii_max = line.len();        //
             for subnode in &mut *line {     //
@@ -703,15 +700,16 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // INSIDE SUBNODE
 
                 // APPLY PROPER CONTEXT PADDING
-                match _ii {
+                /* match _ii {
                     0 => if horizontal { context_padding.x = ancestor_padding.x } else { context_padding.y = ancestor_padding.y },
                     x if x+1 ==_ii_max => if horizontal { context_padding.z = ancestor_padding.z } else { context_padding.w = ancestor_padding.w },
                     _ => if horizontal { context_padding.x = f32::max(ancestor_padding.x, gap.x) } else { context_padding.y = f32::max(ancestor_padding.y, gap.y) },
-                }
+                } */
 
                 // Fetch data
                 let subnode_data = subnode.data.as_ref().unwrap();
                 let layout = if let Layout::Div(layout) = subnode_data.layout { layout } else { unreachable!() };
+                
                 let forced_margin = comline.divs[_ii].forced_margin;
                 let size = comline.divs[_ii].size;
 
@@ -727,6 +725,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     let off = forced_margin.y + possible_size/2.0 - size.y/2.0;
                     my_offset = Vec2::new(cursor, off + (off - forced_margin.x) * my_align);
                     cursor += size.x;
+                    cursor += forced_margin.w;
 
                 } else {
                     if let Some(align) = layout.align_x { my_align = align.0 }
@@ -735,7 +734,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     let off = forced_margin.x + possible_size/2.0 - size.x/2.0;
                     my_offset = Vec2::new(off + (off - forced_margin.x) * my_align, cursor);
                     cursor += size.y;
-
+                    cursor += forced_margin.z;
                 };
                 
 
@@ -750,8 +749,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 let subnode_data = subnode.data.as_ref().unwrap();
                 subnode.align_stack(subnode_data.rectangle.pos.xy());
 
-                biggest_line_padreach = f32::max(biggest_line_padreach, if horizontal { my_offset.y + size.y + forced_margin.w } else { my_offset.x + size.x + forced_margin.z });
-                biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
+                //biggest_line_padreach = f32::max(biggest_line_padreach, if horizontal { my_offset.y + size.y + forced_margin.w } else { my_offset.x + size.x + forced_margin.z });
+                //biggest_line_boundary = f32::max(biggest_line_boundary, if horizontal { my_offset.y + size.y } else { my_offset.x + size.x });
 
                 // END OF INSIDE SUBNODE
                 // =================================================================
@@ -760,15 +759,15 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
             if horizontal {
                 content_size.x = f32::max(content_size.x, cursor - ancestor_padding.x);
-                context_padding.y = comline.line_padding;
+                //context_padding.y = comline.line_padding;
 
             } else {
                 content_size.y = f32::max(content_size.y, cursor - ancestor_padding.y);
-                context_padding.x = comline.line_padding;
+                //context_padding.x = comline.line_padding;
 
             }
 
-            comline.line_padding = biggest_line_padreach - biggest_line_boundary;
+            //comline.line_padding = biggest_line_padreach - biggest_line_boundary;
             line_cursor += comline.line_length;
 
             // END OF INSIDE LINE
@@ -862,8 +861,8 @@ struct ComputedLine {
     divs: Vec<ComputedDiv>,
     /// Margin1 + SIZE + Margin2
     line_length: f32,
-    /// Future Margin1
-    line_padding: f32,
+    // Future Margin1
+    //line_padding: f32,
 }
 
 
