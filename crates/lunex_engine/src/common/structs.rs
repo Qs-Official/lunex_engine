@@ -29,45 +29,37 @@ pub struct Rectangle2D {
     pub size: Vec2,
 }
 impl Rectangle2D {
-    /// ## Empty Rectangle2D
-    /// A new empty Rectangle2D. Has `0` size. 
+    /// A new empty [`Rectangle2D`]. Has `0` size. 
     pub const EMPTY: Rectangle2D = Rectangle2D { pos : Vec2::ZERO, size: Vec2::ZERO };
-    /// ## New
     /// Creates new empty Window layout.
     pub const fn new() -> Self {
         Rectangle2D::EMPTY
     }
-    /// ## With pos
     /// Replaces the position with the new value.
     pub fn with_pos(mut self, pos: impl Into<Vec2>) -> Self {
         self.pos = pos.into();
         self
     }
-    /// ## With x
     /// Replaces the x position with the new value.
     pub fn with_x(mut self, width: f32) -> Self {
         self.pos.x = width;
         self
     }
-    /// ## With y
     /// Replaces the y position with the new value.
     pub fn with_y(mut self, height: f32) -> Self {
         self.pos.y = height;
         self
     }
-    /// ## With size
     /// Replaces the size with the new value.
     pub fn with_size(mut self, size: impl Into<Vec2>) -> Self {
         self.size = size.into();
         self
     }
-    /// ## With width
     /// Replaces the width with the new value.
     pub fn with_width(mut self, width: f32) -> Self {
         self.size.x = width;
         self
     }
-    /// ## With height
     /// Replaces the height with the new value.
     pub fn with_height(mut self, height: f32) -> Self {
         self.size.y = height;
@@ -105,6 +97,6 @@ impl Into<Rectangle2D> for Rectangle3D {
 impl NiceDisplay for Rectangle3D {
     fn to_nicestr(&self) -> String {
         let text = format!("[pos: {} size: {}]", self.pos.to_string(), self.size.to_string());
-        format!("{} {}", "3D".bright_magenta(), text.black())
+        format!("{} {}", "Computed".bright_magenta(), text.black())
     }
 }
