@@ -349,7 +349,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             // Adding depth
-            node_data.rectangle.pos.z = depth;
+            node_data.rectangle.pos.z = depth*40.0;
             node_data.rectangle
 
         } else { return; };
@@ -507,10 +507,15 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // Fetch data again, because they were modified
                 let subnode_data = subnode.data.as_mut().unwrap();
 
-                subnode_data.rectangle = Rectangle2D {
+                let _xxx = my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) };
+                subnode_data.rectangle.pos.x = _xxx.x;
+                subnode_data.rectangle.pos.y = _xxx.y;
+                subnode_data.rectangle.size = size;
+
+                /* subnode_data.rectangle = Rectangle2D {
                     pos: my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) },
                     size,
-                }.into();
+                }.into(); */
 
                 let subnode_data = subnode.data.as_ref().unwrap();
                 subnode.align_stack(subnode_data.rectangle.pos.xy());
