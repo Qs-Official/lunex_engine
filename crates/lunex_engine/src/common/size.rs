@@ -10,8 +10,8 @@ use crate::import::*;
 use super::NiceDisplay;
 
 
-// #====================#
-// #=== UNIT TESTING ===#
+// #===============#
+// #=== TESTING ===#
 
 #[cfg(test)]
 mod test {
@@ -46,27 +46,28 @@ mod test {
 // #========================#
 // #=== TYPE DEFINITIONS ===#
 
-/// ## Absolute unit
-/// Represents non-changing unit. Scale can vary but by default `1Abs = 1Px`.
-/// ### Example
+/// Represents non-changing unit. Scale can be modified but by default `1Abs = 1Px`.
+/// ## 🛠️ Example
 /// ```
 /// # use lunex_core::Abs;
 /// let a: Abs<f32> = Abs(4.0) + Abs(6.0); // -> 10px
+/// let b: Abs<f32> = Abs(4.0) * 2.0;      // -> 8px
 /// ```
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Abs<T>(pub T);
-/// ## Percentage unit
-/// `0% to 100%`. Overflow allowed.
-/// ### Example
+
+/// Represents scalable unit `0% to 100%`. `120%` is allowed.
+/// ## 🛠️ Example
 /// ```
 /// # use lunex_core::Prc;
 /// let a: Prc<f32> = Prc(25.0) + Prc(40.0); // -> 65%
+/// let b: Prc<f32> = Prc(25.0) * 3.0;       // -> 75%
 /// ```
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Prc<T>(pub T);
-/// ## Rem unit
-/// Size of 1 symbol `M` which is `16px` with `font size 16px` and so on.
-/// ### Example
+
+/// Represents unit that is of size of the symbol `M`. Which is `16px` with `font size 16px` and so on.
+/// ## 🛠️ Example
 /// ```
 /// # use lunex_core::Rem;
 /// let a: Rem<f32> = Rem(1.0) + Rem(2.0); // -> 3rem == 48px with font size 16px
@@ -74,24 +75,20 @@ pub struct Prc<T>(pub T);
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rem<T>(pub T);
 
-/// # Node Size
-/// A struct holding size NodeSize data used in Ui.
-/// It can be constructed from the following units:
-/// * [`Abs`] = Absolute units
-/// * [`Prc`] = Percentage units
-/// * [`Rem`] = Rem units
-/// 
-/// ### Support
-/// First class implementations for (`T`)
-/// * [`f32`]
-/// * [`Vec2`]
-/// * [`Vec3`]
-/// * [`Vec4`]
-/// ### Example
+
+/// Represents collection of different units.
+/// They are computed at runtime when layout computation is happening.
+/// The supported units are:
+/// * [`Abs`] [`Prc`] [`Rem`]
+/// ## 📦 Types
+/// First class implementations for `(T)` are:
+/// * [`f32`] [`Vec2`] [`Vec3`] [`Vec4`]
+/// ## 🛠️ Example
 /// ```
 /// # use lunex_core::{NodeSize, Abs, Rem};
-/// let a: NodeSize<f32> = Abs(4.0) + Rem(16.0); // -> 4px + (16rem == 256px with font size 16px)
-/// let b: NodeSize<f32> = Prc(50.0).into();   // -> 50%
+/// let a: NodeSize<f32> = Abs(4.0) + Rem(1.0);  // -> 4px + 1rem
+/// let b: NodeSize<f32> = Abs(40.0) - Prc(5.0); // -> 40px - 5%
+/// let c: NodeSize<f32> = Prc(50.0).into();     // -> 50%
 /// ```
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct NodeSize<T> {
@@ -879,7 +876,7 @@ impl Into<NodeSize<Vec4>> for NodeSize<f32> {
 
 // # Impl `splat2`
 impl Abs<Vec2> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Abs(Vec2::splat(v))
     /// ```
@@ -889,7 +886,7 @@ impl Abs<Vec2> {
 }
 // # Impl `splat3`
 impl Abs<Vec3> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Abs(Vec3::splat(v))
     /// ```
@@ -899,7 +896,7 @@ impl Abs<Vec3> {
 }
 // # Impl `splat4`
 impl Abs<Vec4> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Abs(Vec4::splat(v))
     /// ```
@@ -910,7 +907,7 @@ impl Abs<Vec4> {
 
 // # Impl `splat2`
 impl Prc<Vec2> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Prc(Vec2::splat(v))
     /// ```
@@ -920,7 +917,7 @@ impl Prc<Vec2> {
 }
 // # Impl `splat3`
 impl Prc<Vec3> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Prc(Vec3::splat(v))
     /// ```
@@ -930,7 +927,7 @@ impl Prc<Vec3> {
 }
 // # Impl `splat4`
 impl Prc<Vec4> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Prc(Vec4::splat(v))
     /// ```
@@ -941,7 +938,7 @@ impl Prc<Vec4> {
 
 // # Impl `splat2`
 impl Rem<Vec2> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Rem(Vec2::splat(v))
     /// ```
@@ -951,7 +948,7 @@ impl Rem<Vec2> {
 }
 // # Impl `splat3`
 impl Rem<Vec3> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Rem(Vec3::splat(v))
     /// ```
@@ -961,7 +958,7 @@ impl Rem<Vec3> {
 }
 // # Impl `splat4`
 impl Rem<Vec4> {
-    /// ### Same as
+    /// Is equal to writing:
     /// ```no_run
     /// Rem(Vec4::splat(v))
     /// ```
@@ -971,9 +968,8 @@ impl Rem<Vec4> {
 }
 
 
-// # Impl `with_x` and `set_x` ...
+// # Impl `get_x`, `with_x` and `set_x` ...
 impl NodeSize<Vec2> {
-    /// ## Get X
     /// Gets the X value of all units.
     pub fn get_x(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -982,7 +978,6 @@ impl NodeSize<Vec2> {
         if let Some(v) = self.rem { out += Rem(v.x) }
         out
     }
-    /// ## With X
     /// Replaces the X value of appropriate units with the new value.
     pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -991,7 +986,6 @@ impl NodeSize<Vec2> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec2::new(v2, 0.0)) } }
         self
     }
-    /// ## Set X
     /// Sets the X value of appropriate units with the new value.
     pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -999,7 +993,6 @@ impl NodeSize<Vec2> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec2::new(v2, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec2::new(v2, 0.0)) } }
     }
-    /// ## Get Y
     /// Gets the Y value of all units.
     pub fn get_y(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1008,7 +1001,6 @@ impl NodeSize<Vec2> {
         if let Some(v) = self.rem { out += Rem(v.y) }
         out
     }
-    /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
     pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1017,7 +1009,6 @@ impl NodeSize<Vec2> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec2::new(0.0, v2)) } }
         self
     }
-    /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
     pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1026,9 +1017,8 @@ impl NodeSize<Vec2> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec2::new(0.0, v2)) } }
     }
 }
-// # Impl `with_x` and `set_x` ...
+// # Impl `get_x`, `with_x` and `set_x` ...
 impl NodeSize<Vec3> {
-    /// ## Get X
     /// Gets the X value of all units.
     pub fn get_x(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1037,7 +1027,6 @@ impl NodeSize<Vec3> {
         if let Some(v) = self.rem { out += Rem(v.x) }
         out
     }
-    /// ## With X
     /// Replaces the X value of appropriate units with the new value.
     pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1046,7 +1035,6 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec3::new(v2, 0.0, 0.0)) } }
         self
     }
-    /// ## Set X
     /// Sets the X value of appropriate units with the new value.
     pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1054,7 +1042,6 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec3::new(v2, 0.0, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec3::new(v2, 0.0, 0.0)) } }
     }
-    /// ## Get Y
     /// Gets the Y value of all units.
     pub fn get_y(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1063,7 +1050,6 @@ impl NodeSize<Vec3> {
         if let Some(v) = self.rem { out += Rem(v.y) }
         out
     }
-    /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
     pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1072,7 +1058,6 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec3::new(0.0, v2, 0.0)) } }
         self
     }
-    /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
     pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1080,7 +1065,6 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec3::new(0.0, v2, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec3::new(0.0, v2, 0.0)) } }
     }
-    /// ## Get Z
     /// Gets the Z value of all units.
     pub fn get_z(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1089,7 +1073,6 @@ impl NodeSize<Vec3> {
         if let Some(v) = self.rem { out += Rem(v.z) }
         out
     }
-    /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
     pub fn with_z(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1098,7 +1081,6 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec3::new(0.0, 0.0, v2)) } }
         self
     }
-    /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
     pub fn set_z(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1107,9 +1089,8 @@ impl NodeSize<Vec3> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec3::new(0.0, 0.0, v2)) } }
     }
 }
-// # Impl `with_x` and `set_x` ...
+// # Impl `get_x`, `with_x` and `set_x` ...
 impl NodeSize<Vec4> {
-    /// ## Get X
     /// Gets the X value of all units.
     pub fn get_x(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1118,7 +1099,6 @@ impl NodeSize<Vec4> {
         if let Some(v) = self.rem { out += Rem(v.x) }
         out
     }
-    /// ## With X
     /// Replaces the X value of appropriate units with the new value.
     pub fn with_x(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1127,7 +1107,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
         self
     }
-    /// ## Set X
     /// Sets the X value of appropriate units with the new value.
     pub fn set_x(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1135,7 +1114,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.x = v2 } else { self.prc = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.x = v2 } else { self.rem = Some(Vec4::new(v2, 0.0, 0.0, 0.0)) } }
     }
-    /// ## Get Y
     /// Gets the Y value of all units.
     pub fn get_y(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1144,7 +1122,6 @@ impl NodeSize<Vec4> {
         if let Some(v) = self.rem { out += Rem(v.y) }
         out
     }
-    /// ## With Y
     /// Replaces the Y value of appropriate units with the new value.
     pub fn with_y(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1153,7 +1130,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
         self
     }
-    /// ## Set Y
     /// Sets the Y value of appropriate units with the new value.
     pub fn set_y(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1161,7 +1137,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.y = v2 } else { self.prc = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.y = v2 } else { self.rem = Some(Vec4::new(0.0, v2, 0.0, 0.0)) } }
     }
-    /// ## Get Z
     /// Gets the Z value of all units.
     pub fn get_z(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1170,7 +1145,6 @@ impl NodeSize<Vec4> {
         if let Some(v) = self.rem { out += Rem(v.z) }
         out
     }
-    /// ## With Z
     /// Replaces the Z value of appropriate units with the new value.
     pub fn with_z(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1179,7 +1153,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
         self
     }
-    /// ## Set Z
     /// Sets the Z value of appropriate units with the new value.
     pub fn set_z(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1187,7 +1160,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.prc { if let Some(v1) = &mut self.prc { v1.z = v2 } else { self.prc = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.z = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, v2, 0.0)) } }
     }
-    /// ## Get W
     /// Gets the W value of all units.
     pub fn get_w(&self) -> NodeSize<f32> {
         let mut out = NodeSize::<f32>::new();
@@ -1196,7 +1168,6 @@ impl NodeSize<Vec4> {
         if let Some(v) = self.rem { out += Rem(v.w) }
         out
     }
-    /// ## With W
     /// Replaces the W value of appropriate units with the new value.
     pub fn with_w(mut self, other: impl Into<NodeSize<f32>>) -> Self {
         let other = other.into();
@@ -1205,7 +1176,6 @@ impl NodeSize<Vec4> {
         if let Some(v2) = other.rem { if let Some(v1) = &mut self.rem { v1.w = v2 } else { self.rem = Some(Vec4::new(0.0, 0.0, 0.0, v2)) } }
         self
     }
-    /// ## Set W
     /// Sets the W value of appropriate units with the new value.
     pub fn set_w(&mut self, other: impl Into<NodeSize<f32>>) {
         let other = other.into();
@@ -1218,18 +1188,23 @@ impl NodeSize<Vec4> {
 
 
 /// ## NodeSize Evaluate
-/// Trait for implementing evaluation logic for (T)
+/// Trait for implementing evaluation logic for `(TT)`.
+/// `(T)` should be 1 vector unit version of `(TT)`.
+/// ## 📦 Types
+/// * `(f32, f32)` = `(TT, T)`
+/// * `(Vec2, f32)` = `(TT, T)`
+/// * `(Vec3, f32)` = `(TT, T)`
+/// * `(Vec4, f32)` = `(TT, T)`
 pub trait NodeSizeEvaluate<T, TT> {
-    /// ## Evaluate
-    /// Evaluates the NodeSize for (T)
+    /// Evaluates the NodeSize for `(T)`
     fn evaluate(&self, abs_scale: TT, parent_size: T, font_size: TT) -> T;
-
+    /// Evaluates the NodeSize abs only for `(T)`
     fn evaluate_abs(&self, abs_scale: TT) -> T;
-
+    /// Evaluates the NodeSize prc only for `(T)`
     fn evaluate_prc(&self, parent_size: T) -> T;
-
+    /// Evaluates the NodeSize rem only for `(T)`
     fn evaluate_rem(&self, parent_size: TT) -> T;
-
+    /// Evaluates the NodeSize abs + rem only for `(T)`
     fn evaluate_abs_rem(&self, abs_scale: TT, font_size: TT) -> T;
 }
 
@@ -1242,25 +1217,21 @@ impl NodeSizeEvaluate<f32, f32> for NodeSize<f32> {
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs(&self, abs_scale: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.abs { out += v * abs_scale }
         out
     }
-
     fn evaluate_prc(&self, parent_size: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         out
     }
-
     fn evaluate_rem(&self, font_size: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs_rem(&self, abs_scale: f32, font_size: f32) -> f32 {
         let mut out = 0.0;
         if let Some(v) = self.abs { out += v * abs_scale }
@@ -1276,25 +1247,21 @@ impl NodeSizeEvaluate<Vec2, f32> for NodeSize<Vec2> {
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs(&self, abs_scale: f32) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
         out
     }
-
     fn evaluate_prc(&self, parent_size: Vec2) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         out
     }
-
     fn evaluate_rem(&self, font_size: f32) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs_rem(&self, abs_scale: f32, font_size: f32) -> Vec2 {
         let mut out = Vec2::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
@@ -1310,25 +1277,21 @@ impl NodeSizeEvaluate<Vec3, f32> for NodeSize<Vec3> {
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs(&self, abs_scale: f32) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
         out
     }
-
     fn evaluate_prc(&self, parent_size: Vec3) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         out
     }
-
     fn evaluate_rem(&self, font_size: f32) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs_rem(&self, abs_scale: f32, font_size: f32) -> Vec3 {
         let mut out = Vec3::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
@@ -1344,25 +1307,21 @@ impl NodeSizeEvaluate<Vec4, f32> for NodeSize<Vec4> {
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs(&self, abs_scale: f32) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
         out
     }
-
     fn evaluate_prc(&self, parent_size: Vec4) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.prc { out += (v/100.0) * parent_size }
         out
     }
-
     fn evaluate_rem(&self, font_size: f32) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.rem { out += v * font_size }
         out
     }
-
     fn evaluate_abs_rem(&self, abs_scale: f32, font_size: f32) -> Vec4 {
         let mut out = Vec4::ZERO;
         if let Some(v) = self.abs { out += v * abs_scale }
