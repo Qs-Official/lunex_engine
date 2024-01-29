@@ -75,7 +75,7 @@ fn setup(
             MyWidget,
             root.clone(),
             Ui::Window::FULL.size(Abs((818.0, 965.0))).pack(),
-            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
+            UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom.png")),
         ));
 
         let head = root.add("Head");
@@ -84,7 +84,7 @@ fn setup(
             head.clone(),
             Ui::Div::new().pad(Abs(20.0)).pack(),
             UiStack::new().direction(StackDirection::Vertical),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom_base_head.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
+            UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom_base_head.png")),
         ));
 
         parent.spawn((

@@ -77,21 +77,30 @@ impl <M: Default + Component, N: Default + Component, T: Component + Default> Fr
 
 
 
+
+
+
 #[derive(Bundle, Debug, Default, Clone)]
 pub struct UiMaterial3dBundle {
+    /// Marks this as node element.
     pub element: Element,
+    /// Quad mesh that is generated every time node is changed.
     pub mesh: Handle<Mesh>,
-
+    /// The material used for the quad.
     pub material: Handle<StandardMaterial>,
-
-    pub dimension: Dimension,
-    pub transform: Transform,
-
+    /// Image boundary for culling.
     pub aabb: Aabb,
-
-    pub visibility: Visibility,
+    /// Contains the ui node size.
+    pub dimension: Dimension,
+    /// The transform of the quad.
+    pub transform: Transform,
+    /// The global transform of the quad.
     pub global_transform: GlobalTransform,
+    /// The visibility properties of the quad.
+    pub visibility: Visibility,
+    /// Inherited visibility of an entity.
     pub inherited_visibility: InheritedVisibility,
+    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering.
     pub view_visibility: ViewVisibility,
 }
 impl From<Handle<StandardMaterial>> for UiMaterial3dBundle {
@@ -102,23 +111,37 @@ impl From<Handle<StandardMaterial>> for UiMaterial3dBundle {
         }
     }
 }
+impl UiMaterial3dBundle {
+    pub fn from_image(materials: &mut ResMut<'_, Assets<StandardMaterial>>, value: Handle<Image>) -> Self {
+        UiMaterial3dBundle {
+            material: materials.add(StandardMaterial { base_color_texture: Some(value), unlit: true, ..default() }),
+            ..default()
+        }
+    }
+}
 
 
 #[derive(Bundle, Clone, Debug, Default)]
 pub struct UiImage2dBundle {
+    /// Marks this as node element.
     pub element: Element,
+    /// Image properties.
     pub sprite: Sprite,
-
+    /// Image texture.
     pub texture: Handle<Image>,
-
-    pub dimension: Dimension,
-    pub transform: Transform,
-
+    /// Image boundary for culling.
     pub aabb: Aabb,
-
-    pub visibility: Visibility,
+    /// Contains the ui node size.
+    pub dimension: Dimension,
+    /// The transform of the image.
+    pub transform: Transform,
+    /// The global transform of the image.
     pub global_transform: GlobalTransform,
+    /// The visibility properties of the image.
+    pub visibility: Visibility,
+    /// Inherited visibility of an entity.
     pub inherited_visibility: InheritedVisibility,
+    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering.
     pub view_visibility: ViewVisibility,
 }
 impl From<Handle<Image>> for UiImage2dBundle {
@@ -131,45 +154,12 @@ impl From<Handle<Image>> for UiImage2dBundle {
 }
 
 
-
-
-
-#[derive(Bundle, Clone, Debug, Default)]
-pub struct UiText3dBundle {
-    /// Contains the text.
-    pub text: Text,
-    /// How the text is positioned relative to its transform.
-    pub text_anchor: bevy::sprite::Anchor,
-    /// The maximum width and height of the text.
-    pub text_2d_bounds: bevy::text::Text2dBounds,
-    /// The transform of the text.
-    pub transform: Transform,
-    /// The global transform of the text.
-    pub global_transform: GlobalTransform,
-    /// The visibility properties of the text.
-    pub visibility: Visibility,
-    /// Inherited visibility of an entity.
-    pub inherited_visibility: InheritedVisibility,
-    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
-    pub view_visibility: ViewVisibility,
-    /// Contains the size of the text and its glyph's position and scale data. Generated via [`TextPipeline::queue_text`]
-    pub text_layout_info: bevy::text::TextLayoutInfo,
-
-
-    pub element: Element,
-    pub sprite: Sprite,
-
-    pub dimension: Dimension,
-
-    pub aabb: Aabb,
-}
-
-
 #[derive(Bundle, Clone, Debug, Default)]
 pub struct UiText2dBundle {
+    /// Marks this as node element.
     pub element: Element,
+    /// Contains the ui node size.
     pub dimension: Dimension,
-
     /// Contains the text.
     pub text: Text,
     /// How the text is positioned relative to its transform.
@@ -184,7 +174,7 @@ pub struct UiText2dBundle {
     pub visibility: Visibility,
     /// Inherited visibility of an entity.
     pub inherited_visibility: InheritedVisibility,
-    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
+    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering.
     pub view_visibility: ViewVisibility,
     /// Contains the size of the text and its glyph's position and scale data. Generated via [`TextPipeline::queue_text`]
     pub text_layout_info: TextLayoutInfo,

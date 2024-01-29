@@ -14,11 +14,11 @@ fn main() {
         .run();
 }
 
-fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<AssetServer>) {
+fn setup(mut cmd: Commands, mut _mat: ResMut<Assets<StandardMaterial>>, assets: Res<AssetServer>) {
 
     cmd.spawn((
         MyWidget,
-        Camera3dBundle {
+        Camera2dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 1000.0),
             camera: Camera::default(),
             ..default()
@@ -45,7 +45,8 @@ fn setup(mut cmd: Commands, mut mat: ResMut<Assets<StandardMaterial>>, ast: Res<
             MyWidget,
             UiLink::path("Root/Square"),
             Ui::Solid::new().size(Abs((1920.0, 1080.0))).pack(),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(ast.load("background.png")), unlit: true, ..default() }) ),
+            UiImage2dBundle::from(assets.load("background.png")),
+            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("background.png")), unlit: true, ..default() }) ),
         ));
 
     });

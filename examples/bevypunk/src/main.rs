@@ -87,7 +87,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             MyWidget,
             root.new(),
             Ui::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
-            UiText2dBundle {
+            /*UiText2dBundle {
                 text: Text::from_section("hello world!",
                     TextStyle {
                         font: assets.font.clone(),
@@ -95,7 +95,8 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
                         color: Color::RED,
                     }),
                 ..default()
-            }
+            }*/
+            UiImage2dBundle::from(assets.main_background.clone())
         ));
 
         for _ in 0..3 {
@@ -112,45 +113,6 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             root.add(".||#:2").new(),
             Ui::Div::new().pad(Abs::MD).br().pack(),
         ));
-
-        /* parent.spawn((
-            MyWidget,
-            root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::MD).br().pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::MD).br().pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.add(".||#:0").new(),
-            Ui::Div::new().pad(Abs::MD).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.add(".||#:0").add(".||#:1").new(),
-            Ui::Div::new().pad(Abs::XL).pad_y(Abs::MD).margin_y(Abs::MD).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.add(".||#:0").add(".||#:2").new(),
-            Ui::Div::new().pad_y(Abs::MD).pad_x(Prc(15.0)).margin_y(Abs::MD * 2.0).pack(),
-        )); */
-
-
-
-
-
-
-
-
-
 
 
 
