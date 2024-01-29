@@ -323,202 +323,6 @@ trait UiNodeComputeTrait {
     fn align_stack(&mut self, ancestor_position: Vec2);
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
-    /* fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
-
-        // Get depth before mutating self
-        let depth = self.get_depth();
-        
-        let mut skip = true;
-        let mut is_parametric = false;
-
-        // Check here if computation is required for partial recalculation
-
-        // Compute my layout and return computed rectangle for recursion
-        let my_rectangle = if let Some(node_data) = &mut self.data {
-
-            // Overwrite passed style with font size
-            if let Some(fnt) = node_data.font_size { font_size = fnt }
-
-            // Compute node layout
-            match &node_data.layout {
-                Layout::Div(_) => {
-                    is_parametric = true;
-                },
-                Layout::Window(l) => {
-                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
-                    skip = false;
-                },
-                Layout::Solid(l)  => {
-                    node_data.rectangle = l.compute(parent.into(), abs_scale, font_size).into();
-                    skip = false;
-                },
-            }
-
-            // Adding depth
-            node_data.rectangle.pos.z = depth;
-            node_data.rectangle
-
-        } else { return; };
-
-        if skip == false {
-            if is_parametric {
-                //compute divs with inherited scale
-                self.compute_content(parent.pos.xy(), parent.size, Vec4::ZERO, abs_scale, font_size);
-            } else {
-                //compute divs with my rectangle scale
-                self.compute_content(my_rectangle.pos.xy(), my_rectangle.size, Vec4::ZERO, abs_scale, font_size);
-            }
-        }
-
-        // Enter recursion
-        for (_, subnode) in &mut self.nodes {
-            subnode.compute_all(my_rectangle, abs_scale, font_size);
-        }
-    } */
-    /* fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
-
-        let stack_options = self.data.as_ref().unwrap().stack;
-
-        match stack_options.direction {
-            StackDirection::Horizontal => self.compute_stack(position, size, padding, abs_scale, font_size, true),
-            StackDirection::Vertical => self.compute_stack(position, size, padding, abs_scale, font_size, false),
-        }
-    } */
-    /* fn compute_stack(&mut self, _position: Vec2, size: Vec2, _padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2 {
-
-        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
-        let mut content_size = Vec2::ZERO;
-
-        // Sort mutable pointers into matrix
-        let mut i = 0;
-        matrix.push(Vec::new());
-        for (_, subnode) in &mut self.nodes {
-            if let Some(subnode_data) = &subnode.data {
-                if let Layout::Div(layout) = &subnode_data.layout {
-                    let br = layout.force_break;
-                    matrix[i].push(subnode);
-                    if br {
-                        i += 1;
-                        matrix.push(Vec::new());
-                    }
-                }
-            }
-        }
-
-
-        // =================================================================
-        // INSIDE MATRIX
-
-        // Get the offset position
-        let mut cursor = Vec2::ZERO;
-        let mut previous_line_padmargin = Vec2::ZERO;
-        let mut debt = Vec2::ZERO;
-
-        let mut _i = 0;
-        for line in &mut matrix {
-            // =================================================================
-            // INSIDE LINE
-
-            let mut previous_padmargin = _padding.xy();
-            let mut line_size = 0.0;
-            let mut line_padmargin = 0.0;
-            if horizontal {
-                cursor.x = 0.0;
-                cursor.y = content_size.y;
-                if _i != 0 { previous_padmargin.y = 0.0 }
-            } else {
-                cursor.y = 0.0;
-                cursor.x = content_size.x;
-                if _i != 0 { previous_padmargin.x = 0.0 }
-            }
-            
-            let mut _ii = 0;
-            for subnode in line {
-
-                // =================================================================
-                // INSIDE SUBNODE
-
-                // Fetch data
-                let subnode_data = subnode.data.as_mut().unwrap();
-                let layout = if let Layout::Div(layout) = subnode_data.layout { layout } else { unreachable!() };
-
-
-                // Get padding & margin => compute right position
-                let padding = layout.compute_padding(size, abs_scale, font_size);
-                let margin = layout.compute_margin(size, abs_scale, font_size);
-
-                println!("Before vursor1: {}, {}, {}", previous_padmargin, previous_line_padmargin, margin.xy());
-                // Apply primary offset
-                cursor += Vec2::max( Vec2::max(previous_padmargin, previous_line_padmargin), margin.xy());
-                let position = _position + cursor;
-
-                // Enter recursion to get the right content size
-                let potential_content = subnode.compute_content(position, size, padding, abs_scale, font_size);
-
-
-                // Fetch data again, because they were modified
-                let subnode_data = subnode.data.as_mut().unwrap();
-
-
-                // Compute size with the right content size
-                let mut subnode_content = subnode_data.content_size;
-                if potential_content != Vec2::ZERO { subnode_content = potential_content }
-                let size = layout.compute(subnode_content, size, abs_scale, font_size);
-
-                // Update computed subnode rectangle
-                subnode_data.rectangle = Rect2D {
-                    pos: position,
-                    size,
-                }.into();
-
-                println!("Cursor1: {}", cursor);
-
-                // Apply secondary offset
-                previous_padmargin = margin.zw();
-                cursor += size;
-
-                if horizontal {
-                    if cursor.y - content_size.y > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.y) }
-                    line_size = f32::max(line_size, cursor.y - content_size.y);
-                    debt.y = _padding.y;
-                    cursor.y = content_size.y;
-                } else {
-                    if cursor.x - content_size.x > line_size { line_padmargin = f32::max(line_padmargin, previous_padmargin.x) }
-                    debt.x = _padding.x;
-                    line_size = f32::max(line_size, cursor.x - content_size.x);
-                    cursor.x = content_size.x;
-                }
-
-                println!("Cursor2: {}", cursor);
-
-                // END OF INSIDE SUBNODE
-                // =================================================================
-                _ii += 1;
-            }
-
-            if horizontal {
-                previous_line_padmargin.y = line_padmargin;
-                content_size.y += line_size;
-                content_size.x = f32::max(content_size.x, cursor.x - _padding.x);
-            } else {
-                previous_line_padmargin.x = line_padmargin;
-                content_size.x += line_size;
-                content_size.y = f32::max(content_size.y, cursor.y - _padding.y);
-            }
-
-            // END OF INSIDE LINE
-            // =================================================================
-            _i += 1;
-        }
-
-        content_size -= debt;
-        
-        // END OF INSIDE MATRIX
-        // =================================================================
-        content_size
-    } */
-    
-
     fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
@@ -571,7 +375,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             subnode.compute_all(my_rectangle, abs_scale, font_size);
         }
     }
-
     fn compute_content(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2 {
 
         let stack_options = self.data.as_ref().unwrap().stack;
@@ -690,7 +493,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     let off = margin.y + possible_size/2.0 - size.y/2.0;
                     my_offset = Vec2::new(cursor, off + (off - margin.x) * my_align);
                     cursor += size.x;
-                    cursor += margin.w;
+                    cursor += margin.z;
 
                 } else {
                     if let Some(align) = layout.align_x { my_align = align.0 }
@@ -699,7 +502,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                     let off = margin.x + possible_size/2.0 - size.x/2.0;
                     my_offset = Vec2::new(off + (off - margin.x) * my_align, cursor);
                     cursor += size.y;
-                    cursor += margin.z;
+                    cursor += margin.w;
                 };
                 
 
@@ -762,48 +565,26 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         }
 
 
-        // =================================================================
-        // INSIDE MATRIX
 
+        let mut _i = 0;
+        let _i_max = matrix.len();
+        for line in &mut matrix {
 
-        // Line loop
-        //-----------------------------//
-        let mut _i = 0;               //
-        let _i_max = matrix.len();   //
-        for line in &mut matrix {   //
-            // =================================================================
-            // INSIDE LINE
-
-
-            // Subnode loop
-            //---------------------------------//
-            let mut _ii = 0;                  //
-            let _ii_max = line.len();        //
-            for subnode in &mut *line {     //
+            let mut _ii = 0;
+            let _ii_max = line.len();
+            for subnode in &mut *line {
                 // =================================================================
-                // INSIDE SUBNODE
 
                 let subnode_data = subnode.data.as_mut().unwrap();
                 subnode_data.rectangle.pos.x += ancestor_position.x;
                 subnode_data.rectangle.pos.y += ancestor_position.y;
+                subnode.align_stack(ancestor_position);
 
-                let subnode_data = subnode.data.as_ref().unwrap();
-                subnode.align_stack(subnode_data.rectangle.pos.xy());
-
-                // END OF INSIDE SUBNODE
                 // =================================================================
                 _ii += 1;
             }
-
-
-            // END OF INSIDE LINE
-            // =================================================================
             _i += 1;
         }
-
-        
-        // END OF INSIDE MATRIX
-        // =================================================================
     }
 }
 
