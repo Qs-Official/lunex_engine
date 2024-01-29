@@ -83,7 +83,7 @@ fn setup(
             MyWidget,
             head.clone(),
             UiLayout::Div::new().pad(Abs(20.0)).pack(),
-            UiStack::new().direction(StackDirection::Vertical),
+            UiStack::new().direction(FlexDirection::Vertical),
             UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom_base_head.png")),
         ));
 

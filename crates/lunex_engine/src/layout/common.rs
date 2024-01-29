@@ -60,6 +60,18 @@ impl NiceDisplay for Cover {
     }
 }
 
+/// Defines how div should behave
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub enum Sizing {
+    /// Minimal with forced wrapping.
+    Minimal,
+    ///Minimal with no wrap unless reached max size.
+    #[default]
+    Normal,
+    /// Stretches until it can't.
+    Maximal,
+}
+
 
 
 
@@ -94,30 +106,17 @@ impl NiceDisplay for Layout {
 
 
 
+/// Defines the main flexbox axis
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum Sizing {
-    /// Minimal with forced wrapping.
-    Minimal,
-    ///Minimal with no wrap unless reached max size.
-    #[default]
-    Normal,
-    /// Stretches until it can't.
-    Maximal,
-}
-
-
-
-
-
-#[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum StackDirection {
+pub enum FlexDirection {
     #[default]
     Horizontal,
     Vertical,
 }
 
+/// Defines how nodes should be positioned within one flex line
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
-pub enum LinePlacement {
+pub enum FlexJustify {
     #[default]
     Start,
     Center,
@@ -125,27 +124,28 @@ pub enum LinePlacement {
     Between,
     Around,
     Evenly,
+    Stretch,
 }
 
 #[cfg_attr(feature = "bevy", derive(Component))]
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct StackOptions {
+pub struct FlexBox {
     /// Dictates on which axis should the nodes be stacked.
-    pub direction: StackDirection,
+    pub direction: FlexDirection,
     /// Dictates if the stacking direction should be flipped (flip around Y axis).
     pub flipped: bool,
     /// Dictates if the stacking direction should be inverted (flip around X axis).
     pub inverted: bool,
     /// Dictates how should the nodes be positioned within one line.
-    pub placement: LinePlacement,
+    pub placement: FlexJustify,
     /// Minimal gap between subnodes and lines.
     pub gap: NodeSize<Vec2>,
     /// Default alignment of nodes within lines.
     pub node_alignment: Align,
 }
-impl Default for StackOptions {
+impl Default for FlexBox {
     fn default() -> Self {
-        StackOptions {
+        FlexBox {
             direction: Default::default(),
             flipped: Default::default(),
             inverted: Default::default(),
@@ -155,47 +155,41 @@ impl Default for StackOptions {
         }
     }
 }
-impl StackOptions {
+impl FlexBox {
+    /// Craetes new [`FlexBox`]
     pub fn new() -> Self {
         Default::default()
     }
-    /// ## With direction
     /// Replaces the direction with the new value.
-    pub fn direction(mut self, direction: StackDirection) -> Self {
+    pub fn direction(mut self, direction: FlexDirection) -> Self {
         self.direction = direction;
         self
     }
-    /// ## As flipped
     /// Replaces the flipped value with the new value.
     pub fn flipped(mut self, value: bool) -> Self {
         self.flipped = value;
         self
     }
-    /// ## As inverted
     /// Replaces the inversion value with the new value.
     pub fn inverted(mut self, value: bool) -> Self {
         self.inverted = value;
         self
     }
-    /// ## With placement
     /// Replaces the placement with the new value.
-    pub fn placement(mut self, placement: LinePlacement) -> Self {
+    pub fn placement(mut self, placement: FlexJustify) -> Self {
         self.placement = placement;
         self
     }
-    /// ## With gap
     /// Replaces the gap with the new value.
     pub fn gap(mut self, gap: impl Into<NodeSize<Vec2>>) -> Self {
         self.gap = gap.into();
         self
     }
-    /// ## With gap horizontal
     /// Replaces the horizontal gap with the new value.
     pub fn gap_x(mut self, gap: impl Into<NodeSize<f32>>) -> Self {
         self.gap.set_x(gap);
         self
     }
-    /// ## With gap vertical
     /// Replaces the vertical gap with the new value.
     pub fn gap_y(mut self, gap: impl Into<NodeSize<f32>>) -> Self {
         self.gap.set_y(gap);

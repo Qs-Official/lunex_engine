@@ -39,7 +39,7 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             MyWidget,
             root.clone(),
             UiLayout::Window::FULL.pack(),
-            UiStack::new().direction(StackDirection::Vertical)//.gap(Abs::SM),
+            UiStack::new().direction(FlexDirection::Vertical)//.gap(Abs::SM),
         ));
 
 

@@ -11,7 +11,7 @@ use crate::NodeSizeEvaluate;
 use crate::Rectangle2D;
 use crate::Rectangle3D;
 use crate::import::*;
-use crate::StackDirection;
+use crate::FlexDirection;
 
 use super::{UiNode, UiTree, NodeData};
 
@@ -375,8 +375,8 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
         let stack_options = self.data.as_ref().unwrap().stack;
 
         match stack_options.direction {
-            StackDirection::Horizontal => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, true),
-            StackDirection::Vertical => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, false),
+            FlexDirection::Horizontal => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, true),
+            FlexDirection::Vertical => self.compute_stack(ancestor_size, ancestor_padding, abs_scale, font_size, false),
         }
     }
     /// This will compute the stack and position nodes ONLY locally as if every matrix starts at 0,0.
