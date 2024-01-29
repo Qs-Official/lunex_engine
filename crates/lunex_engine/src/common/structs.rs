@@ -6,7 +6,7 @@ use crate::NodeError;
 // #==================#
 // #=== ERROR TYPE ===#
 
-/// ## Lunex error
+/// ## Ui error
 /// Error type indicating something went wrong.
 #[derive(Debug, Error, Clone, PartialEq)]
 pub enum UiError {
@@ -22,7 +22,6 @@ impl From<NodeError> for UiError {
 
 
 
-/// ## Rectangle 2D
 /// A struct for holding a 2D rectangle data.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rect2D {
@@ -86,7 +85,6 @@ impl Into<Rect3D> for Rect2D {
 }
 
 
-/// ## Rectangle 3D
 /// A struct for holding a 3D rectangle data.
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Rect3D {

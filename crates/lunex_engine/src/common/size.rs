@@ -1992,5 +1992,3 @@ impl Rem<Vec4> {
     /// ## Extra-large 7
     pub const XL7_VEC4: Rem<Vec4> = Rem(Vec4::splat(18.0));
 }
-
-pub type Size = NodeSize<f32>;
