@@ -1511,7 +1511,6 @@ impl NiceDisplay for NodeSize<Vec4> {
 
 // # Impl Constructors
 impl <T> NodeSize<T> {
-    /// ## New
     /// Creates new empty NodeSize
     pub const fn new() -> Self {
         NodeSize {
@@ -1520,8 +1519,7 @@ impl <T> NodeSize<T> {
             rem: None,
         }
     }
-    /// ## From absolute
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from absolute
     pub const fn from_abs(abs: T) -> NodeSize<T> {
         NodeSize {
             abs: Some(abs),
@@ -1529,8 +1527,7 @@ impl <T> NodeSize<T> {
             rem: None,
         }
     }
-    /// ## From percentage
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from percentage
     pub const fn from_prc(prc: T) -> NodeSize<T> {
         NodeSize {
             abs: None,
@@ -1538,8 +1535,7 @@ impl <T> NodeSize<T> {
             rem: None,
         }
     }
-    /// ## From rem
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from rem
     pub const fn from_rem(rem: T) -> NodeSize<T> {
         NodeSize {
             abs: None,
@@ -1547,8 +1543,7 @@ impl <T> NodeSize<T> {
             rem: Some(rem),
         }
     }
-    /// ## From absolute & percentage
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from absolute & percentage
     pub const fn from_abs_prc(abs: T, prc: T) -> NodeSize<T> {
         NodeSize {
             abs: Some(abs),
@@ -1556,8 +1551,7 @@ impl <T> NodeSize<T> {
             rem: None,
         }
     }
-    /// ## From absolute & rem
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from absolute & rem
     pub const fn from_abs_rem(abs: T, rem: T) -> NodeSize<T> {
         NodeSize {
             abs: Some(abs),
@@ -1565,8 +1559,7 @@ impl <T> NodeSize<T> {
             rem: Some(rem),
         }
     }
-    /// ## From percentage & rem
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from percentage & rem
     pub const fn from_prc_rem(prc: T, rem: T) -> NodeSize<T> {
         NodeSize {
             abs: None,
@@ -1574,8 +1567,7 @@ impl <T> NodeSize<T> {
             rem: Some(rem),
         }
     }
-    /// ## From absolute & percentage & rem
-    /// Creates new NodeSize
+    /// Creates new empty NodeSize from absolute & percentage & rem
     pub const fn from_abs_prc_rem(abs: T, prc: T, rem: T) -> NodeSize<T> {
         NodeSize {
             abs: Some(abs),
