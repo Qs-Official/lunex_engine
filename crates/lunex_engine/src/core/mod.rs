@@ -9,7 +9,7 @@ pub mod prelude {
     pub use super::{MasterData, NodeData, NoData};
 
     pub use super::{UiNodeCreationTrait, UiNodeDataTrait, UiNodeTreeInitTrait, UiNodeTreeComputeTrait};
-    pub use super::{BuildAsNode, SyncToNode};
+    pub use super::BuildAsNode;
 
     //RE-EXPORT FROM NODES                          // NEEDS ABSTRACTION
     pub use crate::nodes::prelude::{NodeGeneralTrait, NodeTopDataTrait, NodeDisplayTrait};
