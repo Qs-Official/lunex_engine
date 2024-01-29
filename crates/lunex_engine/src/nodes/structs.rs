@@ -33,10 +33,10 @@ pub enum NodeError {
 // #================#
 // #=== NODETREE ===#
 
-/// ## NodeTree
 /// A hashmap-like data structure for organizing general data into recursive subnodes.
-/// Data is indexed and traversed using `paths`.
-/// ### Tree
+/// Data is indexed and traversed using `paths`. It retains the order of insertion.
+/// ## 📏 Structure
+/// All data is stored inside inner tree-like hierarchy. Each node can store users data and multiple subnodes.
 /// ```text
 /// > NodeTree
 ///  |-> Node_1
@@ -46,22 +46,25 @@ pub enum NodeError {
 ///  |-> Node_5
 ///  |    |-> Node_6
 /// ```
-/// If you want to access `Node_4`, use path `"Node_1/Node_3/Node_4"` on `NodeTree`.
-/// Or you can use `"Node_3/Node_4"` on `Node_1` struct to get the same result.
-/// ### Paths
-/// Whitespaces are allowed in paths, but are not encouraged.
-/// Putting a dot as first symbol like this `".name"` will hide the node from the tree. If you want to
-/// display hidden nodes too, pass `"show-hidden"` as params to [`NodeDisplayTrait::tree`] method.
-/// Just `"."` will refer to the same node. `".."` is not supported for the sake of simplicity
-/// and performance.
+/// ## ⚙️ Paths
+/// Paths are strings that are passed to the methods to retrive and mutate data.
+/// For example `"foo/bar/bar"` is a valid path syntax. You need to construct paths always
+/// from the point of view of the struct we pass them to. For example on the previous hierarchy:
 /// 
-/// You can also not specify the name when creating a node. That will mean the name will be
-/// generated. The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes`.
-/// Meaning nodes with names like `".||#:0"`, `".||#:1"`, `".||#:2"` can exist. Please refrain from
-/// manually using these names or [`NodeGeneralTrait::add_node`] will return errors.
-/// ### Generics
-/// * (`D`) => A type holding surface top-data that is stored in [`NodeTree`] for all nodes to share.
-/// * (`T`) => A type holding node-specific data that any [`Node`] can store.
+/// If you want to access `Node_4`, you use path `"Node_1/Node_3/Node_4"` on `NodeTree` struct.
+/// You can also use `"Node_3/Node_4"` on `Node_1` struct to get the same result.
+/// 
+/// Whitespaces are allowed in paths, but are not encouraged.
+/// Putting a dot as first symbol like this `".name"` will hide the node from the tree.
+/// Just `"."` will refer to the same node. `".."` is not supported and is actually a valid name.
+/// 
+/// You can also not specify the name when creating a node. That means the name will be generated.
+/// The format is as follows `".||#:N"` with `N` being the `.len()` of the `nodes` hashmap.
+/// ## 📦 Types
+/// * Generic `(D)` - Master data schema struct defining what surface data can be stored in [`NodeTree`] for all nodes to share.
+/// * Generic `(N)` - Node data schema struct defining what node-specific data can be stored in [`Node`]
+/// ## ⚠️ Warning
+/// Please refrain from manually using `".||#:0"`, `".||#:1"`, `".||#:2"`, ... as names or [`NodeGeneralTrait::add_node`] will return errors.
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct NodeTree<D, T> {
     /// ## Top-level data

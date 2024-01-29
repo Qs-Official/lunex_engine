@@ -23,7 +23,7 @@ pub struct NoData;
 pub struct MasterData<M: Default + Component> {
     /// Mandatory data the user can uppend which all nodes have shared access to.
     pub data: M,
-    /// Scale of the [`Abs`] unit.
+    /// Scale of the [`crate::Abs`] unit.
     pub abs_scale: f32,
     /// Default font size for all subnodes to use (Rem unit scaling).
     pub font_size: f32,
