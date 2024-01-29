@@ -1,5 +1,5 @@
 use crate::import::*;
-use crate::{NiceDisplay, Align, Cover, Rect2D, Layout, NodeSize, NodeSizeEvaluate, Abs};
+use crate::{NiceDisplay, Align, Cover, Rectangle2D, Layout, NodeSize, NodeSizeEvaluate, Abs};
 
 /// ## Window Layout
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
@@ -70,8 +70,8 @@ impl Window {
     }
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
-        Rect2D {
+    pub fn compute(&self, parent: Rectangle2D, abs_scale: f32, font_size: f32) -> Rectangle2D {
+        Rectangle2D {
             pos: parent.pos + self.pos.evaluate(abs_scale, parent.size, font_size),
             size: self.size.evaluate(abs_scale, parent.size, font_size),
         }
@@ -159,7 +159,7 @@ impl Solid {
     }
     /// ## Compute
     /// Computes the layout based on given parameters.
-    pub fn compute(&self, parent: Rect2D, abs_scale: f32, font_size: f32) -> Rect2D {
+    pub fn compute(&self, parent: Rectangle2D, abs_scale: f32, font_size: f32) -> Rectangle2D {
         
         let size = self.size.evaluate(abs_scale, parent.size, font_size);
 
@@ -176,7 +176,7 @@ impl Solid {
         let computed_height = size.y * scale;
         let computed_point = Vec2::new(center_point.x - computed_width / 2.0, center_point.y - computed_height / 2.0);
 
-        Rect2D {
+        Rectangle2D {
             pos: Vec2::new(
                 computed_point.x + (computed_point.x - parent.pos.x) * self.align_x.0,
                 computed_point.y + (computed_point.y - parent.pos.y) * self.align_y.0,

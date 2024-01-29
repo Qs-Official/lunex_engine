@@ -8,8 +8,8 @@ use crate::layout;
 use crate::Layout;
 use crate::MasterData;
 use crate::NodeSizeEvaluate;
-use crate::Rect2D;
-use crate::Rect3D;
+use crate::Rectangle2D;
+use crate::Rectangle3D;
 use crate::import::*;
 use crate::StackDirection;
 
@@ -294,10 +294,10 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeInitTrait for Ui
 /// ## Node tree compute trait
 /// Trait with all node tree layout computation implementations.
 pub trait UiNodeTreeComputeTrait {
-    fn compute(&mut self, parent: Rect3D);
+    fn compute(&mut self, parent: Rectangle3D);
 }
 impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for UiTree<M, N> {
-    fn compute(&mut self, parent: Rect3D) {
+    fn compute(&mut self, parent: Rectangle3D) {
 
         let mut abs_scale = 1.0;
         let mut font_size = 16.0;
@@ -314,8 +314,8 @@ impl <M: Default + Component, N: Default + Component> UiNodeTreeComputeTrait for
 /// ## Node compute trait
 /// Trait with all node layout computation implementations. Includes private methods.
 trait UiNodeComputeTrait {
-    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
-    //fn position_all(&mut self, parent: Rect3D, abs_scale: f32, font_size: f32);
+    fn compute_all(&mut self, parent: Rectangle3D, abs_scale: f32, font_size: f32);
+    //fn position_all(&mut self, parent: Rectangle3D, abs_scale: f32, font_size: f32);
     //fn compute_content(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
     //fn compute_stack(&mut self, position: Vec2, size: Vec2, padding: Vec4, abs_scale: f32, font_size: f32, horizontal: bool) -> Vec2;
     fn compute_content(&mut self, ancestor_size: Vec2, ancestor_padding: Vec4, abs_scale: f32, font_size: f32) -> Vec2;
@@ -323,7 +323,7 @@ trait UiNodeComputeTrait {
     fn align_stack(&mut self, ancestor_position: Vec2);
 }
 impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> { 
-    fn compute_all(&mut self, parent: Rect3D, abs_scale: f32, mut font_size: f32) {
+    fn compute_all(&mut self, parent: Rectangle3D, abs_scale: f32, mut font_size: f32) {
 
         // Get depth before mutating self
         let depth = self.get_depth();
@@ -512,7 +512,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 // Fetch data again, because they were modified
                 let subnode_data = subnode.data.as_mut().unwrap();
 
-                subnode_data.rectangle = Rect2D {
+                subnode_data.rectangle = Rectangle2D {
                     pos: my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) },
                     size,
                 }.into();

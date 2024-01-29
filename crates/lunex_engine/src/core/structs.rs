@@ -1,4 +1,4 @@
-use crate::{import::*, NiceDisplay, Rect3D, StackOptions};
+use crate::{import::*, NiceDisplay, Rectangle3D, StackOptions};
 use bevy::ecs::component::Component;
 use colored::Colorize;
 
@@ -51,7 +51,7 @@ pub struct NodeData<N: Default + Component> {
     /// Optional data the user can append.
     pub data: Option<N>,
     /// Calculated rectangle from layout.
-    pub rectangle: Rect3D,
+    pub rectangle: Rectangle3D,
     /// Layout of this node.
     pub layout: Layout,
     /// Layout of subnodes and how to stack them.

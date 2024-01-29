@@ -19,7 +19,7 @@ pub fn compute_ui<M:Default + Component, N:Default + Component, T: Component>(
     for (dimension, mut ui) in &mut query {
         // Compute the Ui
         //println!("Ui DIM: {}", dimension.size);
-        ui.compute(Rect2D::new().with_size(dimension.size).into());
+        ui.compute(Rectangle2D::new().with_size(dimension.size).into());
     }
 }
 
