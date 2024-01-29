@@ -1,240 +1,178 @@
 use std::borrow::Borrow;
-use super::{Node, NodeError};
+#[allow(unused_imports)]
+use super::{NodeTree, Node, NodeError};
 
 // #=========================#
 // #=== TRAIT DECLARATION ===#
 
-/// ## Node general trait
 /// Trait with all node management implementations.
 pub trait NodeGeneralTrait<T> {
-    /// ## Add node
     /// Adds new subnode to this node and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::insert_node`] for hierarchy insert
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::insert_node`] for hierarchy insert `(supports path recursion)`
     fn add_node(&mut self, name: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeError>;
-
-    /// ## Insert node
+    /// ## 🚸 Recursive
     /// Inserts new subnode to this node or any other subnode and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::add_node`] for direct insert
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::add_node`] for direct insert on this node `(no recursion)`
     fn insert_node(&mut self, path: impl Borrow<str>, node: impl Into<Node<T>>) -> Result<String, NodeError>;
-
-    /// ## Take node
     /// Removes subnode from this node and returns it.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::take_node`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::take_node`] for hierarchy retrieval `(supports path recursion)`
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeError>;
-
-    /// ## Remove node
+    /// ## 🚸 Recursive
     /// Removes subnode from this node or any other subnode and returns it.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::take_node`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::take_node`] for direct retrieval on this node `(no recursion)`
     fn remove_node(&mut self, path: impl Borrow<str>) -> Result<Node<T>, NodeError>;
-
-    /// ## Obtain node
     /// Borrows subnode from this node.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::borrow_node`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::borrow_node`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_node(&self, name: impl Borrow<str>) -> Result<&Node<T>, NodeError>;
-
-    /// ## Obtain node mut
     /// Borrows subnode from this node as mut.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::borrow_node_mut`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::borrow_node_mut`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeError>;
-
-    /// ## Borrow node
+    /// ## 🚸 Recursive
     /// Borrows subnode from this node or any other subnode.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::obtain_node`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::obtain_node`] for direct retrieval on this node `(no recursion)`
     fn borrow_node(&self, path: impl Borrow<str>) -> Result<&Node<T>, NodeError>;
-
-    /// ## Borrow node mut
+    /// ## 🚸 Recursive
     /// Borrows subnode from this node or any other subnode as mut.
-    /// ### 📌 Note
-    /// * Use [`NodeGeneralTrait::obtain_node_mut`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeGeneralTrait::obtain_node_mut`] for direct retrieval on this node `(no recursion)`
     fn borrow_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeError>;
-
-    /// ## Merge
     /// Merges subnodes of supplied node or nodetree into this node.
-    /// ### ⚠️ Warning
+    /// ## ⚠️ Warning
     /// * Any data that supplied node contains will be dropped.
     /// * Returns error if there is a name collision.
     fn merge(&mut self, node: impl Into<Node<T>>) -> Result<(), NodeError>;
-
-    /// ## Crawl
     /// Recursively iterates over all subnodes and returns them in a single vector.
     fn crawl(&self) -> Vec<&Node<T>>;
-
-    /// ## Tree node
     /// Generates overview of the inner structure of subnodes as a printable string.
     /// 
     /// You can supply additional parameters like `show-hidden`.
-    /// ### 📌 Note
+    /// ## 📌 Note
     /// * Prefer [`NodeDisplayTrait::tree`] method instad if (`T`) implements [`crate::NiceDisplay`]
     fn tree_node(&self, params: impl Borrow<str>) -> String;
-
-    /// ## Get name
     /// Returns name of the node. `Cached` & `Read-only`.
-    /// ### ⚠️ Warning
+    /// ## ⚠️ Warning
     /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_name(&self) -> &String;
-
-    /// ## Get path
     /// Returns depth within the hierarchy. `Cached` & `Read-only`.
-    /// ### ⚠️ Warning
+    /// ## ⚠️ Warning
     /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_path(&self) -> &String;
-
-    /// ## Get depth
     /// Returns full path without the name. `Cached` & `Read-only`.
-    /// ### ⚠️ Warning
+    /// ## ⚠️ Warning
     /// * Not guaranteed to be correct if node is not put inside the hierarchy correctly.
     fn get_depth(&self) -> f32;
 }
 
-/// ## Node creation trait
 /// Trait with all node creation implementations.
 /// Lunex abstacts over this trait with another trait.
 pub trait NodeCreationTrait<T> {
-    /// ## Make node
     /// Makes new subnode in this node and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::create_node`] for hierarchy creation
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::create_node`] for hierarchy creation `(supports path recursion)`
     fn make_node(&mut self, name: impl Borrow<str>) -> Result<String, NodeError>;
-
-    /// ## Create node
+    /// ## 🚸 Recursive
     /// Creates new subnode in this node or any other subnode and returns the new subnodes' name.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::make_node`] for direct creation
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::make_node`] for direct creation on this node `(no recursion)`
     fn create_node(&mut self, path: impl Borrow<str>) -> Result<String, NodeError>;
-
-    /// ## Obtain or create node
     /// Borrows subnode from this node. If the node doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::borrow_or_create_node`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::borrow_or_create_node`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_or_create_node(&mut self, name: impl Borrow<str>) -> Result<&Node<T>, NodeError>;
-
-    /// ## Obtain or create node mut
     /// Borrows subnode from this node as mut. If the node doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::borrow_or_create_node_mut`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::borrow_or_create_node_mut`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_or_create_node_mut(&mut self, name: impl Borrow<str>) -> Result<&mut Node<T>, NodeError>;
-
-    /// ## Borrow or create node
+    /// ## 🚸 Recursive
     /// Borrows subnode from this node or any other subnode. If a node in path doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::obtain_or_create_node`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::obtain_or_create_node`] for direct retrieval on this node `(no recursion)`
     fn borrow_or_create_node(&mut self, path: impl Borrow<str>) -> Result<&Node<T>, NodeError>;
-
-    /// ## Borrow or create node mut
+    /// ## 🚸 Recursive
     /// Borrows subnode from this node or any other subnode as mut. If a node in path doesn't exist, it creates one.
-    /// ### 📌 Note
-    /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeCreationTrait::obtain_or_create_node_mut`] for direct retrieval on this node `(no recursion)`
     fn borrow_or_create_node_mut(&mut self, path: impl Borrow<str>) -> Result<&mut Node<T>, NodeError>;    
 }
 
-/// ## Node data trait
 /// Trait with all node data management implementations.
-/// Provides mainly raw access methods. Lunex abstacts over
-/// this trait with another trait.
+/// Lunex abstacts over this trait with another trait.
 pub trait NodeDataTrait<T> {
-    /// ## Add data
     /// Adds new data to this node and returns the previous data.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::insert_data`] for hierarchy insert
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::insert_data`] for hierarchy insert `(supports path recursion)`
     fn add_data(&mut self, data: T) -> Option<T>;
-
-    /// ## Insert data
+    /// ## 🚸 Recursive
     /// Inserts new data to this node or any other subnode and returns the previous data.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::add_data`] for direct insert
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::add_data`] for direct insert on this node `(no recursion)`
     fn insert_data(&mut self, path: impl Borrow<str>, data: T) -> Result<Option<T>, NodeError>;
-
-    /// ## Take data
     /// Removes data from this node and returns them.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::remove_data`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::remove_data`] for hierarchy retrieval `(supports path recursion)`
     fn take_data(&mut self) -> Option<T>;
-
-    /// ## Remove data
+    /// ## 🚸 Recursive
     /// Removes data from this node or any other subnode and returns them.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::take_data`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::take_data`] for direct retrieval on this node `(no recursion)`
     fn remove_data(&mut self, path: impl Borrow<str>) -> Result<Option<T>, NodeError>;
-
-    /// ## Obtain data
     /// Borrows data from this node.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::borrow_data`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::borrow_data`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_data(&self) -> Option<&T>;
-
-    /// ## Obtain data mut
     /// Borrows data from this node as mut.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::borrow_data_mut`] for hierarchy retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::borrow_data_mut`] for hierarchy retrieval `(supports path recursion)`
     fn obtain_data_mut(&mut self) -> Option<&mut T>;
-
-    /// ## Borrow data
+    /// ## 🚸 Recursive
     /// Borrows data from this node or any other subnode.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::obtain_data`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::obtain_data`] for direct retrieval on this node `(no recursion)`
     fn borrow_data(&self, path: impl Borrow<str>) -> Result<Option<&T>, NodeError>;
-
-    /// ## Borrow data mut
+    /// ## 🚸 Recursive
     /// Borrows data from this node or any other subnode as mut.
-    /// ### 📌 Note
-    /// * Use [`NodeDataTrait::obtain_data_mut`] for direct retrieval
+    /// ## 📌 Note
+    /// * Use [`NodeDataTrait::obtain_data_mut`] for direct retrieval on this node `(no recursion)`
     fn borrow_data_mut(&mut self, path: impl Borrow<str>) -> Result<Option<&mut T>, NodeError>;
 }
 
-/// ## Node top data trait
 /// Trait with all nodetree top-data management implementations.
+/// Lunex SHOULD!!!! abstacts over this trait with another trait. (WIP)
 pub trait NodeTopDataTrait<D> {
-    /// ## Add top-level data
     /// Adds new top-level data and returns previous top-level data.
     fn add_topdata(&mut self, data: D) -> Option<D>;
-
-    /// ## Take top-level data
     /// Removes top-level data and returns it.
     fn take_topdata(&mut self) -> Option<D>;
-
-    /// ## Obtain top-level data
     /// Borrows top-level data.
     fn obtain_topdata(&self) -> Option<&D>;
-
-    /// ## Obtain top-level data mut
     /// Borrows top-level data as mut.
     fn obtain_topdata_mut(&mut self) -> Option<&mut D>;
 }
 
-/// ## Node init trait
-/// Trait with all init methods for empty nodes. Lunex abstacts over
-/// this trait with another trait.
+/// Trait with all init methods for empty nodes.
+/// Lunex abstacts over this trait with another trait.
 pub trait NodeInitTrait {
-    /// ## New
-    /// Creates new node.
+    /// Creates new [`Node`].
     fn new() -> Self;
 }
 
-/// ## Nodetree init trait
-/// Trait with init methods for nodetrees. Lunex abstacts over
-/// this trait with another trait.
+/// Trait with init methods for [`NodeTree`].
+/// Lunex abstacts over this trait with another trait.
 pub trait NodeTreeInitTrait {
-    /// ## New
-    /// Creates new NodeTree.
+    /// Creates new [`NodeTree`].
     fn new(name: impl Borrow<str>) -> Self;
 }
 
-/// ## Node display trait
 /// Trait with all node display implementations.
 pub trait NodeDisplayTrait<T> {
-    /// ## Tree
     /// Generates overview of the inner structure of subnodes as a printable string.
-    /// 
-    /// It also displays information about layout by default.
-    /// 
     /// You can supply additional parameters like `show-hidden`.
-    /// 
     fn tree(&self, params: impl Borrow<str>) -> String;
 }
