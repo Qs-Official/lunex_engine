@@ -1,6 +1,6 @@
 use std::borrow::Borrow;
 
-use bevy::{prelude::*, render::primitives::Aabb};
+use bevy::{prelude::*, render::primitives::Aabb, sprite::Anchor, text::{Text2dBounds, TextLayoutInfo}};
 use lunex_engine::prelude::*;
 
 pub type UiStack = StackOptions;
@@ -135,7 +135,7 @@ impl From<Handle<Image>> for UiImage2dBundle {
 
 
 #[derive(Bundle, Clone, Debug, Default)]
-pub struct UiText2dBundle {
+pub struct UiText3dBundle {
     /// Contains the text.
     pub text: Text,
     /// How the text is positioned relative to its transform.
@@ -159,9 +159,33 @@ pub struct UiText2dBundle {
     pub element: Element,
     pub sprite: Sprite,
 
-    pub texture: Handle<Image>,
-
     pub dimension: Dimension,
 
     pub aabb: Aabb,
+}
+
+
+#[derive(Bundle, Clone, Debug, Default)]
+pub struct UiText2dBundle {
+    pub element: Element,
+    pub dimension: Dimension,
+
+    /// Contains the text.
+    pub text: Text,
+    /// How the text is positioned relative to its transform.
+    pub text_anchor: Anchor,
+    /// The maximum width and height of the text.
+    pub text_2d_bounds: Text2dBounds,
+    /// The transform of the text.
+    pub transform: Transform,
+    /// The global transform of the text.
+    pub global_transform: GlobalTransform,
+    /// The visibility properties of the text.
+    pub visibility: Visibility,
+    /// Inherited visibility of an entity.
+    pub inherited_visibility: InheritedVisibility,
+    /// Algorithmically-computed indication of whether an entity is visible and should be extracted for rendering
+    pub view_visibility: ViewVisibility,
+    /// Contains the size of the text and its glyph's position and scale data. Generated via [`TextPipeline::queue_text`]
+    pub text_layout_info: TextLayoutInfo,
 }

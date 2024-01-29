@@ -13,7 +13,7 @@ fn main() {
         .run();
 }
 
-fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: ResMut<Assets<StandardMaterial>>) {
+fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResMut<Assets<StandardMaterial>>) {
 
     commands.spawn((
         MyWidget,
@@ -87,6 +87,15 @@ fn startup(mut commands: Commands, _assets: Res<AssetCache>, mut _materials: Res
             MyWidget,
             root.new(),
             Ui::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
+            UiText2dBundle {
+                text: Text::from_section("hello world!",
+                    TextStyle {
+                        font: assets.font.clone(),
+                        font_size: 60.0,
+                        color: Color::RED,
+                    }),
+                ..default()
+            }
         ));
 
         for _ in 0..3 {
