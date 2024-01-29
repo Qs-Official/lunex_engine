@@ -410,7 +410,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
 
         // INSIDE MATRIX =================================================================
 
-        let _gap = self.data.as_ref().unwrap().stack.gap.evaluate(abs_scale, ancestor_size, font_size);
+        let gap = self.data.as_ref().unwrap().stack.gap.evaluate(abs_scale, ancestor_size, font_size);
         let align = self.data.as_ref().unwrap().stack.node_alignment.0;
 
 
@@ -466,6 +466,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 _ii += 1;
             }
 
+            if _i != 0 { line_cursor += if horizontal { gap.x } else { gap.y } }
             let mut cursor = if horizontal { ancestor_padding.x } else { ancestor_padding.y };
 
             // Second pass to align them----//
@@ -489,6 +490,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 if horizontal {
                     if let Some(align) = layout.align_y { my_align = align.0 }
 
+                    if _ii != 0 { cursor += gap.x }
                     cursor += margin.x;
                     let off = margin.y + possible_size/2.0 - size.y/2.0;
                     my_offset = Vec2::new(cursor, off + (off - margin.x) * my_align);
@@ -498,6 +500,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 } else {
                     if let Some(align) = layout.align_x { my_align = align.0 }
 
+                    if _ii != 0 { cursor += gap.y }
                     cursor += margin.y;
                     let off = margin.x + possible_size/2.0 - size.x/2.0;
                     my_offset = Vec2::new(off + (off - margin.x) * my_align, cursor);

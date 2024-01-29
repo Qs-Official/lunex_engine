@@ -75,7 +75,7 @@ fn setup(
             MyWidget,
             root.clone(),
             Ui::Window::FULL.size(Abs((818.0, 965.0))).pack(),
-            UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
+            //UiMaterial3dBundle::from( mat.add(StandardMaterial { base_color_texture: Some(assets.load("bevycom.png")), alpha_mode: AlphaMode::Blend, unlit: true, ..default() }) ),
         ));
 
         let head = root.add("Head");
