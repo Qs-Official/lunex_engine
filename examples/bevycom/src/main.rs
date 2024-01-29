@@ -99,7 +99,7 @@ fn setup(
             head.add("Rank"),
             UiLayout::Div::new().margin_b(Abs(10.0)).pack(),
             UiContent::new((100.0, 30.0)),
-            UiText2dBundle {
+            /*UiText2dBundle {
                 text: Text::from_section("hello world!",
                     TextStyle {
                         font: assets.load("fonts/rajdhani/Rajdhani-SemiBold.ttf"),
@@ -107,7 +107,7 @@ fn setup(
                         color: Color::WHITE,
                     }),
                 ..default()
-            }
+            }*/
         ));
 
         parent.spawn((
@@ -150,6 +150,98 @@ fn setup(
 
     });
 
+    cmd.spawn((
+        UiTreeBundle::<NoData, NoData, MyWidget> {
+            transform: Transform::from_xyz(0.0, 300.0, 300.0),
+            tree: UiTree::new("MyWidget"),
+            ..default()
+        },
+        msh.add(Mesh::from(shape::Cube { size: 15.0 })),
+        mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
+        Visibility::default(),
+        ViewVisibility::default(),
+
+    )).with_children(|parent| {
+
+        let root = UiLink::path("Root");
+        parent.spawn((
+            MyWidget,
+            root.clone(),
+            UiLayout::Window::FULL.size(Abs((818.0, 965.0))).pack(),
+            UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom.png")),
+        ));
+
+        let head = root.add("Head");
+        parent.spawn((
+            MyWidget,
+            head.clone(),
+            UiLayout::Div::new().pad(Abs(20.0)).pack(),
+            UiStack::new().direction(FlexDirection::Vertical),
+            UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom_base_head.png")),
+        ));
+
+        parent.spawn((
+            MyWidget,
+            head.add("Icon"),
+            UiLayout::Div::new().margin_r(Abs(20.0)).br().pack(),
+            UiContent::new((115.0, 155.0)),
+        ));
+
+        parent.spawn((
+            MyWidget,
+            head.add("Rank"),
+            UiLayout::Div::new().margin_b(Abs(10.0)).pack(),
+            UiContent::new((100.0, 30.0)),
+            /*UiText2dBundle {
+                text: Text::from_section("hello world!",
+                    TextStyle {
+                        font: assets.load("fonts/rajdhani/Rajdhani-SemiBold.ttf"),
+                        font_size: 60.0,
+                        color: Color::WHITE,
+                    }),
+                ..default()
+            }*/
+        ));
+
+        parent.spawn((
+            MyWidget,
+            head.add("Name"),
+            UiLayout::Div::new().margin_b(Abs(20.0)).pack(),
+            UiContent::new((350.0, 45.0))
+        ));
+
+        let list = head.add("List");
+        parent.spawn((
+            MyWidget,
+            list.clone(),
+            UiLayout::Div::new().pad_y(Abs(10.0)).pack(),
+            UiStack::new().gap_x(Abs(10.0))
+        ));
+
+        {
+            parent.spawn((
+                MyWidget,
+                list.add("Missions"),
+                UiLayout::Div::new().pack(),
+                UiContent::new((200.0, 30.0))
+            ));
+
+            parent.spawn((
+                MyWidget,
+                list.add("Kills"),
+                UiLayout::Div::new().pack(),
+                UiContent::new((150.0, 30.0))
+            ));
+
+            parent.spawn((
+                MyWidget,
+                list.add("Status"),
+                UiLayout::Div::new().pack(),
+                UiContent::new((250.0, 30.0))
+            ));
+        }
+
+    });
 }
 
 

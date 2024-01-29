@@ -114,7 +114,7 @@ impl From<Handle<StandardMaterial>> for UiMaterial3dBundle {
 impl UiMaterial3dBundle {
     pub fn from_image(materials: &mut ResMut<'_, Assets<StandardMaterial>>, value: Handle<Image>) -> Self {
         UiMaterial3dBundle {
-            material: materials.add(StandardMaterial { base_color_texture: Some(value), unlit: true, ..default() }),
+            material: materials.add(StandardMaterial { base_color_texture: Some(value), unlit: true, alpha_mode: AlphaMode::Blend, ..default() }),
             ..default()
         }
     }
