@@ -9,7 +9,7 @@ pub struct PlayerCam {
     pub distance: f32,
     pub sensitivity: Vec2,
 }
-pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mouse_input: Res<Input<MouseButton>>, mut query: Query<(&PlayerCam, &mut Transform)>) {
+pub fn rotate_playercam(mut mouse_motion_events: EventReader<MouseMotion>, mouse_input: Res<ButtonInput<MouseButton>>, mut query: Query<(&PlayerCam, &mut Transform)>) {
     let mut delta = Vec2::ZERO;
     if mouse_input.pressed(MouseButton::Left) {
         delta = mouse_motion_events.read().map(|e| e.delta).sum();

@@ -57,7 +57,7 @@ fn setup(
                 ..default()
             },
             msh.add(Mesh::from(shape::Cube { size: 15.0 })),
-            mat.add(Color::rgb(1.0, 0.0, 1.0).into()),
+            mat.add(Color::rgb(1.0, 0.0, 1.0)),
             Visibility::default(),
             ViewVisibility::default(),
     
