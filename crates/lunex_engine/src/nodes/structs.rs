@@ -341,7 +341,7 @@ impl <T> NodeGeneralTrait<T> for Node<T> {
     }
 
     fn take_node(&mut self, name: impl Borrow<str>) -> Result<Node<T>, NodeError> {
-        match self.nodes.remove(name.borrow()) {
+        match self.nodes.shift_remove(name.borrow()) {
             Some(node) => Ok(node),
             None => Err(NodeError::NoNode(name.borrow().to_owned())),
         }

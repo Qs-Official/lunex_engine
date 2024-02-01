@@ -8,7 +8,6 @@ use crate::layout;
 use crate::Layout;
 use crate::MasterData;
 use crate::NodeSizeEvaluate;
-use crate::Rectangle2D;
 use crate::Rectangle3D;
 use crate::import::*;
 use crate::FlexDirection;
@@ -349,7 +348,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             // Adding depth
-            node_data.rectangle.pos.z = depth*40.0;
+            node_data.rectangle.pos.z = depth;
             node_data.rectangle
 
         } else { return; };
