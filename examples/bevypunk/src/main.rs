@@ -3,17 +3,23 @@ use bevy_lunex::prelude::*;
 
 fn main() {
     App::new()
-        .add_plugins((DefaultPlugins, UiPlugin::<NoData, NoData, MyWidget>::new()))
-        .add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
-
-        //.add_plugins(Shape2dPlugin::default())
-        //.add_systems(Update, render_update)
-        .add_systems(PreStartup, prestartup)
-        .add_systems(Startup, startup)
+        .add_plugins((DefaultPlugins.set (
+            WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Bevypunk".into(),
+                    mode: bevy::window::WindowMode::BorderlessFullscreen,
+                    ..default()
+                }),
+                ..default()
+            }
+        ), UiPlugin::<NoData, NoData, MyWidget>::new()))
+        //.add_plugins(UiDebugPlugin::<NoData, NoData, MyWidget>::new())
+        .add_systems(PreStartup, presetup)
+        .add_systems(Startup, setup)
         .run();
 }
 
-fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResMut<Assets<StandardMaterial>>) {
+fn setup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResMut<Assets<StandardMaterial>>) {
 
     commands.spawn((
         MyWidget,
@@ -81,10 +87,9 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
 
 }
 
+
 #[derive(Component, Debug, Default, Clone, PartialEq)]
 pub struct MyWidget;
-
-
 
 #[derive(Resource)]
 pub struct AssetCache {
@@ -100,7 +105,7 @@ pub struct AssetCache {
     pub main_logo: Handle<Image>,
     pub settings_background: Handle<Image>,
 }
-fn prestartup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn presetup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.insert_resource(AssetCache {
         font: asset_server.load("fonts/rajdhani/Rajdhani-Medium.ttf"),
         font_bold: asset_server.load("fonts/rajdhani/Rajdhani-Bold.ttf"),
