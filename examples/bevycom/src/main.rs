@@ -68,7 +68,7 @@ fn setup(
                 MyWidget,
                 root.clone(),
                 UiLayout::Window::FULL.size(Abs((818.0, 965.0))).pack(),
-                UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom.png")),
+                //UiMaterial3dBundle::from_image(&mut mat, assets.load("bevycom.png")),
             ));
     
             let head = root.add("Head");
@@ -92,15 +92,6 @@ fn setup(
                 head.add("Rank"),
                 UiLayout::Div::new().margin_b(Abs(10.0)).pack(),
                 UiContent::new((100.0, 30.0)),
-                /*UiText2dBundle {
-                    text: Text::from_section("hello world!",
-                        TextStyle {
-                            font: assets.load("fonts/rajdhani/Rajdhani-SemiBold.ttf"),
-                            font_size: 60.0,
-                            color: Color::WHITE,
-                        }),
-                    ..default()
-                }*/
             ));
     
             parent.spawn((
