@@ -282,6 +282,21 @@ pub fn element_fetch_transform_from_node<M:Default + Component, N:Default + Comp
     }
 }
 
+/// This system fetches [`Dimension`] & [`Image`] data and overwrites querried [`Transform`] scale data to fit.
+/// ## 📦 Types
+/// * Generic `(T)` - Marker component grouping entities into one widget type
+pub fn element_sprite_scale_to_dimension<T: Component>(
+    mut query: Query<(&mut Transform, &Dimension, &Handle<Image>), (With<T>, With<Element>, With<Sprite>, Or<(Changed<Dimension>, Changed<Handle<Image>>)>)>,
+    assets: Res<Assets<Image>>,
+) {
+    for (mut transform, dimension, image) in &mut query {
+        if let Some(img) = assets.get(image) {
+            transform.scale.x = dimension.size.x / img.texture_descriptor.size.width as f32;
+            transform.scale.y = dimension.size.y / img.texture_descriptor.size.height as f32;
+        }
+    }
+}
+
 /// This system reconstructs the mesh on [`UiTree`] change.
 /// ## 📦 Types
 /// * Generic `(M)` - Master data schema struct defining what can be stored in [`UiTree`]
@@ -358,9 +373,12 @@ impl <M:Default + Component, N:Default + Component, T: Component> Plugin for UiP
             .add_systems(Update, send_content_size_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, send_stack_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
             .add_systems(Update, send_layout_to_node::<M, N, T>.before(compute_ui::<M, N, T>))
+
             .add_systems(Update, fetch_transform_from_node::<M, N, T>)
             .add_systems(Update, (fetch_dimension_from_node::<M, N, T>, element_reconstruct_mesh::<T>).chain())
             .add_systems(Update, element_fetch_transform_from_node::<M, N, T>)
+            .add_systems(Update, element_sprite_scale_to_dimension::<T>)
+
             .add_systems(Update, (fetch_dimension_from_camera::<M, N, T>, fetch_transform_from_camera::<T>).before(compute_ui::<M, N, T>))
             .add_systems(Update, compute_ui::<M, N, T>);
     }

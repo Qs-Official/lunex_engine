@@ -19,7 +19,6 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         MyWidget,
         Camera2dBundle {
             transform: Transform::from_xyz(0.0, 0.0, 1000.0),
-            camera: Camera::default(),
             ..default()
         }
     ));
@@ -39,51 +38,11 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
             MyWidget,
             root.clone(),
             UiLayout::Window::FULL.pack(),
-            UiStack::new().direction(FlexDirection::Vertical)//.gap(Abs::SM),
+            //UiStack::new().direction(FlexDirection::Vertical),
         ));
 
 
-
-
-
-
-
-
-
-
-        parent.spawn((
-            MyWidget,
-            root.new(),
-            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::START).pack(),
-        ));
-        parent.spawn((
-            MyWidget,
-            root.new(),
-            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::CENTER).pack(),
-        ));
-        parent.spawn((
-            MyWidget,
-            root.new(),
-            UiLayout::Div::new().pad(Abs::MD).margin(Abs::ZERO).align_x(Align::END).pack(),
-        ));
-
-        parent.spawn((
-            MyWidget,
-            root.new(),
-            UiLayout::Div::new().pad(Abs::MD).pad_x(Prc(10.0)).margin(Abs::SM).br().pack(),
-        ));
-
-
-
-        for _ in 0..2 {
-            parent.spawn((
-                MyWidget,
-                root.new(),
-                UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
-            ));
-        }
-
-        parent.spawn((
+        /* parent.spawn((
             MyWidget,
             root.new(),
             UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).br().pack(),
@@ -97,22 +56,9 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
                 ..default()
             }*/
             //UiImage2dBundle::from(assets.main_background.clone())
-        ));
-
-        for _ in 0..3 {
-            parent.spawn((
-                MyWidget,
-                root.new(),
-                UiLayout::Div::new().pad(Abs::MD).margin(Abs::SM).pack(),
-            ));
-        }
+        )); */
 
 
-        parent.spawn((
-            MyWidget,
-            root.add(".||#:2").new(),
-            UiLayout::Div::new().pad(Abs::MD).br().pack(),
-        ));
 
 
 
@@ -120,8 +66,15 @@ fn startup(mut commands: Commands, assets: Res<AssetCache>, mut _materials: ResM
         parent.spawn((
             MyWidget,
             UiLink::path("Root/Square"),
-            UiLayout::Solid::new().align_x(Align::CENTER).pack(),
+            UiLayout::Solid::new().size(Abs((1920.0, 1080.0))).cover(Cover::Full).pack(),
             UiImage2dBundle::from(assets.main_background.clone())
+        ));
+
+        parent.spawn((
+            MyWidget,
+            UiLink::path("Root/Board"),
+            UiLayout::Solid::new().size(Abs((807.0, 1432.0))).align_x(Align(-0.8)).pack(),
+            UiImage2dBundle::from(assets.main_board.clone())
         ));
 
     });
