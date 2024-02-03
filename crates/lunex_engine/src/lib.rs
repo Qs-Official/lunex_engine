@@ -23,7 +23,7 @@ pub mod prelude {
 // #=========================#
 // #=== CRATE ONLY EXPORT ===#
 
-pub mod import {
+pub(crate) mod import {
     pub(crate) use std::borrow::Borrow;
 
     pub(crate) use indexmap::IndexMap as HashMap;
