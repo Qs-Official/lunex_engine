@@ -25,11 +25,11 @@
 
   #bevy = { version = "0.12.1", default_features = false, features = [
   bevy = { git = "https://github.com/bevyengine/bevy", default_features = false, features = [
-    "bevy_gilrs",
-    "bevy_render",
-    "bevy_sprite",
-    "bevy_text",
-    "bevy_gizmos",
+    #"bevy_gilrs",
+    #"bevy_render",
+    #"bevy_sprite",
+    #"bevy_text",
+    #"bevy_gizmos",
   ] }
 
   bevy_mod_picking   = { version = "0.17.0"}
