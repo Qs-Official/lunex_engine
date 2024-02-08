@@ -348,7 +348,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
             }
 
             // Adding depth
-            node_data.rectangle.pos.z = depth*30.0;
+            node_data.rectangle.pos.z = depth;
             node_data.rectangle
 
         } else { return; };
