@@ -742,6 +742,13 @@ impl<T: Mul<f32, Output = T> + Copy> MulAssign<f32> for Rem<T> {
 // #===============================#
 // #=== CASTING IMPLEMENTATIONS ===#
 
+// # Impl (x) => NodeSize(f32)
+impl Into<NodeSize<f32>> for f32 {
+    fn into(self) -> NodeSize<f32> {
+        NodeSize::from_abs(self)
+    }
+}
+
 // # Impl ((x, x)) => NodeSize(Vec2)
 impl Into<NodeSize<Vec2>> for Abs<(f32, f32)> {
     fn into(self) -> NodeSize<Vec2> {
@@ -794,6 +801,11 @@ impl Into<NodeSize<Vec4>> for Rem<(f32, f32, f32, f32)> {
 }
 
 // # Impl (x) => NodeSize(Vec2)
+impl Into<NodeSize<Vec2>> for f32 {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_abs((self, self).into())
+    }
+}
 impl Into<NodeSize<Vec2>> for Abs<f32> {
     fn into(self) -> NodeSize<Vec2> {
         NodeSize::from_abs((self.0, self.0).into())
@@ -819,6 +831,11 @@ impl Into<NodeSize<Vec2>> for NodeSize<f32> {
 }
 
 // # Impl (x) => NodeSize(Vec3)
+impl Into<NodeSize<Vec3>> for f32 {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_abs((self, self, self).into())
+    }
+}
 impl Into<NodeSize<Vec3>> for Abs<f32> {
     fn into(self) -> NodeSize<Vec3> {
         NodeSize::from_abs((self.0, self.0, self.0).into())
@@ -845,6 +862,11 @@ impl Into<NodeSize<Vec3>> for NodeSize<f32> {
 }
 
 // # Impl (x) => NodeSize(Vec4)
+impl Into<NodeSize<Vec4>> for f32 {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_abs((self, self, self, self).into())
+    }
+}
 impl Into<NodeSize<Vec4>> for Abs<f32> {
     fn into(self) -> NodeSize<Vec4> {
         NodeSize::from_abs((self.0, self.0, self.0, self.0).into())
