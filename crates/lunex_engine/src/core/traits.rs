@@ -511,10 +511,6 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 subnode_data.rectangle.pos.y = _xxx.y;
                 subnode_data.rectangle.size = size;
 
-                /* subnode_data.rectangle = Rectangle2D {
-                    pos: my_offset + if horizontal { Vec2::new(0.0, line_cursor) } else { Vec2::new(line_cursor, 0.0) },
-                    size,
-                }.into(); */
 
                 let subnode_data = subnode.data.as_ref().unwrap();
                 subnode.align_stack(subnode_data.rectangle.pos.xy());
