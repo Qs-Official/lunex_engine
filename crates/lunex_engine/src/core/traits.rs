@@ -549,27 +549,32 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
     }
     /// This is the secondary pass to align the nodes.
     fn align_stack(&mut self, ancestor_position: Vec2) {
-        let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
+        //let mut matrix: Vec<Vec<&mut Node<NodeData<N>>>> = Vec::new();
 
         // Sort mutable pointers into matrix
-        let mut i = 0;
-        matrix.push(Vec::new());
+        //let mut i = 0;
+        //matrix.push(Vec::new());
         for (_, subnode) in &mut self.nodes {
-            if let Some(subnode_data) = &subnode.data {
-                if let Layout::Div(layout) = &subnode_data.layout {
-                    let br = layout.force_break;
-                    matrix[i].push(subnode);
-                    if br {
-                        i += 1;
-                        matrix.push(Vec::new());
-                    }
+            if let Some(subnode_data) = &mut subnode.data {
+                if let Layout::Div(_) = &subnode_data.layout {
+
+                    subnode_data.rectangle.pos.x += ancestor_position.x;
+                    subnode_data.rectangle.pos.y += ancestor_position.y;
+
+                    //let br = layout.force_break;
+                    //matrix[i].push(subnode);
+                    //if br {
+                    //    i += 1;
+                    //    matrix.push(Vec::new());
+                    //}
                 }
+                subnode.align_stack(ancestor_position);
             }
         }
 
 
 
-        let mut _i = 0;
+        /* let mut _i = 0;
         let _i_max = matrix.len();
         for line in &mut matrix {
 
@@ -587,7 +592,7 @@ impl <N:Default + Component> UiNodeComputeTrait for UiNode<N> {
                 _ii += 1;
             }
             _i += 1;
-        }
+        } */
     }
 }
 
