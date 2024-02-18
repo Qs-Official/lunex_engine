@@ -28,6 +28,11 @@ impl NiceDisplay for Align {
         format!("{}", self.0.to_string().bold())
     }
 }
+impl Into<Align> for f32 {
+    fn into(self) -> Align {
+        Align(self)
+    }
+}
 
 /// Defines how a container is scaled relative to it's parent container
 /// * [`Cover::Horizontal`]

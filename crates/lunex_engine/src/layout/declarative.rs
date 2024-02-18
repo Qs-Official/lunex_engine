@@ -120,13 +120,13 @@ impl Solid {
         self
     }
     /// Replaces the x alignment with the new value.
-    pub fn align_x(mut self, align: Align) -> Self {
-        self.align_x = align;
+    pub fn align_x(mut self, align: impl Into<Align>) -> Self {
+        self.align_x = align.into();
         self
     }
     /// Replaces the y alignment with the new value.
-    pub fn align_y(mut self, align: Align) -> Self {
-        self.align_y = align;
+    pub fn align_y(mut self, align: impl Into<Align>) -> Self {
+        self.align_y = align.into();
         self
     }
     /// Replaces both x & y cover values with the new value.
