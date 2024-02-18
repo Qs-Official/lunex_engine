@@ -750,6 +750,11 @@ impl Into<NodeSize<f32>> for f32 {
 }
 
 // # Impl ((x, x)) => NodeSize(Vec2)
+impl Into<NodeSize<Vec2>> for (f32, f32) {
+    fn into(self) -> NodeSize<Vec2> {
+        NodeSize::from_abs((self.0, self.1).into())
+    }
+}
 impl Into<NodeSize<Vec2>> for Abs<(f32, f32)> {
     fn into(self) -> NodeSize<Vec2> {
         NodeSize::from_abs((self.0.0, self.0.1).into())
@@ -767,6 +772,11 @@ impl Into<NodeSize<Vec2>> for Rem<(f32, f32)> {
 }
 
 // # Impl ((x, x, x)) => NodeSize(Vec3)
+impl Into<NodeSize<Vec3>> for (f32, f32, f32) {
+    fn into(self) -> NodeSize<Vec3> {
+        NodeSize::from_abs((self.0, self.1, self.2).into())
+    }
+}
 impl Into<NodeSize<Vec3>> for Abs<(f32, f32, f32)> {
     fn into(self) -> NodeSize<Vec3> {
         NodeSize::from_abs((self.0.0, self.0.1, self.0.2).into())
@@ -784,6 +794,11 @@ impl Into<NodeSize<Vec3>> for Rem<(f32, f32, f32)> {
 }
 
 // # Impl ((x, x, x, x)) => NodeSize(Vec4)
+impl Into<NodeSize<Vec4>> for (f32, f32, f32, f32) {
+    fn into(self) -> NodeSize<Vec4> {
+        NodeSize::from_abs((self.0, self.1, self.2, self.3).into())
+    }
+}
 impl Into<NodeSize<Vec4>> for Abs<(f32, f32, f32, f32)> {
     fn into(self) -> NodeSize<Vec4> {
         NodeSize::from_abs((self.0.0, self.0.1, self.0.2, self.0.3).into())
