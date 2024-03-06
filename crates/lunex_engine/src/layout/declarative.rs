@@ -101,7 +101,7 @@ impl Solid {
             size: Abs(Vec2::ONE).into(),
             align_x: Align::CENTER,
             align_y: Align::CENTER,
-            cover: Cover::Contain,
+            cover: Cover::Fit,
         }
     }
     /// Replaces the size with the new value.
@@ -142,8 +142,8 @@ impl Solid {
         let scale = match self.cover {
             Cover::Horizontal => parent.size.x / size.x,
             Cover::Vertical => parent.size.y / size.y,
-            Cover::Contain => f32::min(parent.size.x / size.x, parent.size.y / size.y),
-            Cover::Full => f32::max(parent.size.x / size.x, parent.size.y / size.y),
+            Cover::Fit => f32::min(parent.size.x / size.x, parent.size.y / size.y),
+            Cover::Fill => f32::max(parent.size.x / size.x, parent.size.y / size.y),
         };
 
         let center_point = Vec2::new(parent.pos.x + parent.size.x / 2.0, parent.pos.y + parent.size.y / 2.0);

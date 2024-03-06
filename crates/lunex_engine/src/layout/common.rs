@@ -37,8 +37,8 @@ impl Into<Align> for f32 {
 /// Defines how a container is scaled relative to it's parent container
 /// * [`Cover::Horizontal`]
 /// * [`Cover::Vertical`]
-/// * [`Cover::Contain`]
-/// * [`Cover::Full`]
+/// * [`Cover::Fit`]
+/// * [`Cover::Fill`]
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub enum Cover {
     /// ## Horizontal cover
@@ -47,20 +47,20 @@ pub enum Cover {
     /// ## Vertical cover
     /// Stretches the container so that it always fully covers the vertical axis of the parent.
     Vertical,
-    /// ## Contain
+    /// ## Fit
     /// Stretches the container so that it is fully contained within the parent.
-    #[default] Contain,
-    // ## Full
+    #[default] Fit,
+    // ## Fill
     /// Stretches the container so that it fully covers the parent.
-    Full,
+    Fill,
 }
 impl NiceDisplay for Cover {
     fn to_nicestr(&self) -> String {
         match self {
             Cover::Horizontal => format!("{}", "Horizontal".bold()),
             Cover::Vertical => format!("{}", "Vertical".bold()),
-            Cover::Contain => format!("{}", "Contain".bold()),
-            Cover::Full => format!("{}", "Full".bold()),
+            Cover::Fit => format!("{}", "Fit".bold()),
+            Cover::Fill => format!("{}", "Fill".bold()),
         }
     }
 }

@@ -24,7 +24,7 @@
   thiserror          = { version = "^1.0" }
 
   bevy = { version = "0.13.0", default_features = false, features = [
-  #bevy = { git = "https://github.com/bevyengine/bevy", default_features = false, features = [
+  #bevy = { git = "https://github.com/floppyhammer/bevy", branch="fix-camera-distance", default_features = false, features = [
     #"bevy_gilrs",
     #"bevy_render",
     #"bevy_sprite",
@@ -32,7 +32,7 @@
     #"bevy_gizmos",
   ] }
 
-  bevy_mod_picking   = { version = "0.17.0"}
+  bevy_mod_picking   = { version = "0.18.1"}
 
   bevy_lunex         = { path = "crates/bevy_lunex" }
   lunex_engine       = { path = "crates/lunex_engine" }
