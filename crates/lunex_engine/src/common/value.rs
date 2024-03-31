@@ -106,83 +106,84 @@ macro_rules! uivalue_declare {
     }
 }
 macro_rules! uivalue_operations {
-    ($unit:ident, $ufield:ident) => {
-        impl <T> Into<UiValue<T>> for $unit<T> {
-            fn into(self) -> UiValue<T> {
-                let mut ret = UiValue::new();
-                ret.$ufield = Some(self.0);
-                ret
-            }
-        }
-        impl <T: Add<Output = T> + Add> Add<$unit<T>> for UiValue<T> {
-            type Output = Self;
-            fn add(mut self, other: $unit<T>) -> Self::Output {
-                match self.$ufield {
-                    Some(v) => {
-                        self.$ufield = Some(v + other.0);
-                        self
-                    },
-                    None => {
-                        self.$ufield = Some(other.0);
-                        self
-                    },
+    ($( ($unit:ident, $ufield:ident) ),* ) => {
+        $(
+            impl <T> Into<UiValue<T>> for $unit<T> {
+                fn into(self) -> UiValue<T> {
+                    let mut ret = UiValue::new();
+                    ret.$ufield = Some(self.0);
+                    ret
                 }
             }
-        }
-        impl <T: Add<Output = T> + Copy> AddAssign<$unit<T>> for UiValue<T> {
-            fn add_assign(&mut self, rhs: $unit<T>) {
-                match self.$ufield {
-                    Some(v) => self.$ufield = Some(v + rhs.0),
-                    None => self.$ufield = Some(rhs.0),
+            impl <T: Add<Output = T> + Add> Add<$unit<T>> for UiValue<T> {
+                type Output = Self;
+                fn add(mut self, other: $unit<T>) -> Self::Output {
+                    match self.$ufield {
+                        Some(v) => {
+                            self.$ufield = Some(v + other.0);
+                            self
+                        },
+                        None => {
+                            self.$ufield = Some(other.0);
+                            self
+                        },
+                    }
                 }
             }
-        }
-        impl <T: Sub<Output = T> + Sub> Sub<$unit<T>> for UiValue<T> {
-            type Output = Self;
-            fn sub(mut self, other: $unit<T>) -> Self::Output {
-                match self.$ufield {
-                    Some(v) => {
-                        self.$ufield = Some(v - other.0);
-                        self
-                    },
-                    None => {
-                        self.$ufield = Some(other.0);
-                        self
-                    },
+            impl <T: Add<Output = T> + Copy> AddAssign<$unit<T>> for UiValue<T> {
+                fn add_assign(&mut self, rhs: $unit<T>) {
+                    match self.$ufield {
+                        Some(v) => self.$ufield = Some(v + rhs.0),
+                        None => self.$ufield = Some(rhs.0),
+                    }
                 }
             }
-        }
-        impl <T: Sub<Output = T> + Copy> SubAssign<$unit<T>> for UiValue<T> {
-            fn sub_assign(&mut self, rhs: $unit<T>) {
-                match self.$ufield {
-                    Some(v) => self.$ufield = Some(v - rhs.0),
-                    None => self.$ufield = Some(rhs.0),
+            impl <T: Sub<Output = T> + Sub> Sub<$unit<T>> for UiValue<T> {
+                type Output = Self;
+                fn sub(mut self, other: $unit<T>) -> Self::Output {
+                    match self.$ufield {
+                        Some(v) => {
+                            self.$ufield = Some(v - other.0);
+                            self
+                        },
+                        None => {
+                            self.$ufield = Some(other.0);
+                            self
+                        },
+                    }
                 }
             }
-        }
-        impl <T: Mul<Output = T> + Mul> Mul<$unit<T>> for UiValue<T> {
-            type Output = Self;
-            fn mul(mut self, other: $unit<T>) -> Self::Output {
-                if let Some(v) = self.$ufield {
-                    self.$ufield = Some(v * other.0);
-                }
-                self
-            }
-        }
-        impl <T: Mul<Output = T> + Copy> MulAssign<$unit<T>> for UiValue<T> {
-            fn mul_assign(&mut self, rhs: $unit<T>) {
-                if let Some(v) = self.$ufield {
-                    self.$ufield = Some(v * rhs.0);
+            impl <T: Sub<Output = T> + Copy> SubAssign<$unit<T>> for UiValue<T> {
+                fn sub_assign(&mut self, rhs: $unit<T>) {
+                    match self.$ufield {
+                        Some(v) => self.$ufield = Some(v - rhs.0),
+                        None => self.$ufield = Some(rhs.0),
+                    }
                 }
             }
-        }
+            impl <T: Mul<Output = T> + Mul> Mul<$unit<T>> for UiValue<T> {
+                type Output = Self;
+                fn mul(mut self, other: $unit<T>) -> Self::Output {
+                    if let Some(v) = self.$ufield {
+                        self.$ufield = Some(v * other.0);
+                    }
+                    self
+                }
+            }
+            impl <T: Mul<Output = T> + Copy> MulAssign<$unit<T>> for UiValue<T> {
+                fn mul_assign(&mut self, rhs: $unit<T>) {
+                    if let Some(v) = self.$ufield {
+                        self.$ufield = Some(v * rhs.0);
+                    }
+                }
+            }
+        )*
     };
 }
 
 
 macro_rules! uivalue_implement {
     ($( ($unit:ident, $ufield:ident) ),* ) => {
-        // # Impl `get_x`, `with_x` and `set_x` ...
         impl UiValue<Vec2> {
             /// Gets the X value of all units.
             pub fn get_x(&self) -> UiValue<f32> {
@@ -236,7 +237,6 @@ macro_rules! uivalue_implement {
             }
 
         }
-        // # Impl `get_x`, `with_x` and `set_x` ...
         impl UiValue<Vec3> {
             /// Gets the X value of all units.
             pub fn get_x(&self) -> UiValue<f32> {
@@ -406,7 +406,6 @@ macro_rules! uivalue_implement {
                 )*
             }
         }
-    
     }
 }
 
@@ -448,57 +447,59 @@ macro_rules! unit_into_impl {
 }
 
 macro_rules! unit_basic_operations {
-    ($unit:ident) => {
-        impl <T: Add<Output = T>> Add for $unit<T> {
-            type Output = Self;
-            fn add(self, other: Self) -> Self::Output {
-                $unit(self.0 + other.0)
+    ($($unit:ident), *) => {
+        $(
+            impl <T: Add<Output = T>> Add for $unit<T> {
+                type Output = Self;
+                fn add(self, other: Self) -> Self::Output {
+                    $unit(self.0 + other.0)
+                }
             }
-        }
-        impl <T: AddAssign<T>> AddAssign for $unit<T> {
-            fn add_assign(&mut self, rhs: Self) {
-                self.0 += rhs.0
+            impl <T: AddAssign<T>> AddAssign for $unit<T> {
+                fn add_assign(&mut self, rhs: Self) {
+                    self.0 += rhs.0
+                }
             }
-        }
-        impl <T: Sub<Output = T>> Sub for $unit<T> {
-            type Output = Self;
-            fn sub(self, other: Self) -> Self::Output {
-                $unit(self.0 - other.0)
+            impl <T: Sub<Output = T>> Sub for $unit<T> {
+                type Output = Self;
+                fn sub(self, other: Self) -> Self::Output {
+                    $unit(self.0 - other.0)
+                }
             }
-        }
-        impl <T: SubAssign<T>> SubAssign for $unit<T> {
-            fn sub_assign(&mut self, rhs: Self) {
-                self.0 -= rhs.0
+            impl <T: SubAssign<T>> SubAssign for $unit<T> {
+                fn sub_assign(&mut self, rhs: Self) {
+                    self.0 -= rhs.0
+                }
             }
-        }
-        impl <T: Neg<Output = T>> Neg for $unit<T> {
-            type Output = Self;
-            fn neg(self) -> Self::Output {
-                $unit(-self.0)
+            impl <T: Neg<Output = T>> Neg for $unit<T> {
+                type Output = Self;
+                fn neg(self) -> Self::Output {
+                    $unit(-self.0)
+                }
             }
-        }
-        impl <T: Mul<Output = T>> Mul for $unit<T> {
-            type Output = Self;
-            fn mul(self, other: Self) -> Self::Output {
-                $unit(self.0 * other.0)
+            impl <T: Mul<Output = T>> Mul for $unit<T> {
+                type Output = Self;
+                fn mul(self, other: Self) -> Self::Output {
+                    $unit(self.0 * other.0)
+                }
             }
-        }
-        impl <T: MulAssign<T>> MulAssign for $unit<T> {
-            fn mul_assign(&mut self, rhs: Self) {
-                self.0 *= rhs.0
+            impl <T: MulAssign<T>> MulAssign for $unit<T> {
+                fn mul_assign(&mut self, rhs: Self) {
+                    self.0 *= rhs.0
+                }
             }
-        }
-        impl <T: Mul<f32, Output = T>> Mul<f32> for $unit<T> {
-            type Output = $unit<T>;
-            fn mul(self, rhs: f32) -> Self::Output {
-                $unit(self.0 * rhs)
+            impl <T: Mul<f32, Output = T>> Mul<f32> for $unit<T> {
+                type Output = $unit<T>;
+                fn mul(self, rhs: f32) -> Self::Output {
+                    $unit(self.0 * rhs)
+                }
             }
-        }
-        impl <T: MulAssign<f32>> MulAssign<f32> for $unit<T> {
-            fn mul_assign(&mut self, rhs: f32) {
-                self.0 *= rhs
+            impl <T: MulAssign<f32>> MulAssign<f32> for $unit<T> {
+                fn mul_assign(&mut self, rhs: f32) {
+                    self.0 *= rhs
+                }
             }
-        }
+        )*
     };
 }
 macro_rules! unit_cross_operations {
@@ -595,23 +596,27 @@ pub struct Sp<T>(pub T);
 
 
 uivalue_declare!(ab, rl, rw, rh, em, sp);
+
+// Adds UiValue +-*!= unit ...
+uivalue_operations!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp));
+
+// Implements get_x, set_x, with_x ...
 uivalue_implement!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp));
 
-uivalue_operations!(Ab, ab);
-uivalue_operations!(Rl, rl);
-uivalue_operations!(Rw, rw);
-uivalue_operations!(Rh, rh);
-uivalue_operations!(Em, em);
-uivalue_operations!(Sp, sp);
 
+
+
+// Implements (x,y,z,w) into Unit<Vec4> ...
 unit_into_impl!(Ab, Rl, Rw, Rh, Em, Sp);
 
-unit_basic_operations!(Ab);
+unit_basic_operations!(Ab, Rl, Rw, Rh, Em, Sp);
+
+/* unit_basic_operations!(Ab);
 unit_basic_operations!(Rl);
 unit_basic_operations!(Rw);
 unit_basic_operations!(Rh);
 unit_basic_operations!(Em);
-unit_basic_operations!(Sp);
+unit_basic_operations!(Sp); */
 
 unit_cross_operations!((Ab, ab), (Rl, rl));
 unit_cross_operations!((Ab, ab), (Rw, rw));
