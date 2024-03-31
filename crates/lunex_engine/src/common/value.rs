@@ -8,6 +8,10 @@ use std::ops::MulAssign;
 
 use crate::import::*;
 
+
+// #==========================#
+// #=== DECLARATIVE MACROS ===#
+
 macro_rules! uivalue_declare {
     ($($ufield:ident), *) => {
         /// **Ui value** - Represents collection of different units.
@@ -105,8 +109,9 @@ macro_rules! uivalue_declare {
         }    
     }
 }
-macro_rules! uivalue_operations {
+macro_rules! uivalue_implement {
     ($( ($unit:ident, $ufield:ident) ),* ) => {
+
         $(
             impl <T> Into<UiValue<T>> for $unit<T> {
                 fn into(self) -> UiValue<T> {
@@ -178,12 +183,7 @@ macro_rules! uivalue_operations {
                 }
             }
         )*
-    };
-}
 
-
-macro_rules! uivalue_implement {
-    ($( ($unit:ident, $ufield:ident) ),* ) => {
         impl UiValue<Vec2> {
             /// Gets the X value of all units.
             pub fn get_x(&self) -> UiValue<f32> {
@@ -202,7 +202,6 @@ macro_rules! uivalue_implement {
                 out
             }
 
-
             /// Replaces the X value of appropriate units with the new value.
             pub fn with_x(mut self, other: impl Into<UiValue<f32>>) -> Self {
                 let other = other.into();
@@ -219,7 +218,6 @@ macro_rules! uivalue_implement {
                 )*
                 self
             }
-
 
             /// Sets the X value of appropriate units with the new value.
             pub fn set_x(&mut self, other: impl Into<UiValue<f32>>) {
@@ -408,45 +406,7 @@ macro_rules! uivalue_implement {
         }
     }
 }
-
-macro_rules! unit_into_impl {
-    ($($unit:ident), *) => {
-        $(
-            impl Into<UiValue<Vec2>> for $unit<(f32, f32)> {
-                fn into(self) -> UiValue<Vec2> {
-                    $unit(Vec2::new(self.0.0, self.0.1)).into()
-                }
-            }
-            impl Into<UiValue<Vec3>> for $unit<(f32, f32, f32)> {
-                fn into(self) -> UiValue<Vec3> {
-                    $unit(Vec3::new(self.0.0, self.0.1, self.0.2)).into()
-                }
-            }
-            impl Into<UiValue<Vec4>> for $unit<(f32, f32, f32, f32)> {
-                fn into(self) -> UiValue<Vec4> {
-                    $unit(Vec4::new(self.0.0, self.0.1, self.0.2, self.0.3)).into()
-                }
-            }
-            impl Into<UiValue<Vec2>> for $unit<f32> {
-                fn into(self) -> UiValue<Vec2> {
-                    $unit(Vec2::new(self.0, self.0)).into()
-                }
-            }
-            impl Into<UiValue<Vec3>> for $unit<f32> {
-                fn into(self) -> UiValue<Vec3> {
-                    $unit(Vec3::new(self.0, self.0, self.0)).into()
-                }
-            }
-            impl Into<UiValue<Vec4>> for $unit<f32> {
-                fn into(self) -> UiValue<Vec4> {
-                    $unit(Vec4::new(self.0, self.0, self.0, self.0)).into()
-                }
-            }
-        )*
-    };
-}
-
-macro_rules! unit_basic_operations {
+macro_rules! unit_implement {
     ($($unit:ident), *) => {
         $(
             impl <T: Add<Output = T>> Add for $unit<T> {
@@ -497,6 +457,37 @@ macro_rules! unit_basic_operations {
             impl <T: MulAssign<f32>> MulAssign<f32> for $unit<T> {
                 fn mul_assign(&mut self, rhs: f32) {
                     self.0 *= rhs
+                }
+            }
+        
+            impl Into<UiValue<Vec2>> for $unit<(f32, f32)> {
+                fn into(self) -> UiValue<Vec2> {
+                    $unit(Vec2::new(self.0.0, self.0.1)).into()
+                }
+            }
+            impl Into<UiValue<Vec3>> for $unit<(f32, f32, f32)> {
+                fn into(self) -> UiValue<Vec3> {
+                    $unit(Vec3::new(self.0.0, self.0.1, self.0.2)).into()
+                }
+            }
+            impl Into<UiValue<Vec4>> for $unit<(f32, f32, f32, f32)> {
+                fn into(self) -> UiValue<Vec4> {
+                    $unit(Vec4::new(self.0.0, self.0.1, self.0.2, self.0.3)).into()
+                }
+            }
+            impl Into<UiValue<Vec2>> for $unit<f32> {
+                fn into(self) -> UiValue<Vec2> {
+                    $unit(Vec2::new(self.0, self.0)).into()
+                }
+            }
+            impl Into<UiValue<Vec3>> for $unit<f32> {
+                fn into(self) -> UiValue<Vec3> {
+                    $unit(Vec3::new(self.0, self.0, self.0)).into()
+                }
+            }
+            impl Into<UiValue<Vec4>> for $unit<f32> {
+                fn into(self) -> UiValue<Vec4> {
+                    $unit(Vec4::new(self.0, self.0, self.0, self.0)).into()
                 }
             }
         )*
@@ -594,29 +585,12 @@ pub struct Em<T>(pub T);
 pub struct Sp<T>(pub T);
 
 
+// #===================#
+// #=== MACRO CALLS ===#
 
 uivalue_declare!(ab, rl, rw, rh, em, sp);
-
-// Adds UiValue +-*!= unit ...
-uivalue_operations!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp));
-
-// Implements get_x, set_x, with_x ...
+unit_implement!(Ab, Rl, Rw, Rh, Em, Sp);
 uivalue_implement!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp));
-
-
-
-
-// Implements (x,y,z,w) into Unit<Vec4> ...
-unit_into_impl!(Ab, Rl, Rw, Rh, Em, Sp);
-
-unit_basic_operations!(Ab, Rl, Rw, Rh, Em, Sp);
-
-/* unit_basic_operations!(Ab);
-unit_basic_operations!(Rl);
-unit_basic_operations!(Rw);
-unit_basic_operations!(Rh);
-unit_basic_operations!(Em);
-unit_basic_operations!(Sp); */
 
 unit_cross_operations!((Ab, ab), (Rl, rl));
 unit_cross_operations!((Ab, ab), (Rw, rw));
@@ -655,18 +629,8 @@ unit_cross_operations!((Sp, sp), (Rh, rh));
 unit_cross_operations!((Sp, sp), (Em, em));
 
 
-#[cfg(test)]
-mod test {
-    use super::{Ab, Rl, Rw, Rh, Em, Sp, UiValue};
-    #[test]
-    fn all () {
-        let amount: UiValue<f32> = Ab(5.0) + Rl(5.0);
-        //assert_eq!(amount, Ab(15.0));
-    }
-}
-
-
-
+// #==============================#
+// #=== CUSTOM IMPLEMENTATIONS ===#
 
 // # Impl (x) => UiValue(f32)
 impl Into<UiValue<f32>> for f32 {
@@ -674,7 +638,6 @@ impl Into<UiValue<f32>> for f32 {
         Ab(self).into()
     }
 }
-
 
 impl Into<UiValue<Vec2>> for UiValue<f32> {
     fn into(self) -> UiValue<Vec2> {
@@ -697,7 +660,6 @@ impl Into<UiValue<Vec2>> for (f32, f32) {
     }
 }
 
-
 impl Into<UiValue<Vec3>> for UiValue<f32> {
     fn into(self) -> UiValue<Vec3> {
         let mut out = UiValue::<Vec3>::new();
@@ -719,7 +681,6 @@ impl Into<UiValue<Vec3>> for (f32, f32, f32) {
         Ab(Vec3::new(self.0, self.1, self.2)).into()
     }
 }
-
 
 impl Into<UiValue<Vec4>> for UiValue<f32> {
     fn into(self) -> UiValue<Vec4> {
@@ -745,6 +706,17 @@ impl Into<UiValue<Vec4>> for (f32, f32, f32, f32) {
 }
 
 
+// #=============#
+// #=== TESTS ===#
 
-
+#[cfg(test)]
+mod test {
+    use super::{Ab, Rl, Rw, Rh, Em, Sp, UiValue};
+    #[test]
+    fn all () {
+        let _: UiValue<f32> = Ab(5.0) + Rl(5.0);
+        let _: UiValue<f32> = Rw(5.0) + Rh(5.0);
+        let _: UiValue<f32> = Em(5.0) + Sp(5.0);
+    }
+}
 
