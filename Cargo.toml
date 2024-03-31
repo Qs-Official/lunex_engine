@@ -20,19 +20,9 @@
   ahash              = { version = "^0.8" }
   colored            = { version = "^2.1" }
   indexmap           = { version = "^2.1" }
-  glam               = { version = "^0.25" }
+  glam               = { version = "^0.27" }
   thiserror          = { version = "^1.0" }
 
-  bevy = { version = "0.13.0", default_features = false, features = [
-  #bevy = { git = "https://github.com/floppyhammer/bevy", branch="fix-camera-distance", default_features = false, features = [
-    #"bevy_gilrs",
-    #"bevy_render",
-    #"bevy_sprite",
-    #"bevy_text",
-    #"bevy_gizmos",
-  ] }
+  bevy = { version = "0.13.1", default_features = false, features = [] }
 
-  bevy_mod_picking   = { version = "0.18.1"}
-
-  bevy_lunex         = { path = "crates/bevy_lunex" }
   lunex_engine       = { path = "crates/lunex_engine" }
