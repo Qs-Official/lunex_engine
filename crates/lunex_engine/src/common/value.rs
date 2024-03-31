@@ -584,50 +584,125 @@ pub struct Em<T>(pub T);
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Sp<T>(pub T);
 
+/// **Viewport** - Represents scalable unit `0% to 100%` of the root container. `120%` is allowed.
+/// ## 🛠️ Example
+/// ```
+/// # use lunex_core::Vp;
+/// let a: Vp<f32> = Vp(25.0) + Vp(40.0); // -> 65%
+/// let b: Vp<f32> = Vp(25.0) * 3.0;      // -> 75%
+/// ```
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct Vp<T>(pub T);
+
+/// **Viewport width** - Represents scalable unit `0% to 100%` of the root container. `120%` is allowed.
+/// Proportional to width measure even when used in height field.
+/// ## 🛠️ Example
+/// ```
+/// # use lunex_core::Vw;
+/// let a: Vw<f32> = Vw(25.0) + Vw(40.0); // -> 65%
+/// let b: Vw<f32> = Vw(25.0) * 3.0;      // -> 75%
+/// ```
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct Vw<T>(pub T);
+
+/// **Viewport Height** - Represents scalable unit `0% to 100%` of the root container. `120%` is allowed.
+/// Proportional to height measure even when used in width field.
+/// ## 🛠️ Example
+/// ```
+/// # use lunex_core::Vh;
+/// let a: Vh<f32> = Vh(25.0) + Vh(40.0); // -> 65%
+/// let b: Vh<f32> = Vh(25.0) * 3.0;      // -> 75%
+/// ```
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
+pub struct Vh<T>(pub T);
 
 // #===================#
 // #=== MACRO CALLS ===#
 
-uivalue_declare!(ab, rl, rw, rh, em, sp);
-unit_implement!(Ab, Rl, Rw, Rh, Em, Sp);
-uivalue_implement!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp));
+uivalue_declare!(ab, rl, rw, rh, em, sp, vp, vw, vh);
+unit_implement!(Ab, Rl, Rw, Rh, Em, Sp, Vp, Vw, Vh);
+uivalue_implement!((Ab, ab), (Rl, rl), (Rw, rw), (Rh, rh), (Em, em), (Sp, sp), (Vp, vp), (Vw, vw), (Vh, vh));
 
 unit_cross_operations!((Ab, ab), (Rl, rl));
 unit_cross_operations!((Ab, ab), (Rw, rw));
 unit_cross_operations!((Ab, ab), (Rh, rh));
 unit_cross_operations!((Ab, ab), (Em, em));
 unit_cross_operations!((Ab, ab), (Sp, sp));
+unit_cross_operations!((Ab, ab), (Vp, vp));
+unit_cross_operations!((Ab, ab), (Vw, vw));
+unit_cross_operations!((Ab, ab), (Vh, vh));
 
 unit_cross_operations!((Rl, rl), (Ab, ab));
 unit_cross_operations!((Rl, rl), (Rw, rw));
 unit_cross_operations!((Rl, rl), (Rh, rh));
 unit_cross_operations!((Rl, rl), (Em, em));
 unit_cross_operations!((Rl, rl), (Sp, sp));
+unit_cross_operations!((Rl, rl), (Vp, vp));
+unit_cross_operations!((Rl, rl), (Vw, vw));
+unit_cross_operations!((Rl, rl), (Vh, vh));
 
 unit_cross_operations!((Rw, rw), (Ab, ab));
 unit_cross_operations!((Rw, rw), (Rl, rl));
 unit_cross_operations!((Rw, rw), (Rh, rh));
 unit_cross_operations!((Rw, rw), (Em, em));
 unit_cross_operations!((Rw, rw), (Sp, sp));
+unit_cross_operations!((Rw, rw), (Vp, vp));
+unit_cross_operations!((Rw, rw), (Vw, vw));
+unit_cross_operations!((Rw, rw), (Vh, vh));
 
 unit_cross_operations!((Rh, rh), (Ab, ab));
 unit_cross_operations!((Rh, rh), (Rl, rl));
 unit_cross_operations!((Rh, rh), (Rw, rw));
 unit_cross_operations!((Rh, rh), (Em, em));
 unit_cross_operations!((Rh, rh), (Sp, sp));
+unit_cross_operations!((Rh, rh), (Vp, vp));
+unit_cross_operations!((Rh, rh), (Vw, vw));
+unit_cross_operations!((Rh, rh), (Vh, vh));
 
 unit_cross_operations!((Em, em), (Ab, ab));
 unit_cross_operations!((Em, em), (Rl, rl));
 unit_cross_operations!((Em, em), (Rw, rw));
 unit_cross_operations!((Em, em), (Rh, rh));
 unit_cross_operations!((Em, em), (Sp, sp));
+unit_cross_operations!((Em, em), (Vp, vp));
+unit_cross_operations!((Em, em), (Vw, vw));
+unit_cross_operations!((Em, em), (Vh, vh));
 
 unit_cross_operations!((Sp, sp), (Ab, ab));
 unit_cross_operations!((Sp, sp), (Rl, rl));
 unit_cross_operations!((Sp, sp), (Rw, rw));
 unit_cross_operations!((Sp, sp), (Rh, rh));
 unit_cross_operations!((Sp, sp), (Em, em));
+unit_cross_operations!((Sp, sp), (Vp, vp));
+unit_cross_operations!((Sp, sp), (Vw, vw));
+unit_cross_operations!((Sp, sp), (Vh, vh));
 
+unit_cross_operations!((Vp, vp), (Ab, ab));
+unit_cross_operations!((Vp, vp), (Rl, rl));
+unit_cross_operations!((Vp, vp), (Rw, rw));
+unit_cross_operations!((Vp, vp), (Rh, rh));
+unit_cross_operations!((Vp, vp), (Em, em));
+unit_cross_operations!((Vp, vp), (Sp, sp));
+unit_cross_operations!((Vp, vp), (Vw, vw));
+unit_cross_operations!((Vp, vp), (Vh, vh));
+
+unit_cross_operations!((Vw, vw), (Ab, ab));
+unit_cross_operations!((Vw, vw), (Rl, rl));
+unit_cross_operations!((Vw, vw), (Rw, rw));
+unit_cross_operations!((Vw, vw), (Rh, rh));
+unit_cross_operations!((Vw, vw), (Em, em));
+unit_cross_operations!((Vw, vw), (Sp, sp));
+unit_cross_operations!((Vw, vw), (Vp, vp));
+unit_cross_operations!((Vw, vw), (Vh, vh));
+
+unit_cross_operations!((Vh, vh), (Ab, ab));
+unit_cross_operations!((Vh, vh), (Rl, rl));
+unit_cross_operations!((Vh, vh), (Rw, rw));
+unit_cross_operations!((Vh, vh), (Rh, rh));
+unit_cross_operations!((Vh, vh), (Em, em));
+unit_cross_operations!((Vh, vh), (Sp, sp));
+unit_cross_operations!((Vh, vh), (Vp, vp));
+unit_cross_operations!((Vh, vh), (Vw, vw));
 
 // #==============================#
 // #=== CUSTOM IMPLEMENTATIONS ===#
