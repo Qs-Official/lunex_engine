@@ -14,7 +14,7 @@ use super::NiceDisplay;
 // #=== TESTING ===#
 
 #[cfg(test)]
-mod test {
+mod testy {
     use super::{Abs, Prc, Rem, NodeSize, Vec2};
     #[test]
     fn all () {
