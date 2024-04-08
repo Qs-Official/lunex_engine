@@ -899,6 +899,67 @@ impl Ab<Vec4> {
 
 // #=====================#
 // #=== FUNCTIONALITY ===#
+
+impl NiceDisplay for UiValue<f32> {
+    fn to_nicestr(&self) -> String {
+        let mut t = String::new();
+        if let Some(v) = self.ab {
+            if v != 0.0 {
+                t = format!("{}", v.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.rl {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rw {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "%w".bright_green());
+            }
+        }
+        if let Some(v) = self.rh {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "%h".bright_green());
+            }
+        }
+        if let Some(v) = self.em {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if let Some(v) = self.sp {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_red(), "sp".bright_red());
+            }
+        }
+        if let Some(v) = self.vp {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "v%".bright_green());
+            }
+        }
+        if let Some(v) = self.vw {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "v%w".bright_green());
+            }
+        }
+        if let Some(v) = self.vh {
+            if v != 0.0 {
+                if !t.is_empty() { t += " + " };
+                t = format!("{}{}{}", t, v.to_string().bright_green(), "v%h".bright_green());
+            }
+        }
+        if t.is_empty() { t = format!("{}", "0".bright_blue()); };
+        format!("{}", t.black())
+    }
+}
 impl NiceDisplay for UiValue<Vec2> {
     fn to_nicestr(&self) -> String {
         let mut tx = String::new();
@@ -1307,12 +1368,17 @@ impl NiceDisplay for UiValue<Vec4> {
 
 #[cfg(test)]
 mod test {
-    use super::{Ab, Rl, Rw, Rh, Em, Sp, UiValue};
+    use crate::NiceDisplay;
+
+    use super::{Ab, Rl, Rw, Rh, Em, Sp, UiValue, Vec2};
     #[test]
     fn all () {
         let _: UiValue<f32> = Ab(5.0) + Rl(5.0);
         let _: UiValue<f32> = Rw(5.0) + Rh(5.0);
         let _: UiValue<f32> = Em(5.0) + Sp(5.0);
+
+        let size: UiValue<Vec2> = Ab(Vec2::splat(5.0)) + Rl(Vec2::splat(5.0));
+        println!("{}", size.to_nicestr());
     }
 }
 
