@@ -8,6 +8,8 @@ use std::ops::MulAssign;
 
 use crate::import::*;
 
+use super::NiceDisplay;
+
 
 // #==========================#
 // #=== DECLARATIVE MACROS ===#
@@ -892,6 +894,412 @@ impl Ab<Vec4> {
     pub const XL6_4: Ab<Vec4> = Ab(Vec4::splat(16.0 * 16.0));
     /// ## Extra-large 7 - Vec4
     pub const XL7_4: Ab<Vec4> = Ab(Vec4::splat(18.0 * 16.0));
+}
+
+
+// #=====================#
+// #=== FUNCTIONALITY ===#
+impl NiceDisplay for UiValue<Vec2> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        if let Some(v) = self.ab {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.rl {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%w".bright_green());
+            }
+        }
+        if let Some(v) = self.rh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%h".bright_green());
+            }
+        }
+        if let Some(v) = self.em {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if let Some(v) = self.sp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "sp".bright_red());
+            }
+        }
+        if let Some(v) = self.vp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%".bright_green());
+            }
+        }
+        if let Some(v) = self.vw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%w".bright_green());
+            }
+        }
+        if let Some(v) = self.vh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%h".bright_green());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {}", tx.black(), ty.black())
+    }
+}
+impl NiceDisplay for UiValue<Vec3> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        let mut tz = String::new();
+        if let Some(v) = self.ab {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+            if v.z != 0.0 {
+                tz = format!("{}", v.z.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.rl {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%w".bright_green());
+            }
+        }
+        if let Some(v) = self.rh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%h".bright_green());
+            }
+        }
+        if let Some(v) = self.em {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if let Some(v) = self.sp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "sp".bright_red());
+            }
+        }
+        if let Some(v) = self.vp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%".bright_green());
+            }
+        }
+        if let Some(v) = self.vw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%w".bright_green());
+            }
+        }
+        if let Some(v) = self.vh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%h".bright_green());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        if tz.is_empty() { tz = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {} z:{}", tx.black(), ty.black(), tz.black())
+    }
+}
+impl NiceDisplay for UiValue<Vec4> {
+    fn to_nicestr(&self) -> String {
+        let mut tx = String::new();
+        let mut ty = String::new();
+        let mut tz = String::new();
+        let mut tw = String::new();
+        if let Some(v) = self.ab {
+            if v.x != 0.0 {
+                tx = format!("{}", v.x.to_string().bright_blue());
+            }
+            if v.y != 0.0 {
+                ty = format!("{}", v.y.to_string().bright_blue());
+            }
+            if v.z != 0.0 {
+                tz = format!("{}", v.z.to_string().bright_blue());
+            }
+            if v.w != 0.0 {
+                tw = format!("{}", v.w.to_string().bright_blue());
+            }
+        }
+        if let Some(v) = self.rl {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "%".bright_green());
+            }
+        }
+        if let Some(v) = self.rw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%w".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "%w".bright_green());
+            }
+        }
+        if let Some(v) = self.rh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "%h".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "%h".bright_green());
+            }
+        }
+        if let Some(v) = self.em {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "m".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "m".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "m".bright_red());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_red(), "m".bright_red());
+            }
+        }
+        if let Some(v) = self.sp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_red(), "sp".bright_red());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_red(), "sp".bright_red());
+            }
+        }
+        if let Some(v) = self.vp {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "v%".bright_green());
+            }
+        }
+        if let Some(v) = self.vw {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%w".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "v%w".bright_green());
+            }
+        }
+        if let Some(v) = self.vh {
+            if v.x != 0.0 {
+                if !tx.is_empty() { tx += " + " };
+                tx = format!("{}{}{}", tx, v.x.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.y != 0.0 {
+                if !ty.is_empty() { ty += " + " };
+                ty = format!("{}{}{}", ty, v.y.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.z != 0.0 {
+                if !tz.is_empty() { tz += " + " };
+                tz = format!("{}{}{}", tz, v.z.to_string().bright_green(), "v%h".bright_green());
+            }
+            if v.w != 0.0 {
+                if !tw.is_empty() { tw += " + " };
+                tw = format!("{}{}{}", tw, v.w.to_string().bright_green(), "v%h".bright_green());
+            }
+        }
+        if tx.is_empty() { tx = format!("{}", "0".bright_blue()); };
+        if ty.is_empty() { ty = format!("{}", "0".bright_blue()); };
+        if tz.is_empty() { tz = format!("{}", "0".bright_blue()); };
+        if tw.is_empty() { tw = format!("{}", "0".bright_blue()); };
+        format!("x: {}, y: {} z:{} w:{}", tx.black(), ty.black(), tz.black(), tw.black())
+    }
 }
 
 // #=============#
