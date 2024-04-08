@@ -781,6 +781,119 @@ impl Into<UiValue<Vec4>> for (f32, f32, f32, f32) {
 }
 
 
+impl Ab<f32> {
+    /// ## Zero
+    pub const ZERO: Ab<f32> = Ab(0.0);
+    /// ## One
+    pub const ONE: Ab<f32> = Ab(1.0);
+    /// ## Extra-small
+    pub const XS: Ab<f32> = Ab(1.0 * 16.0);
+    /// ## Small
+    pub const SM: Ab<f32> = Ab(2.0 * 16.0);
+    /// ## Medium
+    pub const MD: Ab<f32> = Ab(3.0 * 16.0);
+    /// ## Large
+    pub const LG: Ab<f32> = Ab(4.0 * 16.0);
+    /// ## Extra-large
+    pub const XL: Ab<f32> = Ab(6.0 * 16.0);
+    /// ## Extra-large 2
+    pub const XL2: Ab<f32> = Ab(8.0 * 16.0);
+    /// ## Extra-large 3
+    pub const XL3: Ab<f32> = Ab(10.0 * 16.0);
+    /// ## Extra-large 4
+    pub const XL4: Ab<f32> = Ab(12.0 * 16.0);
+    /// ## Extra-large 5
+    pub const XL5: Ab<f32> = Ab(14.0 * 16.0);
+    /// ## Extra-large 6
+    pub const XL6: Ab<f32> = Ab(16.0 * 16.0);
+    /// ## Extra-large 7
+    pub const XL7: Ab<f32> = Ab(18.0 * 16.0);
+}
+impl Ab<Vec2> {
+    /// ## Zero - Vec2
+    pub const ZERO_2: Ab<Vec2> = Ab(Vec2::splat(0.0));
+    /// ## One - Vec2
+    pub const ONE_2: Ab<Vec2> = Ab(Vec2::splat(1.0));
+    /// ## Extra-small - Vec2
+    pub const XS_2: Ab<Vec2> = Ab(Vec2::splat(1.0 * 16.0));
+    /// ## Small - Vec2
+    pub const SM_2: Ab<Vec2> = Ab(Vec2::splat(2.0 * 16.0));
+    /// ## Medium - Vec2
+    pub const MD_2: Ab<Vec2> = Ab(Vec2::splat(3.0 * 16.0));
+    /// ## Large - Vec2
+    pub const LG_2: Ab<Vec2> = Ab(Vec2::splat(4.0 * 16.0));
+    /// ## Extra-large - Vec2
+    pub const XL_2: Ab<Vec2> = Ab(Vec2::splat(6.0 * 16.0));
+    /// ## Extra-large 2 - Vec2
+    pub const XL2_2: Ab<Vec2> = Ab(Vec2::splat(8.0 * 16.0));
+    /// ## Extra-large 3 - Vec2
+    pub const XL3_2: Ab<Vec2> = Ab(Vec2::splat(10.0 * 16.0));
+    /// ## Extra-large 4 - Vec2
+    pub const XL4_2: Ab<Vec2> = Ab(Vec2::splat(12.0 * 16.0));
+    /// ## Extra-large 5 - Vec2
+    pub const XL5_2: Ab<Vec2> = Ab(Vec2::splat(14.0 * 16.0));
+    /// ## Extra-large 6 - Vec2
+    pub const XL6_2: Ab<Vec2> = Ab(Vec2::splat(16.0 * 16.0));
+    /// ## Extra-large 7 - Vec2
+    pub const XL7_2: Ab<Vec2> = Ab(Vec2::splat(18.0 * 16.0));
+}
+impl Ab<Vec3> {
+    /// ## Zero - Vec3
+    pub const ZERO_3: Ab<Vec3> = Ab(Vec3::splat(0.0));
+    /// ## One - Vec3
+    pub const ONE_3: Ab<Vec3> = Ab(Vec3::splat(1.0));
+    /// ## Extra-small - Vec3
+    pub const XS_3: Ab<Vec3> = Ab(Vec3::splat(1.0 * 16.0));
+    /// ## Small - Vec3
+    pub const SM_3: Ab<Vec3> = Ab(Vec3::splat(2.0 * 16.0));
+    /// ## Medium - Vec3
+    pub const MD_3: Ab<Vec3> = Ab(Vec3::splat(3.0 * 16.0));
+    /// ## Large - Vec3
+    pub const LG_3: Ab<Vec3> = Ab(Vec3::splat(4.0 * 16.0));
+    /// ## Extra-large - Vec3
+    pub const XL_3: Ab<Vec3> = Ab(Vec3::splat(6.0 * 16.0));
+    /// ## Extra-large 2 - Vec3
+    pub const XL2_3: Ab<Vec3> = Ab(Vec3::splat(8.0 * 16.0));
+    /// ## Extra-large 3 - Vec3
+    pub const XL3_3: Ab<Vec3> = Ab(Vec3::splat(10.0 * 16.0));
+    /// ## Extra-large 4 - Vec3
+    pub const XL4_3: Ab<Vec3> = Ab(Vec3::splat(12.0 * 16.0));
+    /// ## Extra-large 5 - Vec3
+    pub const XL5_3: Ab<Vec3> = Ab(Vec3::splat(14.0 * 16.0));
+    /// ## Extra-large 6 - Vec3
+    pub const XL6_3: Ab<Vec3> = Ab(Vec3::splat(16.0 * 16.0));
+    /// ## Extra-large 7 - Vec3
+    pub const XL7_3: Ab<Vec3> = Ab(Vec3::splat(18.0 * 16.0));
+}
+impl Ab<Vec4> {
+    /// ## Zero - Vec4
+    pub const ZERO_4: Ab<Vec4> = Ab(Vec4::splat(0.0));
+    /// ## One - Vec4
+    pub const ONE_4: Ab<Vec4> = Ab(Vec4::splat(1.0));
+    /// ## Extra-small - Vec4
+    pub const XS_4: Ab<Vec4> = Ab(Vec4::splat(1.0 * 16.0));
+    /// ## Small - Vec4
+    pub const SM_4: Ab<Vec4> = Ab(Vec4::splat(2.0 * 16.0));
+    /// ## Medium - Vec4
+    pub const MD_4: Ab<Vec4> = Ab(Vec4::splat(3.0 * 16.0));
+    /// ## Large - Vec4
+    pub const LG_4: Ab<Vec4> = Ab(Vec4::splat(4.0 * 16.0));
+    /// ## Extra-large - Vec4
+    pub const XL_4: Ab<Vec4> = Ab(Vec4::splat(6.0 * 16.0));
+    /// ## Extra-large 2 - Vec4
+    pub const XL2_4: Ab<Vec4> = Ab(Vec4::splat(8.0 * 16.0));
+    /// ## Extra-large 3 - Vec4
+    pub const XL3_4: Ab<Vec4> = Ab(Vec4::splat(10.0 * 16.0));
+    /// ## Extra-large 4 - Vec4
+    pub const XL4_4: Ab<Vec4> = Ab(Vec4::splat(12.0 * 16.0));
+    /// ## Extra-large 5 - Vec4
+    pub const XL5_4: Ab<Vec4> = Ab(Vec4::splat(14.0 * 16.0));
+    /// ## Extra-large 6 - Vec4
+    pub const XL6_4: Ab<Vec4> = Ab(Vec4::splat(16.0 * 16.0));
+    /// ## Extra-large 7 - Vec4
+    pub const XL7_4: Ab<Vec4> = Ab(Vec4::splat(18.0 * 16.0));
+}
+
 // #=============#
 // #=== TESTS ===#
 
